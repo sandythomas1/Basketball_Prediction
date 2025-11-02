@@ -1,0 +1,275 @@
+Basketball Database Schema - Entity Relationship Diagram
+==========================================================
+
+┌────────────────────────────────────────────────────────────────────┐
+│                            TEAMS TABLE                              │
+│────────────────────────────────────────────────────────────────────│
+│ PK  team_id (INTEGER)                                              │
+│     team_abbr (TEXT) UNIQUE         [e.g., 'LAL', 'BOS']          │
+│     team_name (TEXT)                [e.g., 'Los Angeles Lakers']   │
+│     conference (TEXT)               [CHECK: 'East' or 'West']      │
+│     division (TEXT)                                                │
+│     city (TEXT)                                                    │
+│     arena (TEXT)                                                   │
+│     founded_year (INTEGER)                                         │
+│     is_active (BOOLEAN)                                            │
+│     created_at (TIMESTAMP)                                         │
+│     updated_at (TIMESTAMP)                                         │
+└──────────────┬──────────────────────┬──────────────────────────────┘
+               │                      │
+               │                      │
+               │ Referenced by:       │ Referenced by:
+               │ - games              │ - player_stats
+               │ - team_stats         │ - season_averages
+               │ - player_stats       │
+               │                      │
+    ┌──────────▼──────────┐          │
+    │                     │          │
+    │                     │          │
+┌───┴─────────────────────┴──────────▼─────────────────────────────┐
+│                          GAMES TABLE                              │
+│───────────────────────────────────────────────────────────────────│
+│ PK  game_id (INTEGER)                                             │
+│     external_game_id (TEXT) UNIQUE     [e.g., 'NBA_2024_001']   │
+│     game_date (DATE)                   [e.g., '2024-10-22']      │
+│     season (TEXT)                      [e.g., '2024-25']         │
+│     season_type (TEXT)                 [CHECK: see below]         │
+│                                                                    │
+│ FK  home_team_id (INTEGER) ──────► teams.team_id                 │
+│     home_team_score (INTEGER)                                     │
+│     home_team_won (BOOLEAN)                                       │
+│                                                                    │
+│ FK  away_team_id (INTEGER) ──────► teams.team_id                 │
+│     away_team_score (INTEGER)                                     │
+│     away_team_won (BOOLEAN)                                       │
+│                                                                    │
+│     overtime_periods (INTEGER)        [0 if no OT]               │
+│     attendance (INTEGER)                                          │
+│     arena_name (TEXT)                                             │
+│     created_at (TIMESTAMP)                                        │
+│     updated_at (TIMESTAMP)                                        │
+│                                                                    │
+│ CONSTRAINTS:                                                       │
+│   - home_team_id != away_team_id                                  │
+│   - season_type IN ('Regular Season', 'Playoffs', 'Preseason')    │
+└──────────────┬────────────────────────────────────────────────────┘
+               │
+               │ Referenced by:
+               │ - player_stats
+               │
+    ┌──────────▼──────────┐
+    │                     │
+┌───┴─────────────────────┴──────────────────────────────────────────┐
+│                    PLAYER_STATS TABLE                               │
+│─────────────────────────────────────────────────────────────────────│
+│ PK  stat_id (INTEGER)                                              │
+│ FK  game_id (INTEGER) ──────────► games.game_id                    │
+│ FK  team_id (INTEGER) ──────────► teams.team_id                    │
+│     player_id (INTEGER)                                            │
+│     player_name (TEXT)                                             │
+│                                                                     │
+│ PLAYING TIME:                                                       │
+│     minutes_played (REAL)                                          │
+│     seconds_played (INTEGER)                                       │
+│                                                                     │
+│ SCORING:                                                            │
+│     points (INTEGER)                                               │
+│     field_goals_made (INTEGER)                                     │
+│     field_goals_attempted (INTEGER)                                │
+│     field_goal_percentage (REAL)                                   │
+│     three_pointers_made (INTEGER)                                  │
+│     three_pointers_attempted (INTEGER)                             │
+│     three_point_percentage (REAL)                                  │
+│     free_throws_made (INTEGER)                                     │
+│     free_throws_attempted (INTEGER)                                │
+│     free_throw_percentage (REAL)                                   │
+│                                                                     │
+│ REBOUNDING:                                                         │
+│     offensive_rebounds (INTEGER)                                   │
+│     defensive_rebounds (INTEGER)                                   │
+│     total_rebounds (INTEGER)                                       │
+│                                                                     │
+│ PLAYMAKING & DEFENSE:                                               │
+│     assists (INTEGER)                                              │
+│     steals (INTEGER)                                               │
+│     blocks (INTEGER)                                               │
+│     turnovers (INTEGER)                                            │
+│     personal_fouls (INTEGER)                                       │
+│                                                                     │
+│ ADVANCED:                                                           │
+│     plus_minus (INTEGER)                                           │
+│     is_starter (BOOLEAN)                                           │
+│     created_at (TIMESTAMP)                                         │
+│                                                                     │
+│ CONSTRAINTS:                                                        │
+│   - UNIQUE(game_id, player_id)  [One stat line per player/game]   │
+└─────────────────────────────────────────────────────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                    SEASON_AVERAGES TABLE                            │
+│─────────────────────────────────────────────────────────────────────│
+│ PK  avg_id (INTEGER)                                               │
+│     player_id (INTEGER)                                            │
+│     player_name (TEXT)                                             │
+│ FK  team_id (INTEGER) ──────────► teams.team_id                    │
+│     season (TEXT)                   [e.g., '2024-25']             │
+│     season_type (TEXT)              [CHECK: see below]             │
+│                                                                     │
+│ COUNTING STATS:                                                     │
+│     games_played (INTEGER)                                         │
+│     games_started (INTEGER)                                        │
+│                                                                     │
+│ PER-GAME AVERAGES:                                                  │
+│     minutes_per_game (REAL)                                        │
+│     points_per_game (REAL)                                         │
+│     rebounds_per_game (REAL)                                       │
+│     assists_per_game (REAL)                                        │
+│     steals_per_game (REAL)                                         │
+│     blocks_per_game (REAL)                                         │
+│     turnovers_per_game (REAL)                                      │
+│                                                                     │
+│ SHOOTING PERCENTAGES:                                               │
+│     field_goal_percentage (REAL)                                   │
+│     three_point_percentage (REAL)                                  │
+│     free_throw_percentage (REAL)                                   │
+│                                                                     │
+│ ADVANCED METRICS:                                                   │
+│     player_efficiency_rating (REAL)    [PER]                       │
+│     true_shooting_percentage (REAL)    [TS%]                       │
+│     effective_field_goal_percentage (REAL) [eFG%]                  │
+│     usage_rate (REAL)                                              │
+│                                                                     │
+│     created_at (TIMESTAMP)                                         │
+│     updated_at (TIMESTAMP)                                         │
+│                                                                     │
+│ CONSTRAINTS:                                                        │
+│   - UNIQUE(player_id, team_id, season, season_type)               │
+│   - season_type IN ('Regular Season', 'Playoffs')                  │
+└─────────────────────────────────────────────────────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                      TEAM_STATS TABLE                               │
+│─────────────────────────────────────────────────────────────────────│
+│ PK  team_stat_id (INTEGER)                                         │
+│ FK  team_id (INTEGER) ──────────► teams.team_id                    │
+│     season (TEXT)                   [e.g., '2024-25']             │
+│     season_type (TEXT)              [CHECK: see below]             │
+│                                                                     │
+│ RECORD:                                                             │
+│     games_played (INTEGER)                                         │
+│     wins (INTEGER)                                                 │
+│     losses (INTEGER)                                               │
+│     win_percentage (REAL)                                          │
+│                                                                     │
+│ HOME/AWAY SPLITS:                                                   │
+│     home_wins (INTEGER)                                            │
+│     home_losses (INTEGER)                                          │
+│     away_wins (INTEGER)                                            │
+│     away_losses (INTEGER)                                          │
+│                                                                     │
+│ OFFENSIVE STATS (per game):                                         │
+│     points_per_game (REAL)                                         │
+│     field_goal_percentage (REAL)                                   │
+│     three_point_percentage (REAL)                                  │
+│     free_throw_percentage (REAL)                                   │
+│     offensive_rebounds_per_game (REAL)                             │
+│     assists_per_game (REAL)                                        │
+│     turnovers_per_game (REAL)                                      │
+│                                                                     │
+│ DEFENSIVE STATS (per game):                                         │
+│     opponent_points_per_game (REAL)                                │
+│     opponent_field_goal_percentage (REAL)                          │
+│     opponent_three_point_percentage (REAL)                         │
+│     defensive_rebounds_per_game (REAL)                             │
+│     steals_per_game (REAL)                                         │
+│     blocks_per_game (REAL)                                         │
+│                                                                     │
+│ ADVANCED METRICS:                                                   │
+│     offensive_rating (REAL)         [Pts per 100 possessions]      │
+│     defensive_rating (REAL)         [Opp pts per 100 poss]         │
+│     net_rating (REAL)               [Off - Def rating]             │
+│     pace (REAL)                     [Possessions per game]         │
+│     effective_field_goal_percentage (REAL)                         │
+│     true_shooting_percentage (REAL)                                │
+│                                                                     │
+│ MOMENTUM INDICATORS:                                                │
+│     current_streak (INTEGER)        [+/- for wins/losses]          │
+│     last_10_wins (INTEGER)                                         │
+│     last_10_losses (INTEGER)                                       │
+│                                                                     │
+│     created_at (TIMESTAMP)                                         │
+│     updated_at (TIMESTAMP)                                         │
+│                                                                     │
+│ CONSTRAINTS:                                                        │
+│   - UNIQUE(team_id, season, season_type)                           │
+│   - season_type IN ('Regular Season', 'Playoffs')                  │
+└─────────────────────────────────────────────────────────────────────┘
+
+
+INDEXES (for query performance):
+═════════════════════════════════
+teams:
+  - idx_teams_abbr ON (team_abbr)
+  - idx_teams_conference ON (conference)
+
+games:
+  - idx_games_date ON (game_date)
+  - idx_games_season ON (season)
+  - idx_games_home_team ON (home_team_id)
+  - idx_games_away_team ON (away_team_id)
+  - idx_games_external_id ON (external_game_id)
+
+player_stats:
+  - idx_player_stats_game ON (game_id)
+  - idx_player_stats_player ON (player_id)
+  - idx_player_stats_team ON (team_id)
+
+season_averages:
+  - idx_season_avg_player ON (player_id)
+  - idx_season_avg_season ON (season)
+  - idx_season_avg_team ON (team_id)
+
+team_stats:
+  - idx_team_stats_team ON (team_id)
+  - idx_team_stats_season ON (season)
+  - idx_team_stats_win_pct ON (win_percentage)
+
+
+RELATIONSHIPS SUMMARY:
+═══════════════════════
+1. teams (1) ──< (many) games
+   - One team plays in many games (as home or away)
+
+2. teams (1) ──< (many) player_stats
+   - One team has many player stat entries
+
+3. teams (1) ──< (many) season_averages
+   - One team has many player season averages
+
+4. teams (1) ──< (many) team_stats
+   - One team has multiple season statistics records
+
+5. games (1) ──< (many) player_stats
+   - One game has many player performances
+
+
+DATA FLOW:
+══════════
+1. Raw Data → player_stats (individual game performances)
+2. Aggregation → season_averages (calculated from player_stats)
+3. Aggregation → team_stats (calculated from games + player_stats)
+4. Prediction → Use season_averages + team_stats as features
+
+
+KEY CONCEPTS:
+═════════════
+• PK = Primary Key (unique identifier)
+• FK = Foreign Key (references another table)
+• UNIQUE = No duplicates allowed
+• CHECK = Must satisfy condition
+• ON DELETE CASCADE = Delete child records when parent is deleted
+• Indexes speed up queries but slow down inserts
+• Timestamps track when records were created/updated (automatic triggers)
+
