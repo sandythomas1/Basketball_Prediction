@@ -4,7 +4,7 @@ Exploratory Data Analysis for NBA SQLite Database
 import sqlite3
 
 # Connect to database
-conn = sqlite3.connect('data/nba.sqlite')
+conn = sqlite3.connect('/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/data/nba.sqlite')
 cursor = conn.cursor()
 
 # Get all tables
