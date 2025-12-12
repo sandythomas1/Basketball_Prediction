@@ -22,7 +22,7 @@ def initilaze_elo(teams):
 
 def expected_home_win(Ehome, Eaway, hca=70):
     #calculate expected probability that home team wins
-    return 1 / (1 + 10 ** (-(Eaway - Ehome + hca) / 400))
+    return 1 / (1 + 10 ** (-(Ehome - Eaway + hca) / 400))
 
 def update_elo(Ehome, Eaway, home_win, k=20):
     Phome = expected_home_win(Ehome, Eaway)
@@ -51,9 +51,23 @@ def main():
     df["elo_away"] = 0.0
     df["elo_prob"] = 0.0
 
+    #add reset
+    current_season = None
     for i, row in df.iterrows():
-        home = row['team_id_home']
-        away = row['team_id_away']
+        season = row["season_id"]
+
+        # -------- Season regression (once per season) --------
+        if current_season is None:
+            current_season = season
+
+        if season != current_season:
+            # regress ALL teams toward mean
+            for team in elo:
+                elo[team] = 0.7 * elo[team] + 0.3 * 1500
+            current_season = season
+
+        home = row["team_id_home"]
+        away = row["team_id_away"]
 
         Ehome = elo[home]
         Eaway = elo[away]
@@ -74,6 +88,13 @@ def main():
     out_path.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(out_path, index=False)
     print(f"Saved elo data to {out_path}")
+
+    #print shape, head, and tail
+    print(df.shape)
+    print(df.head(5))
+    print(df.tail(5))
+    print(df["elo_home"].min(), df["elo_home"].max())
+    print(df["elo_away"].min(), df["elo_away"].max())
 
 if __name__ == "__main__":
     main()
