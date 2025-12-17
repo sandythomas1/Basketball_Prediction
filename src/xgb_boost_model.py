@@ -4,9 +4,17 @@ from sklearn.metrics import log_loss, accuracy_score, roc_auc_score
 from xgboost import XGBClassifier   
 
 
-features_path = Path("/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/data/processed/features.csv")
+features_path = Path("/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/data/processed/features_2.csv")
 
-features_cols = ["elo_home", "elo_away", "elo_diff", "elo_prob"]
+
+features_cols = [
+    "elo_home", "elo_away", "elo_diff", "elo_prob",
+    "pf_roll_home", "pf_roll_away", "pf_roll_diff",
+    "pa_roll_home", "pa_roll_away", "pa_roll_diff",
+    "win_roll_home", "win_roll_away", "win_roll_diff",
+    "margin_roll_home", "margin_roll_away", "margin_roll_diff",
+    "games_in_window_home", "games_in_window_away",
+]
 target_col = "home_win"
 
 def split_by_season(df):
