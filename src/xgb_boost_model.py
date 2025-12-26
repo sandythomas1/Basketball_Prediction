@@ -1,27 +1,33 @@
 import pandas as pd
 from pathlib import Path
 from sklearn.metrics import log_loss, accuracy_score, roc_auc_score
-from xgboost import XGBClassifier   
+from xgboost import XGBClassifier 
+from sklearn.linear_model import LogisticRegression
+  
 
 
-features_path = Path("/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/data/processed/features_2.csv")
+features_path = Path("/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/data/processed/features_3.csv")
 
 
 features_cols = [
-    "elo_home", "elo_away", "elo_diff", "elo_prob",
-    "pf_roll_home", "pf_roll_away", "pf_roll_diff",
-    "pa_roll_home", "pa_roll_away", "pa_roll_diff",
-    "win_roll_home", "win_roll_away", "win_roll_diff",
-    "margin_roll_home", "margin_roll_away", "margin_roll_diff",
-    "games_in_window_home", "games_in_window_away",
+    "elo_home","elo_away","elo_diff","elo_prob",
+    "pf_roll_home","pf_roll_away","pf_roll_diff",
+    "pa_roll_home","pa_roll_away","pa_roll_diff",
+    "win_roll_home","win_roll_away","win_roll_diff",
+    "margin_roll_home","margin_roll_away","margin_roll_diff",
+    "games_in_window_home","games_in_window_away",
+    "home_rest_days","away_rest_days","home_b2b","away_b2b","rest_diff",
 ]
+
 target_col = "home_win"
 
 def split_by_season(df):
 
-    train = df[df["season_id"] <= 22018].copy()
-    val = df[(df["season_id"] >= 22019) & (df["season_id"] < 22021)].copy()
-    test = df[df["season_id"] >= 22022].copy()
+    df = df[df["season_id"] >= 22004].copy()
+
+    train = df[(df["season_id"] >= 22004) & (df["season_id"] <= 22018)].copy()
+    val   = df[(df["season_id"] >= 22019) & (df["season_id"] <= 22020)].copy()
+    test  = df[df["season_id"] >= 22022].copy()
     return train, val, test
 
 def eval_split(name, y_true, p_pred):
@@ -89,6 +95,13 @@ def main():
     p_val   = model.predict_proba(X_val)[:, 1]
     p_test  = model.predict_proba(X_test)[:, 1]
 
+    # probability calibration
+    calibrator = LogisticRegression(solver="lbfgs")
+    calibrator.fit(p_val.reshape(-1, 1), y_val)
+
+    p_val_cal = calibrator.predict_proba(p_val.reshape(-1, 1))[:, 1]
+    p_test_cal = calibrator.predict_proba(p_test.reshape(-1, 1))[:, 1]
+
     results = []
     results.append(eval_split("train", y_train, p_train))
     results.append(eval_split("val", y_val, p_val))
@@ -105,11 +118,18 @@ def main():
     print(imp_df)
 
     # Save model
-    out_model = Path("/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/models/xgb_v1.json")
+    out_model = Path("/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/models/xgb_v2_modern.json")
     out_model.parent.mkdir(parents=True, exist_ok=True)
 
     model.get_booster().save_model(str(out_model))
     print("\nSaved model booster to:", out_model)
+
+    print("\n--- Calibrated results ---")
+    print(pd.DataFrame([
+    eval_split("val_cal", y_val, p_val_cal),
+    eval_split("test_cal", y_test, p_test_cal),
+]))
+
 
 if __name__ == "__main__":
     main()
