@@ -1,0 +1,537 @@
+game_date,team_id_home,team_id_away,model_prob_home,confidence_tier,summary_label,high_confidence,high_uncertainty,high_disagreement,upset_alert,ui_tier,ui_label,ui_color,display_priority
+2022-10-18,1610612744.0,1610612747.0,0.6663382492094855,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-10-19,1610612763.0,1610612752.0,0.7115381165109267,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-10-21,1610612737.0,1610612753.0,0.7517242322180836,Heavy Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-10-21,1610612752.0,1610612765.0,0.696395398999018,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-10-21,1610612744.0,1610612743.0,0.6596235596298458,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-10-22,1610612743.0,1610612760.0,0.7672143408068879,Heavy Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-10-23,1610612744.0,1610612758.0,0.7563417203027479,Heavy Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-10-23,1610612747.0,1610612757.0,0.6820775730239232,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-10-24,1610612752.0,1610612753.0,0.720770964908595,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-10-26,1610612739.0,1610612753.0,0.7410360374873265,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-10-26,1610612762.0,1610612745.0,0.7048432293160166,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-10-26,1610612743.0,1610612747.0,0.6736193347782554,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-10-28,1610612738.0,1610612739.0,0.7023581454914793,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-10-28,1610612750.0,1610612747.0,0.6767056369463171,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-10-28,1610612749.0,1610612752.0,0.6555963375198415,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-10-29,1610612742.0,1610612760.0,0.7796711045762446,Heavy Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-10-30,1610612742.0,1610612753.0,0.7853062477628443,Heavy Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-10-31,1610612749.0,1610612765.0,0.8240828023908391,Heavy Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-10-31,1610612746.0,1610612745.0,0.7303186537962563,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-01,1610612756.0,1610612750.0,0.6689750943014175,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-02,1610612749.0,1610612765.0,0.7759066642650838,Heavy Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-02,1610612742.0,1610612762.0,0.6854421743935439,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-04,1610612756.0,1610612757.0,0.7994023685972085,Heavy Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-04,1610612742.0,1610612761.0,0.7075822121691127,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-04,1610612738.0,1610612741.0,0.6587400326154867,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-05,1610612756.0,1610612757.0,0.8026950393619874,Heavy Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-05,1610612750.0,1610612745.0,0.7265871587490874,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-07,1610612748.0,1610612757.0,0.7231804107735783,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-07,1610612762.0,1610612747.0,0.7220712696261603,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-07,1610612742.0,1610612751.0,0.700037076157311,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-07,1610612744.0,1610612758.0,0.6711527622375602,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-09,1610612738.0,1610612765.0,0.8070611274799673,Heavy Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-09,1610612761.0,1610612745.0,0.7229424235879863,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-12,1610612742.0,1610612757.0,0.7430209229502385,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-12,1610612748.0,1610612766.0,0.6645962102610962,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-14,1610612738.0,1610612760.0,0.769636096232261,Heavy Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-15,1610612762.0,1610612752.0,0.7119445113775238,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-15,1610612742.0,1610612746.0,0.707185275807028,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-16,1610612742.0,1610612745.0,0.7380571425323867,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-18,1610612763.0,1610612760.0,0.7432503776790844,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-20,1610612756.0,1610612752.0,0.7208273243268851,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-21,1610612749.0,1610612757.0,0.7369801521790162,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-22,1610612743.0,1610612765.0,0.7721576436990262,Heavy Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-22,1610612756.0,1610612747.0,0.7327204005234966,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-23,1610612762.0,1610612765.0,0.8013163372822089,Heavy Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-23,1610612737.0,1610612758.0,0.7034711531499322,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-23,1610612739.0,1610612757.0,0.6856727213408697,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-23,1610612749.0,1610612741.0,0.6654375118872319,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-25,1610612738.0,1610612758.0,0.7364709623618617,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-26,1610612756.0,1610612762.0,0.6909687850621639,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-27,1610612749.0,1610612742.0,0.6559362764342511,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-28,1610612738.0,1610612766.0,0.7754814380414191,Heavy Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-11-30,1610612756.0,1610612741.0,0.6522350531762219,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-02,1610612756.0,1610612745.0,0.7955026216005844,Heavy Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-02,1610612738.0,1610612748.0,0.7292204213114046,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-02,1610612749.0,1610612747.0,0.6949272484252493,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-02,1610612744.0,1610612741.0,0.6737766409719136,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-02,1610612762.0,1610612754.0,0.6696461421294478,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-03,1610612761.0,1610612753.0,0.7655492007615827,Heavy Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-03,1610612762.0,1610612757.0,0.7046229081788716,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-03,1610612750.0,1610612760.0,0.6573763520551354,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-05,1610612737.0,1610612760.0,0.6968141312025892,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-06,1610612739.0,1610612747.0,0.7394170854897836,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-07,1610612763.0,1610612760.0,0.7182790425640682,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-09,1610612755.0,1610612747.0,0.6698122467117908,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-10,1610612739.0,1610612760.0,0.7051879603287418,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-14,1610612742.0,1610612739.0,0.6635928448314903,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-16,1610612739.0,1610612754.0,0.7074440270314343,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-18,1610612738.0,1610612753.0,0.7911508646507468,Heavy Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-18,1610612743.0,1610612766.0,0.7087523451106051,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-19,1610612758.0,1610612766.0,0.7429052106253492,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-19,1610612737.0,1610612753.0,0.6839201880170582,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-19,1610612755.0,1610612761.0,0.6667055994029878,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-21,1610612737.0,1610612741.0,0.6789568001245374,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-21,1610612758.0,1610612747.0,0.6593887933509163,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-23,1610612743.0,1610612757.0,0.693101791952589,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-23,1610612755.0,1610612746.0,0.6794847277623733,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-26,1610612741.0,1610612745.0,0.7047871860865419,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-27,1610612744.0,1610612766.0,0.7545857860976354,Heavy Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-28,1610612748.0,1610612747.0,0.7182366399255222,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-29,1610612742.0,1610612745.0,0.7281296412751127,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-30,1610612741.0,1610612765.0,0.6570358890407364,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-12-31,1610612750.0,1610612765.0,0.7005929892534007,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2023-01-04,1610612744.0,1610612765.0,0.7208215499333553,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2023-01-04,1610612755.0,1610612754.0,0.6664340368384322,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2023-01-07,1610612744.0,1610612753.0,0.710133498360944,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2023-01-07,1610612758.0,1610612747.0,0.6736589950772688,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2023-01-08,1610612763.0,1610612762.0,0.7426262821814901,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2023-01-09,1610612738.0,1610612741.0,0.7180532106151221,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2023-01-09,1610612758.0,1610612753.0,0.6799114642514067,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2023-01-11,1610612758.0,1610612745.0,0.746845134502813,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2023-01-13,1610612758.0,1610612745.0,0.7789788531760418,Heavy Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2023-01-13,1610612741.0,1610612760.0,0.6838209797591144,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2023-01-13,1610612762.0,1610612753.0,0.6808036726637069,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2023-01-15,1610612743.0,1610612753.0,0.7607550103208941,Heavy Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2023-01-15,1610612751.0,1610612760.0,0.7086234413104471,Moderate Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2023-01-16,1610612747.0,1610612745.0,0.7755602024904452,Heavy Favorite,Strong model confidence,True,False,False,False,1,Clear Favorite,dark_green,1
+2023-01-16,1610612749.0,1610612754.0,0.6930955936199473,Moderate Favorite,Balanced matchup,False,False,False,False,1,Clear Favorite,dark_green,1
+2022-10-18,1610612738.0,1610612755.0,0.5796734893698351,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-10-19,1610612758.0,1610612757.0,0.6437020692320142,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-10-19,1610612756.0,1610612742.0,0.6209082298699187,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-10-22,1610612742.0,1610612763.0,0.624903927174263,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-10-22,1610612748.0,1610612761.0,0.6032443602067836,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-10-24,1610612763.0,1610612751.0,0.6413518384375445,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-10-24,1610612748.0,1610612761.0,0.5805192789379428,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-10-25,1610612756.0,1610612744.0,0.5999233805721551,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-10-26,1610612749.0,1610612751.0,0.6308902678849124,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-10-26,1610612761.0,1610612755.0,0.6059443700135021,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-10-27,1610612744.0,1610612748.0,0.6259814956059204,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-10-29,1610612749.0,1610612737.0,0.6491255745288466,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-10-30,1610612739.0,1610612752.0,0.5891393983376386,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-11-01,1610612748.0,1610612744.0,0.5971336096533751,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-11-02,1610612748.0,1610612758.0,0.6336122845276493,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-11-04,1610612755.0,1610612752.0,0.6122252180444947,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-11-06,1610612761.0,1610612741.0,0.6161582891229774,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-11-07,1610612753.0,1610612745.0,0.5840789141306995,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-11-07,1610612750.0,1610612752.0,0.5772098183394909,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-11-09,1610612746.0,1610612747.0,0.6221327340710152,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-11-11,1610612763.0,1610612750.0,0.6421549394564828,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-11-13,1610612755.0,1610612762.0,0.6051978339919266,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-11-13,1610612752.0,1610612760.0,0.5944881773300428,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-11-14,1610612749.0,1610612737.0,0.5870709443310709,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-11-16,1610612749.0,1610612739.0,0.5865438531677762,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-11-16,1610612766.0,1610612754.0,0.5809805526363839,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-11-16,1610612761.0,1610612748.0,0.5718536053943548,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-11-21,1610612760.0,1610612752.0,0.5889124347564654,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-11-25,1610612749.0,1610612739.0,0.6185175398332987,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-11-25,1610612752.0,1610612757.0,0.6154963146578912,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-11-27,1610612737.0,1610612748.0,0.5924470889960811,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-11-28,1610612761.0,1610612739.0,0.6486867077240427,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-11-28,1610612755.0,1610612737.0,0.6097574939850505,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-11-28,1610612762.0,1610612741.0,0.5953404007354125,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-11-28,1610612747.0,1610612754.0,0.5704814522279766,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-11-29,1610612742.0,1610612744.0,0.5979944069750699,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-02,1610612763.0,1610612755.0,0.5824264392975251,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-04,1610612757.0,1610612754.0,0.5811214466256832,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-04,1610612758.0,1610612741.0,0.5733240166749641,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-05,1610612742.0,1610612756.0,0.5810157502980112,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-06,1610612743.0,1610612742.0,0.6326078001473263,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-07,1610612750.0,1610612754.0,0.6453784255046953,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-07,1610612749.0,1610612758.0,0.6453781200542958,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-07,1610612756.0,1610612738.0,0.6274033626728855,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-07,1610612762.0,1610612744.0,0.620406931974454,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-09,1610612742.0,1610612749.0,0.5869562988527883,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-09,1610612762.0,1610612750.0,0.5812797064534162,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-11,1610612737.0,1610612741.0,0.6253604001786879,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-13,1610612749.0,1610612744.0,0.6362577968526903,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-13,1610612755.0,1610612758.0,0.6141280715938118,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-14,1610612761.0,1610612758.0,0.6107549217733678,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-15,1610612763.0,1610612749.0,0.5854457810959328,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-16,1610612742.0,1610612757.0,0.5890669248805961,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-20,1610612748.0,1610612741.0,0.6289625228276844,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-21,1610612752.0,1610612761.0,0.626054976458852,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-23,1610612752.0,1610612741.0,0.6304050925021191,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-23,1610612748.0,1610612754.0,0.6130088631758204,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-23,1610612739.0,1610612761.0,0.5886859180725172,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-26,1610612757.0,1610612766.0,0.6373892349212416,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-26,1610612739.0,1610612751.0,0.5725308582867213,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-27,1610612761.0,1610612746.0,0.5811768367588829,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-29,1610612738.0,1610612746.0,0.6433150177254465,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-30,1610612737.0,1610612747.0,0.6166863917835435,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-30,1610612744.0,1610612757.0,0.5909477653757959,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-12-30,1610612743.0,1610612748.0,0.585601251055915,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2023-01-02,1610612739.0,1610612741.0,0.6321545496174248,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2023-01-02,1610612744.0,1610612737.0,0.5879587755162593,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2023-01-04,1610612750.0,1610612757.0,0.5821670691412385,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2023-01-05,1610612743.0,1610612746.0,0.5723097653595287,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2023-01-06,1610612755.0,1610612741.0,0.6281285143559254,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2023-01-06,1610612743.0,1610612739.0,0.5766698219726796,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2023-01-08,1610612746.0,1610612737.0,0.6192368505620062,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2023-01-11,1610612752.0,1610612754.0,0.6252863433505962,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2023-01-12,1610612748.0,1610612749.0,0.6160853714152551,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2023-01-16,1610612752.0,1610612761.0,0.572397313124601,Lean Favorite,Balanced matchup,False,False,False,False,2,Leaning Edge,light_green,2
+2022-10-19,1610612761.0,1610612739.0,0.5575027290768008,Lean Favorite,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-10-19,1610612765.0,1610612753.0,0.5549742549528448,Lean Favorite,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-10-20,1610612747.0,1610612746.0,0.4179895879180719,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-10-21,1610612745.0,1610612763.0,0.2803149016044632,Strong Underdog,Strong model confidence,True,False,False,False,3,Toss-Up,gray,3
+2022-10-22,1610612758.0,1610612746.0,0.4181754795836431,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-10-22,1610612753.0,1610612738.0,0.2890882571362757,Strong Underdog,Strong model confidence,True,False,False,False,3,Toss-Up,gray,3
+2022-10-23,1610612760.0,1610612750.0,0.2926445854567175,Strong Underdog,Strong model confidence,True,False,False,False,3,Toss-Up,gray,3
+2022-10-24,1610612745.0,1610612762.0,0.3811470381562342,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-10-25,1610612760.0,1610612746.0,0.3259789261689916,Strong Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-10-26,1610612765.0,1610612737.0,0.3496824310226762,Strong Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-10-27,1610612751.0,1610612742.0,0.4241978954063611,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-10-28,1610612765.0,1610612737.0,0.3578373996549858,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-10-30,1610612747.0,1610612743.0,0.3391941195416597,Strong Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-02,1610612752.0,1610612737.0,0.5585309862120375,Lean Favorite,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-02,1610612745.0,1610612746.0,0.426813934367371,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-02,1610612757.0,1610612763.0,0.2961986335715335,Strong Underdog,Strong model confidence,True,False,False,False,3,Toss-Up,gray,3
+2022-11-03,1610612760.0,1610612743.0,0.3004839905464136,Strong Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-04,1610612754.0,1610612748.0,0.349496534143465,Strong Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-06,1610612747.0,1610612739.0,0.3649218350590879,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-07,1610612737.0,1610612749.0,0.3859442059285319,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-09,1610612758.0,1610612739.0,0.3705484924557269,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-09,1610612754.0,1610612743.0,0.3003689388743737,Strong Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-09,1610612753.0,1610612742.0,0.2408792456821218,Strong Underdog,Strong model confidence,True,False,False,False,3,Toss-Up,gray,3
+2022-11-11,1610612744.0,1610612739.0,0.5664158214061275,Lean Favorite,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-11,1610612738.0,1610612743.0,0.5581908491231392,Lean Favorite,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-11,1610612747.0,1610612758.0,0.3932672926348834,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-11,1610612760.0,1610612761.0,0.3088227457200316,Strong Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-11,1610612753.0,1610612756.0,0.2706637766885096,Strong Underdog,Strong model confidence,True,False,False,False,3,Toss-Up,gray,3
+2022-11-12,1610612746.0,1610612751.0,0.562681880017907,Lean Favorite,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-12,1610612765.0,1610612738.0,0.3198929013904009,Strong Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-13,1610612747.0,1610612751.0,0.4306539543091018,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-14,1610612753.0,1610612766.0,0.5646423963014573,Lean Favorite,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-14,1610612745.0,1610612746.0,0.4280716821960277,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-14,1610612765.0,1610612761.0,0.3287606729299833,Strong Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-16,1610612753.0,1610612750.0,0.3775160413998608,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-18,1610612755.0,1610612749.0,0.5598541484861286,Lean Favorite,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-18,1610612745.0,1610612754.0,0.3626105914359701,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-20,1610612745.0,1610612744.0,0.2891246931170299,Strong Underdog,Strong model confidence,True,False,False,False,3,Toss-Up,gray,3
+2022-11-21,1610612746.0,1610612762.0,0.5685542015208473,Lean Favorite,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-21,1610612739.0,1610612737.0,0.5508566508041304,Lean Favorite,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-21,1610612741.0,1610612738.0,0.4489274109956408,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-23,1610612754.0,1610612750.0,0.3812465738607226,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-25,1610612760.0,1610612741.0,0.4368168398181471,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-25,1610612766.0,1610612750.0,0.3560457528779629,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-25,1610612745.0,1610612737.0,0.269807279993294,Strong Underdog,Strong model confidence,True,False,False,False,3,Toss-Up,gray,3
+2022-11-27,1610612752.0,1610612763.0,0.4123230975391759,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-27,1610612765.0,1610612739.0,0.3037896776817105,Strong Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-29,1610612765.0,1610612752.0,0.3846534177262444,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-30,1610612758.0,1610612754.0,0.5592688302459147,Lean Favorite,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-30,1610612750.0,1610612763.0,0.4340926816408921,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-11-30,1610612753.0,1610612737.0,0.2914861382806496,Strong Underdog,Strong model confidence,True,False,False,False,3,Toss-Up,gray,3
+2022-12-01,1610612765.0,1610612742.0,0.3003601742859964,Strong Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-12-03,1610612766.0,1610612749.0,0.4057234189477092,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-12-04,1610612751.0,1610612738.0,0.438019688739728,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-12-04,1610612765.0,1610612763.0,0.2657947694932371,Strong Underdog,Strong model confidence,True,False,False,False,3,Toss-Up,gray,3
+2022-12-05,1610612745.0,1610612755.0,0.2796841550575512,Strong Underdog,Strong model confidence,True,False,False,False,3,Toss-Up,gray,3
+2022-12-05,1610612753.0,1610612749.0,0.2192237975870005,Strong Underdog,Strong model confidence,True,False,False,False,3,Toss-Up,gray,3
+2022-12-07,1610612753.0,1610612746.0,0.2457675645584706,Strong Underdog,Strong model confidence,True,False,False,False,3,Toss-Up,gray,3
+2022-12-08,1610612757.0,1610612743.0,0.4054464100401642,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-12-09,1610612766.0,1610612752.0,0.3799336343931748,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-12-09,1610612753.0,1610612761.0,0.2310964860677582,Strong Underdog,Strong model confidence,True,False,False,False,3,Toss-Up,gray,3
+2022-12-10,1610612744.0,1610612738.0,0.3701872324665092,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-12-11,1610612765.0,1610612747.0,0.3858590467853965,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-12-11,1610612753.0,1610612761.0,0.2673738412805216,Strong Underdog,Strong model confidence,True,False,False,False,3,Toss-Up,gray,3
+2022-12-11,1610612745.0,1610612749.0,0.2648600663460017,Strong Underdog,Strong model confidence,True,False,False,False,3,Toss-Up,gray,3
+2022-12-12,1610612754.0,1610612748.0,0.4476569533876963,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-12-12,1610612746.0,1610612738.0,0.3710846451324644,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-12-13,1610612747.0,1610612738.0,0.3634854672102073,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-12-16,1610612765.0,1610612758.0,0.3522555812087136,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-12-17,1610612749.0,1610612762.0,0.5601070935815309,Lean Favorite,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-12-17,1610612745.0,1610612757.0,0.4306882057119616,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-12-17,1610612760.0,1610612763.0,0.2880198453971533,Strong Underdog,Strong model confidence,True,False,False,False,3,Toss-Up,gray,3
+2022-12-18,1610612754.0,1610612752.0,0.4394184855829286,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-12-18,1610612765.0,1610612751.0,0.3095840793232953,Strong Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-12-19,1610612760.0,1610612757.0,0.3948374633147459,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-12-21,1610612745.0,1610612753.0,0.4369017695953083,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-12-23,1610612745.0,1610612742.0,0.2479129765620668,Strong Underdog,Strong model confidence,True,False,False,False,3,Toss-Up,gray,3
+2022-12-25,1610612752.0,1610612755.0,0.5626713707476779,Lean Favorite,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-12-26,1610612765.0,1610612746.0,0.367504165480608,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-12-27,1610612753.0,1610612747.0,0.5535418602808323,Lean Favorite,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-12-27,1610612758.0,1610612743.0,0.421188934796359,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-12-28,1610612765.0,1610612753.0,0.5517457313276191,Lean Favorite,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-12-29,1610612761.0,1610612763.0,0.4085083646744167,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-12-31,1610612762.0,1610612748.0,0.5590349747554714,Lean Favorite,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-12-31,1610612754.0,1610612746.0,0.4153688848285198,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-12-31,1610612745.0,1610612752.0,0.3223092713822842,Strong Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2022-12-31,1610612766.0,1610612751.0,0.293456429062602,Strong Underdog,Strong model confidence,True,False,False,False,3,Toss-Up,gray,3
+2023-01-02,1610612754.0,1610612761.0,0.4268034861102741,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2023-01-02,1610612745.0,1610612742.0,0.2701787523193133,Strong Underdog,Strong model confidence,True,False,False,False,3,Toss-Up,gray,3
+2023-01-03,1610612762.0,1610612758.0,0.5691624341955732,Lean Favorite,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2023-01-04,1610612766.0,1610612763.0,0.2662885716770448,Strong Underdog,Strong model confidence,True,False,False,False,3,Toss-Up,gray,3
+2023-01-05,1610612742.0,1610612738.0,0.4029097414931699,Lean Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2023-01-05,1610612753.0,1610612763.0,0.3125978554082603,Strong Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2023-01-05,1610612745.0,1610612762.0,0.2724904196734115,Strong Underdog,Strong model confidence,True,False,False,False,3,Toss-Up,gray,3
+2023-01-07,1610612741.0,1610612762.0,0.557218901519408,Lean Favorite,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2023-01-08,1610612765.0,1610612755.0,0.3258569743229102,Strong Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2023-01-11,1610612765.0,1610612750.0,0.3176187005709822,Strong Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2023-01-14,1610612748.0,1610612749.0,0.568566260170935,Lean Favorite,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2023-01-14,1610612766.0,1610612738.0,0.306127846438107,Strong Underdog,Balanced matchup,False,False,False,False,3,Toss-Up,gray,3
+2023-01-16,1610612766.0,1610612738.0,0.2984589231237803,Strong Underdog,Strong model confidence,True,False,False,False,3,Toss-Up,gray,3
+2022-10-19,1610612750.0,1610612760.0,0.7622541040349395,Heavy Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-10-19,1610612748.0,1610612741.0,0.6319189118372973,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-10-19,1610612737.0,1610612745.0,0.5863084776091347,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-10-21,1610612750.0,1610612762.0,0.5904796178226405,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-10-21,1610612751.0,1610612761.0,0.4070580068041849,Lean Underdog,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-10-21,1610612757.0,1610612756.0,0.1828122826996663,Strong Underdog,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-10-22,1610612749.0,1610612745.0,0.7635788305553688,Heavy Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-10-23,1610612737.0,1610612766.0,0.6477839107039449,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-10-24,1610612755.0,1610612754.0,0.7188060056003414,Moderate Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-10-24,1610612757.0,1610612743.0,0.235316775259943,Strong Underdog,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-10-26,1610612752.0,1610612766.0,0.640308732120691,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-10-26,1610612741.0,1610612754.0,0.5928802301080046,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-10-26,1610612757.0,1610612748.0,0.2942055427569965,Strong Underdog,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-10-27,1610612758.0,1610612763.0,0.3077869179231593,Strong Underdog,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-10-28,1610612757.0,1610612745.0,0.3711317832357256,Lean Underdog,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-10-28,1610612753.0,1610612766.0,0.2873298535852822,Strong Underdog,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-10-29,1610612751.0,1610612754.0,0.6824819847326331,Moderate Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-10-29,1610612758.0,1610612748.0,0.2977147789338057,Strong Underdog,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-10-30,1610612756.0,1610612745.0,0.7780873845828478,Heavy Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-10-31,1610612751.0,1610612754.0,0.5812566967403169,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-02,1610612741.0,1610612766.0,0.5567392403194075,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-03,1610612753.0,1610612744.0,0.3652112136108365,Lean Underdog,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-04,1610612763.0,1610612766.0,0.7224484085459983,Moderate Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-11-04,1610612747.0,1610612762.0,0.3773451777955566,Lean Underdog,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-05,1610612749.0,1610612760.0,0.7872400301490514,Heavy Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-11-07,1610612741.0,1610612761.0,0.4411295963952364,Lean Underdog,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-09,1610612766.0,1610612757.0,0.5882304552650839,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-09,1610612750.0,1610612756.0,0.3899919710912078,Lean Underdog,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-09,1610612760.0,1610612749.0,0.277526954644002,Strong Underdog,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-11-10,1610612748.0,1610612766.0,0.7068991534933029,Moderate Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-11-11,1610612752.0,1610612765.0,0.6733259866559322,Moderate Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-12,1610612754.0,1610612761.0,0.3566561509381988,Lean Underdog,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-14,1610612748.0,1610612756.0,0.409725043132025,Lean Underdog,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-16,1610612743.0,1610612752.0,0.7018666287982802,Moderate Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-11-16,1610612756.0,1610612744.0,0.6090964095306615,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-17,1610612746.0,1610612765.0,0.6852053466274445,Moderate Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-18,1610612739.0,1610612766.0,0.6761456996057823,Moderate Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-18,1610612741.0,1610612753.0,0.6364081559363644,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-18,1610612747.0,1610612765.0,0.6058685753495399,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-18,1610612744.0,1610612752.0,0.573667386009444,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-18,1610612742.0,1610612743.0,0.557382880710652,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-19,1610612754.0,1610612753.0,0.6209795386052888,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-19,1610612737.0,1610612761.0,0.4492752216555244,Lean Underdog,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-20,1610612758.0,1610612765.0,0.7453790068320777,Moderate Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-11-20,1610612739.0,1610612748.0,0.5872555112584862,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-20,1610612742.0,1610612743.0,0.5605173846458535,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-20,1610612751.0,1610612763.0,0.553805105811433,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-21,1610612750.0,1610612748.0,0.6608600298892169,Moderate Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-21,1610612754.0,1610612753.0,0.5549770018188677,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-22,1610612763.0,1610612758.0,0.7180145254187922,Moderate Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-11-23,1610612761.0,1610612751.0,0.6638854081965767,Moderate Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-23,1610612766.0,1610612755.0,0.4143876087966074,Lean Underdog,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-25,1610612756.0,1610612765.0,0.7672393677027346,Heavy Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-11-25,1610612753.0,1610612755.0,0.3190552750819642,Strong Underdog,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-27,1610612746.0,1610612754.0,0.6235321858547531,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-27,1610612751.0,1610612757.0,0.5862525276257854,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-27,1610612753.0,1610612755.0,0.303926152043861,Strong Underdog,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-28,1610612743.0,1610612745.0,0.7553260016881883,Heavy Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-11-28,1610612751.0,1610612753.0,0.723220085298255,Moderate Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-11-28,1610612758.0,1610612756.0,0.3686157159987437,Lean Underdog,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-30,1610612743.0,1610612745.0,0.7451521116351114,Moderate Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-11-30,1610612738.0,1610612748.0,0.6937759520632195,Moderate Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-30,1610612762.0,1610612746.0,0.6065149765199263,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-11-30,1610612747.0,1610612757.0,0.5537284274590086,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-02,1610612739.0,1610612753.0,0.747689817874627,Moderate Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-12-03,1610612744.0,1610612745.0,0.727072396823569,Moderate Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-12-05,1610612744.0,1610612754.0,0.7403666670438878,Moderate Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-12-05,1610612766.0,1610612746.0,0.436707481771015,Lean Underdog,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-06,1610612748.0,1610612765.0,0.6467602864030656,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-07,1610612761.0,1610612747.0,0.7086164142384266,Moderate Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-12-07,1610612751.0,1610612766.0,0.6888856783130973,Moderate Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-08,1610612748.0,1610612746.0,0.5866499561559105,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-09,1610612739.0,1610612758.0,0.7285728290359716,Moderate Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-12-09,1610612763.0,1610612765.0,0.7071369552013482,Moderate Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-12-10,1610612743.0,1610612762.0,0.6104257398460996,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-11,1610612755.0,1610612766.0,0.6854390569714894,Moderate Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-12,1610612763.0,1610612737.0,0.6943385438156471,Moderate Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-12,1610612742.0,1610612760.0,0.669229070662717,Moderate Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-12,1610612757.0,1610612750.0,0.3999813043613588,Lean Underdog,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-13,1610612745.0,1610612756.0,0.2261233369454049,Strong Underdog,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-12-14,1610612746.0,1610612750.0,0.5770211716986867,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-14,1610612753.0,1610612737.0,0.3016812242760947,Strong Underdog,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-16,1610612738.0,1610612753.0,0.7703045516367679,Heavy Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-12-16,1610612755.0,1610612744.0,0.6518947105245556,Moderate Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-16,1610612741.0,1610612752.0,0.4494776846294085,Lean Underdog,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-16,1610612766.0,1610612737.0,0.3949359006718068,Lean Underdog,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-16,1610612760.0,1610612750.0,0.3744974241664734,Lean Underdog,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-17,1610612739.0,1610612742.0,0.646605528410449,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-18,1610612750.0,1610612741.0,0.6467627765101269,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-19,1610612756.0,1610612747.0,0.7463283403075643,Moderate Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-12-19,1610612739.0,1610612762.0,0.6008545429929962,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-20,1610612752.0,1610612744.0,0.5850716658046213,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-21,1610612755.0,1610612765.0,0.7609239146136088,Heavy Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-12-21,1610612738.0,1610612754.0,0.6868382914112641,Moderate Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-21,1610612746.0,1610612766.0,0.6424061795500381,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-21,1610612751.0,1610612744.0,0.634998650206108,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-23,1610612737.0,1610612765.0,0.6389234722542141,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-23,1610612738.0,1610612750.0,0.5998203361095802,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-23,1610612751.0,1610612749.0,0.4289047232640377,Lean Underdog,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-25,1610612742.0,1610612747.0,0.6330432479546635,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-25,1610612738.0,1610612749.0,0.5674846433203551,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-27,1610612738.0,1610612745.0,0.7874997812982599,Heavy Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2022-12-28,1610612737.0,1610612751.0,0.4181847341870356,Lean Underdog,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-29,1610612766.0,1610612760.0,0.4196437805147923,Lean Underdog,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-30,1610612749.0,1610612750.0,0.5736044955827186,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-12-30,1610612761.0,1610612756.0,0.3787223314388825,Lean Underdog,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2023-01-01,1610612763.0,1610612758.0,0.7351910209006028,Moderate Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2023-01-02,1610612757.0,1610612765.0,0.6876169606594847,Moderate Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2023-01-03,1610612760.0,1610612738.0,0.2877077853743612,Strong Underdog,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2023-01-04,1610612758.0,1610612737.0,0.6574839095241055,Moderate Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2023-01-06,1610612749.0,1610612766.0,0.6858324393625695,Moderate Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2023-01-06,1610612750.0,1610612746.0,0.5641979045352457,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2023-01-08,1610612754.0,1610612766.0,0.5793210560799753,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2023-01-08,1610612745.0,1610612750.0,0.2936661127637311,Strong Underdog,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2023-01-09,1610612743.0,1610612747.0,0.7371200015919152,Moderate Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2023-01-10,1610612755.0,1610612765.0,0.7493282018267983,Moderate Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2023-01-10,1610612748.0,1610612760.0,0.6779008830862134,Moderate Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2023-01-10,1610612757.0,1610612753.0,0.6606363997462045,Moderate Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2023-01-10,1610612761.0,1610612766.0,0.5992752818072132,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2023-01-10,1610612744.0,1610612756.0,0.5736750567376038,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2023-01-11,1610612743.0,1610612756.0,0.7880645857936738,Heavy Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2023-01-12,1610612755.0,1610612760.0,0.6452816936217067,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2023-01-12,1610612751.0,1610612738.0,0.6374454765621831,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2023-01-12,1610612761.0,1610612766.0,0.5652082509840685,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2023-01-13,1610612750.0,1610612756.0,0.584740392803166,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2023-01-14,1610612761.0,1610612737.0,0.6089437090241455,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2023-01-14,1610612757.0,1610612742.0,0.4130961803467832,Lean Underdog,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2023-01-14,1610612754.0,1610612763.0,0.3752260194419732,Lean Underdog,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2023-01-15,1610612746.0,1610612745.0,0.7014894289822889,Moderate Favorite,Model and consensus disagree • Strong model confidence,True,False,True,False,4,Analysts Split,purple,4
+2023-01-15,1610612757.0,1610612742.0,0.5553424697873982,Lean Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2023-01-15,1610612765.0,1610612752.0,0.3734853729208967,Lean Underdog,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2023-01-16,1610612763.0,1610612756.0,0.6513667314888082,Moderate Favorite,Model and consensus disagree,False,False,True,False,4,Analysts Split,purple,4
+2022-10-20,1610612755.0,1610612749.0,0.5273957737801526,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-10-21,1610612748.0,1610612738.0,0.4746505710608653,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-10-22,1610612754.0,1610612765.0,0.5268038852223429,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-10-22,1610612741.0,1610612739.0,0.5187269201032013,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-10-23,1610612746.0,1610612756.0,0.4989558512601965,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-10-24,1610612741.0,1610612738.0,0.5233359275395315,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-10-27,1610612760.0,1610612746.0,0.5061342408766294,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-10-28,1610612743.0,1610612762.0,0.5252920828675607,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-10-28,1610612761.0,1610612755.0,0.5462964405676095,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-10-29,1610612766.0,1610612744.0,0.531641649294536,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-10-29,1610612741.0,1610612755.0,0.5025058900426449,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-10-30,1610612765.0,1610612744.0,0.5048986909911087,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-10-31,1610612762.0,1610612763.0,0.5491700424198593,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-10-31,1610612761.0,1610612737.0,0.5300023047349925,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-11-01,1610612760.0,1610612753.0,0.5374368995994406,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-11-01,1610612751.0,1610612741.0,0.5206923274303633,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-11-02,1610612739.0,1610612738.0,0.5045149075601314,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-11-04,1610612765.0,1610612739.0,0.4996772175239081,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-11-04,1610612750.0,1610612749.0,0.4655948582183393,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-11-05,1610612753.0,1610612758.0,0.4616939949445868,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-11-06,1610612746.0,1610612762.0,0.5149146044773312,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-11-07,1610612746.0,1610612739.0,0.4880204017123578,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-11-07,1610612763.0,1610612738.0,0.5131257741254627,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-11-07,1610612755.0,1610612756.0,0.480801695822453,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-11-07,1610612765.0,1610612760.0,0.4623635432455053,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-11-09,1610612737.0,1610612762.0,0.511025794100715,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-11-09,1610612751.0,1610612752.0,0.5206314278719631,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-11-10,1610612737.0,1610612755.0,0.4508476424377224,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-11-12,1610612755.0,1610612737.0,0.5351724152732819,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-11-13,1610612758.0,1610612744.0,0.506671619473758,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-11-13,1610612741.0,1610612743.0,0.5327032158800776,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-11-13,1610612739.0,1610612750.0,0.4885973692928848,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-11-15,1610612758.0,1610612751.0,0.4962302166111486,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-11-16,1610612737.0,1610612738.0,0.454102399168292,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-11-17,1610612757.0,1610612751.0,0.5280844852952294,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-11-18,1610612762.0,1610612756.0,0.5026256699671509,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-11-19,1610612757.0,1610612762.0,0.5477744150164956,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-11-19,1610612755.0,1610612750.0,0.5099020276790366,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-11-23,1610612744.0,1610612746.0,0.5122651036863428,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-11-23,1610612738.0,1610612742.0,0.4518943953653476,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-11-23,1610612760.0,1610612743.0,0.4518796024420311,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-11-25,1610612746.0,1610612743.0,0.5352797624212678,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-11-25,1610612744.0,1610612762.0,0.4824902813115673,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-11-26,1610612761.0,1610612742.0,0.5148467652964032,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-11-26,1610612745.0,1610612760.0,0.4641654391925754,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-11-27,1610612750.0,1610612744.0,0.5488415176723525,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-11-29,1610612757.0,1610612746.0,0.5002524431644152,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-11-30,1610612752.0,1610612749.0,0.4999172285152587,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-11-30,1610612739.0,1610612755.0,0.5332027464279749,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-12-02,1610612737.0,1610612743.0,0.4824061921241052,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-12-02,1610612751.0,1610612761.0,0.5483719260588861,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-12-03,1610612752.0,1610612742.0,0.4676498571926122,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-12-04,1610612752.0,1610612739.0,0.4902959843800567,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-12-05,1610612761.0,1610612738.0,0.5075866559585623,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-12-07,1610612752.0,1610612737.0,0.5383040769121535,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-12-09,1610612751.0,1610612737.0,0.5229687478003906,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-12-10,1610612757.0,1610612750.0,0.5125021887156245,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-12-10,1610612741.0,1610612742.0,0.4844920971027606,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-12-10,1610612754.0,1610612751.0,0.4772945760807316,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-12-11,1610612752.0,1610612758.0,0.548446570740426,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-12-14,1610612741.0,1610612752.0,0.4864055006351758,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-12-14,1610612766.0,1610612765.0,0.4770166090604377,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-12-14,1610612754.0,1610612744.0,0.460459592554871,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-12-14,1610612760.0,1610612748.0,0.4564066881455621,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-12-15,1610612746.0,1610612756.0,0.4709235563533446,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-12-15,1610612745.0,1610612748.0,0.4734874638576096,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-12-16,1610612761.0,1610612751.0,0.4953396367819557,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-12-16,1610612747.0,1610612743.0,0.4705725307434334,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-12-18,1610612761.0,1610612744.0,0.5005512333456203,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-12-19,1610612750.0,1610612742.0,0.4962708649430992,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-12-20,1610612765.0,1610612762.0,0.478300456820212,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-12-20,1610612743.0,1610612763.0,0.4533917806355003,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-12-21,1610612760.0,1610612757.0,0.511718886969946,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-12-21,1610612750.0,1610612742.0,0.5086299509048706,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-12-21,1610612739.0,1610612749.0,0.5072168219776958,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-12-23,1610612756.0,1610612763.0,0.5372310193393434,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-12-23,1610612747.0,1610612766.0,0.5496457627133201,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-12-25,1610612743.0,1610612756.0,0.5018569940581835,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-12-25,1610612744.0,1610612763.0,0.4854300487886265,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-12-26,1610612748.0,1610612750.0,0.5407301396093429,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-12-27,1610612763.0,1610612756.0,0.545374130973032,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-12-27,1610612742.0,1610612752.0,0.5443243400062132,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-12-27,1610612754.0,1610612737.0,0.502032106039506,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-12-28,1610612758.0,1610612743.0,0.4946938511255865,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2022-12-28,1610612741.0,1610612749.0,0.4613876852039772,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-12-29,1610612754.0,1610612739.0,0.4722989205965269,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-12-30,1610612758.0,1610612762.0,0.5301054202999229,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-12-31,1610612741.0,1610612739.0,0.5440717485215524,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-12-31,1610612760.0,1610612755.0,0.460939964959654,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2023-01-01,1610612743.0,1610612738.0,0.4599824430336616,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2023-01-02,1610612746.0,1610612748.0,0.5328568692478454,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2023-01-02,1610612766.0,1610612747.0,0.503545695505342,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2023-01-02,1610612752.0,1610612756.0,0.4980563186366696,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2023-01-04,1610612761.0,1610612749.0,0.548706735840745,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2023-01-04,1610612739.0,1610612756.0,0.5246009121903624,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2023-01-04,1610612741.0,1610612751.0,0.4908568302873627,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2023-01-04,1610612747.0,1610612748.0,0.4593206889189959,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2023-01-04,1610612753.0,1610612760.0,0.4542266347277916,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2023-01-06,1610612761.0,1610612752.0,0.4583310609577787,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2023-01-06,1610612756.0,1610612748.0,0.5427528646444131,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2023-01-06,1610612754.0,1610612757.0,0.5425931579022452,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2023-01-08,1610612756.0,1610612739.0,0.5074441607542067,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2023-01-08,1610612760.0,1610612742.0,0.4969840254998267,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2023-01-08,1610612761.0,1610612757.0,0.5363001150333389,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2023-01-08,1610612748.0,1610612751.0,0.4858407200869289,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2023-01-09,1610612752.0,1610612749.0,0.5168761368969713,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2023-01-10,1610612746.0,1610612742.0,0.4999108334113991,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2023-01-10,1610612762.0,1610612739.0,0.4752444881970704,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2023-01-11,1610612737.0,1610612749.0,0.5425608069728259,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2023-01-12,1610612747.0,1610612742.0,0.5235696398404415,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2023-01-12,1610612757.0,1610612739.0,0.4786285553663015,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2023-01-13,1610612746.0,1610612743.0,0.4500161627488868,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2023-01-13,1610612754.0,1610612737.0,0.4710465108064424,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2023-01-14,1610612762.0,1610612755.0,0.5404758566028887,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2023-01-14,1610612750.0,1610612739.0,0.482987560668451,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2023-01-15,1610612741.0,1610612744.0,0.5414109586354872,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2023-01-16,1610612750.0,1610612762.0,0.5123924278208394,Toss-Up,Model and consensus disagree • High-variance matchup,False,True,True,False,5,Volatile Game,yellow,5
+2023-01-16,1610612737.0,1610612748.0,0.466412331664638,Toss-Up,High-variance matchup,False,True,False,False,5,Volatile Game,yellow,5
+2022-10-19,1610612762.0,1610612743.0,0.6685904211164532,Moderate Favorite,Model and consensus disagree • Upset potential,False,False,True,True,6,Upset Alert,red,6
+2022-10-29,1610612762.0,1610612763.0,0.5982053419612006,Lean Favorite,Model and consensus disagree • Upset potential,False,False,True,True,6,Upset Alert,red,6
+2022-10-31,1610612766.0,1610612758.0,0.6633764072089989,Moderate Favorite,Model and consensus disagree • Upset potential,False,False,True,True,6,Upset Alert,red,6
+2022-11-05,1610612752.0,1610612738.0,0.5624876136431849,Lean Favorite,Model and consensus disagree • Upset potential,False,False,True,True,6,Upset Alert,red,6
+2022-11-05,1610612766.0,1610612751.0,0.5569501857775184,Lean Favorite,Model and consensus disagree • Upset potential,False,False,True,True,6,Upset Alert,red,6
+2022-11-22,1610612755.0,1610612751.0,0.6219555014643198,Lean Favorite,Model and consensus disagree • Upset potential,False,False,True,True,6,Upset Alert,red,6
+2022-11-25,1610612754.0,1610612751.0,0.5579687239934079,Lean Favorite,Model and consensus disagree • Upset potential,False,False,True,True,6,Upset Alert,red,6
+2022-12-03,1610612746.0,1610612758.0,0.6560087627019623,Moderate Favorite,Model and consensus disagree • Upset potential,False,False,True,True,6,Upset Alert,red,6
+2022-12-05,1610612763.0,1610612748.0,0.6351987147109736,Lean Favorite,Model and consensus disagree • Upset potential,False,False,True,True,6,Upset Alert,red,6
+2022-12-28,1610612744.0,1610612762.0,0.614058699900379,Lean Favorite,Model and consensus disagree • Upset potential,False,False,True,True,6,Upset Alert,red,6
+2023-01-02,1610612750.0,1610612743.0,0.5585573128733908,Lean Favorite,Model and consensus disagree • Upset potential,False,False,True,True,6,Upset Alert,red,6
+2023-01-06,1610612747.0,1610612737.0,0.6127361711965295,Lean Favorite,Model and consensus disagree • Upset potential,False,False,True,True,6,Upset Alert,red,6
+2023-01-15,1610612747.0,1610612755.0,0.5609156500966666,Lean Favorite,Model and consensus disagree • Upset potential,False,False,True,True,6,Upset Alert,red,6
