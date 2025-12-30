@@ -13,10 +13,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'NBA Matchups',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 160, 146, 101)),
+        // Define the default brightness and colors.
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 102, 105, 76)),
+        //primaryColor: const Color.fromARGB(255, 41, 17, 126),
         useMaterial3: true,
       ),
-        home: const HomeScreen(),
+      home: HomeScreen(),
     );
   }
 }
