@@ -1,17 +1,17 @@
 // simple game model
 class Games {
-  final String id;
-  final String team_name;
-  final String start_time;
-  final String status;
-  //placeholder for future use
-  final String probability;
+  final String homeTeam;
+  final String awayTeam;
+  final String date;
+  final String time;
+  final double percentage;
+
   
   Games({
-    required this.id,
-    required this.team_name,
-    required this.start_time,
-    required this.status,
-    required this.probability,
+    required this.homeTeam,
+    required this.awayTeam,
+    required this.date,
+    required this.time,
+    required this.percentage,
   });
 }
