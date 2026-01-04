@@ -50,13 +50,13 @@ def main():
     # Example: Predict a single game
     # ==========================
     print("\n" + "=" * 50)
-    print("Example: Lakers vs Celtics")
+    print("Example: Warriors vs Thunder")
     print("=" * 50)
     
     # Convert team names to IDs
-    home_team = "Los Angeles Lakers"
-    away_team = "Boston Celtics"
-    game_date = "2026-01-03"
+    home_team = "Golden State Warriors"
+    away_team = "Oklahoma City Thunder"
+    game_date = "2026-01-02"
     
     home_id = mapper.get_team_id(home_team)
     away_id = mapper.get_team_id(away_team)
