@@ -103,7 +103,22 @@ def main():
         "games_in_window_home", "games_in_window_away",
     ]
 
-    model_df = feat_games[["game_date", "season_id"] + feature_cols + ["home_win"]].copy()
+    model_df = model_df = feat_games[[
+    "game_id",          # ← ADD THIS
+    "game_date",
+    "season_id",
+    "team_id_home",     # ← ADD THIS (optional but recommended)
+    "team_id_away",     # ← ADD THIS
+    "elo_home", "elo_away", "elo_diff", "elo_prob",
+    "pf_roll_home", "pf_roll_away", "pf_roll_diff",
+    "pa_roll_home", "pa_roll_away", "pa_roll_diff",
+    "win_roll_home", "win_roll_away", "win_roll_diff",
+    "margin_roll_home", "margin_roll_away", "margin_roll_diff",
+    "games_in_window_home", "games_in_window_away",
+    "home_win"
+]].copy()
+    
+
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     model_df.to_csv(out_path, index=False)
