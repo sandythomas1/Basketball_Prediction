@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         //primaryColor: const Color.fromARGB(255, 41, 17, 126),
         useMaterial3: true,
       ),
-      home: HomeScreen(),
+      home: const HomeScreen(),
     );
   }
 }
