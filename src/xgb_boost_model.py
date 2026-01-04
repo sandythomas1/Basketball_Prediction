@@ -1,4 +1,5 @@
 import pandas as pd
+import joblib
 from pathlib import Path
 from sklearn.metrics import log_loss, accuracy_score, roc_auc_score
 from sklearn.linear_model import LogisticRegression
@@ -17,6 +18,10 @@ GAMES_PATH = Path(
 
 MODEL_OUT_PATH = Path(
     "/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/models/xgb_v2_modern.json"
+)
+
+CALIBRATOR_OUT_PATH = Path(
+    "/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/models/calibrator.pkl"
 )
 
 PREDS_OUT_PATH = Path(
@@ -133,6 +138,13 @@ def main():
 
     p_val_cal  = calibrator.predict_proba(p_val.reshape(-1, 1))[:, 1]
     p_test_cal = calibrator.predict_proba(p_test.reshape(-1, 1))[:, 1]
+
+    # ----------------------
+    # Save calibrator
+    # ----------------------
+    CALIBRATOR_OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    joblib.dump(calibrator, CALIBRATOR_OUT_PATH)
+    print(f"\nSaved calibrator to: {CALIBRATOR_OUT_PATH}")
 
     # ----------------------
     # Evaluation
