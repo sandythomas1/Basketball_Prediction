@@ -1,71 +1,91 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../Models/game.dart';
+import '../Providers/games_provider.dart';
+import '../Widgets/team_logo.dart';
 
 /// Screen showing live (in-progress) games with scores
-class LiveGamesScreen extends StatelessWidget {
-  final List<Game> games;
-  final bool isLoading;
-  final String? errorMessage;
-  final Future<void> Function() onRefresh;
-
-  const LiveGamesScreen({
-    super.key,
-    required this.games,
-    required this.isLoading,
-    this.errorMessage,
-    required this.onRefresh,
-  });
+class LiveGamesScreen extends ConsumerWidget {
+  const LiveGamesScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final gamesAsync = ref.watch(gamesProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Live Games'),
         centerTitle: false,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: isLoading ? null : onRefresh,
+            icon: gamesAsync.isLoading
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.refresh),
+            onPressed: gamesAsync.isLoading
+                ? null
+                : () => _onRefresh(context, ref),
           ),
         ],
       ),
-      body: _buildBody(context),
+      body: gamesAsync.when(
+        data: (state) => _buildGamesList(context, ref, state.liveGames, state.isRefreshing),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, _) => _buildError(context, ref, error.toString()),
+      ),
     );
   }
 
-  Widget _buildBody(BuildContext context) {
-    if (isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+  Future<void> _onRefresh(BuildContext context, WidgetRef ref) async {
+    try {
+      await ref.read(gamesProvider.notifier).refresh();
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
     }
+  }
 
-    if (errorMessage != null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.error_outline,
-              size: 48,
-              color: Colors.red[300],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              errorMessage!,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: onRefresh,
-              child: const Text('Retry'),
-            ),
-          ],
-        ),
-      );
-    }
+  Widget _buildError(BuildContext context, WidgetRef ref, String error) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.error_outline,
+            size: 48,
+            color: Colors.red[300],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            error,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 16),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () => ref.invalidate(gamesProvider),
+            child: const Text('Retry'),
+          ),
+        ],
+      ),
+    );
+  }
 
+  Widget _buildGamesList(
+    BuildContext context,
+    WidgetRef ref,
+    List<Game> games,
+    bool isRefreshing,
+  ) {
     if (games.isEmpty) {
       return Center(
         child: Column(
@@ -92,7 +112,7 @@ class LiveGamesScreen extends StatelessWidget {
     }
 
     return RefreshIndicator(
-      onRefresh: onRefresh,
+      onRefresh: () => _onRefresh(context, ref),
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 8),
         itemCount: games.length + 1, // +1 for header
@@ -167,8 +187,8 @@ class _SectionHeader extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: isLive 
-                  ? Colors.red.withOpacity(0.1) 
+              color: isLive
+                  ? Colors.red.withOpacity(0.1)
                   : Colors.grey.withOpacity(0.1),
               borderRadius: BorderRadius.circular(4),
             ),
@@ -258,8 +278,8 @@ class _LiveGameCard extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: isLive 
-                        ? Colors.red.withOpacity(0.1) 
+                    color: isLive
+                        ? Colors.red.withOpacity(0.1)
                         : Colors.grey.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(4),
                   ),
@@ -314,23 +334,10 @@ class _TeamScoreRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Container(
-          width: 32,
-          height: 32,
-          decoration: BoxDecoration(
-            color: Colors.grey[100],
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Center(
-            child: Text(
-              _getAbbreviation(team),
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w700,
-                color: Colors.grey[700],
-              ),
-            ),
-          ),
+        TeamLogo(
+          teamName: team,
+          size: 32,
+          backgroundColor: Colors.grey[100],
         ),
         const SizedBox(width: 10),
         Expanded(
@@ -355,13 +362,4 @@ class _TeamScoreRow extends StatelessWidget {
       ],
     );
   }
-
-  String _getAbbreviation(String teamName) {
-    final words = teamName.split(' ');
-    if (words.length >= 2) {
-      return words.last.substring(0, 3).toUpperCase();
-    }
-    return teamName.substring(0, 3).toUpperCase();
-  }
 }
-

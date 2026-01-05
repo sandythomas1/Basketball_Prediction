@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pie_chart/pie_chart.dart';
 import '../Models/game.dart';
+import '../Widgets/team_logo.dart';
 
 /// Detailed game screen with prediction visualization
 class GameDetailScreen extends StatelessWidget {
@@ -100,22 +101,13 @@ class _TeamBadge extends StatelessWidget {
     return Column(
       children: [
         Container(
-          width: 56,
-          height: 56,
           decoration: BoxDecoration(
-            color: Colors.grey[100],
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: Colors.grey[300]!),
           ),
-          child: Center(
-            child: Text(
-              _getAbbreviation(team),
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: Colors.grey[700],
-              ),
-            ),
+          child: TeamLogoLarge(
+            teamName: team,
+            size: 56,
           ),
         ),
         const SizedBox(height: 8),
@@ -133,14 +125,6 @@ class _TeamBadge extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  String _getAbbreviation(String teamName) {
-    final words = teamName.split(' ');
-    if (words.length >= 2) {
-      return words.last.substring(0, 3).toUpperCase();
-    }
-    return teamName.substring(0, 3).toUpperCase();
   }
 }
 
@@ -252,7 +236,7 @@ class _PredictionCard extends StatelessWidget {
                         Text(
                           '${favoredProb.toStringAsFixed(1)}%',
                           style: TextStyle(
-                            fontSize: 28,
+                            fontSize: 15,
                             fontWeight: FontWeight.w700,
                             color: Colors.green[700],
                           ),
