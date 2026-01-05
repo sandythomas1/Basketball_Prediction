@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, maximum-scale=1.0, user-scalable=no">
+  <title>NBA Predictions App - Mockup</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --bg-card: #21262d;
+      --bg-card-hover: #30363d;
+      --accent-orange: #f78166;
+      --accent-blue: #58a6ff;
+      --accent-green: #3fb950;
+      --accent-purple: #bc8cff;
+      --accent-yellow: #d29922;
+      --text-primary: #f0f6fc;
+      --text-secondary: #8b949e;
+      --text-muted: #6e7681;
+      --border-color: #30363d;
+      --live-pulse: #f85149;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Phone Frame Container */
+    .phone-container {
+      display: flex;
+      gap: 40px;
+      padding: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+    }
+
+    .screen-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .screen-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 14px;
+      color: var(--accent-purple);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .phone-frame {
+      width: 375px;
+      height: 812px;
+      background: var(--bg-primary);
+      border-radius: 40px;
+      border: 3px solid var(--border-color);
+      overflow: hidden;
+      position: relative;
+      box-shadow: 
+        0 0 0 4px var(--bg-secondary),
+        0 25px 50px -12px rgba(0, 0, 0, 0.5),
+        0 0 100px -20px rgba(88, 166, 255, 0.15);
+    }
+
+    /* Status Bar */
+    .status-bar {
+      height: 44px;
+      background: var(--bg-primary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .notch {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 150px;
+      height: 30px;
+      background: #000;
+      border-radius: 0 0 20px 20px;
+    }
+
+    /* App Bar */
+    .app-bar {
+      height: 56px;
+      background: var(--bg-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .app-bar h1 {
+      font-size: 20px;
+      font-weight: 600;
+      background: linear-gradient(90deg, var(--accent-orange) 0%, var(--accent-yellow) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .app-bar-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      background: var(--bg-card);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .app-bar-icon:hover {
+      background: var(--bg-card-hover);
+    }
+
+    .app-bar-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--text-secondary);
+    }
+
+    /* Content Area */
+    .content {
+      height: calc(812px - 44px - 56px - 80px);
+      overflow-y: auto;
+      padding: 16px;
+      background: var(--bg-primary);
+    }
+
+    /* Date Header */
+    .date-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .date-header h2 {
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    .date-header .line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border-color), transparent);
+    }
+
+    .games-count {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--accent-blue);
+      background: rgba(88, 166, 255, 0.1);
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+
+    /* Game Card */
+    .game-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
+
+    .game-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-blue);
+      transform: translateY(-2px);
+    }
+
+    .game-card.live {
+      border-left: 3px solid var(--live-pulse);
+      animation: livePulse 2s infinite;
+    }
+
+    @keyframes livePulse {
+      0%, 100% { border-left-color: var(--live-pulse); }
+      50% { border-left-color: rgba(248, 81, 73, 0.5); }
+    }
+
+    .game-teams {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .team-info {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .team-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .team-logo {
+      width: 32px;
+      height: 32px;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--accent-orange);
+    }
+
+    .team-name {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .team-name.away::before {
+      content: "@ ";
+      color: var(--text-muted);
+    }
+
+    .score-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+
+    .score {
+      font-family: 'Space Mono', monospace;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .score.winning {
+      color: var(--accent-green);
+    }
+
+    .game-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .game-time {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .status-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-badge.scheduled {
+      background: rgba(88, 166, 255, 0.15);
+      color: var(--accent-blue);
+    }
+
+    .status-badge.live {
+      background: rgba(248, 81, 73, 0.15);
+      color: var(--live-pulse);
+      animation: statusPulse 1.5s infinite;
+    }
+
+    @keyframes statusPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    .status-badge.final {
+      background: rgba(139, 148, 158, 0.15);
+      color: var(--text-secondary);
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding-bottom: 20px;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+      padding: 8px 16px;
+      border-radius: 12px;
+    }
+
+    .nav-item:hover {
+      background: var(--bg-card);
+    }
+
+    .nav-item.active {
+      background: rgba(247, 129, 102, 0.1);
+    }
+
+    .nav-item svg {
+      width: 24px;
+      height: 24px;
+      fill: var(--text-secondary);
+      transition: fill 0.2s;
+    }
+
+    .nav-item.active svg {
+      fill: var(--accent-orange);
+    }
+
+    .nav-item span {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: color 0.2s;
+    }
+
+    .nav-item.active span {
+      color: var(--accent-orange);
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--live-pulse);
+      border-radius: 50%;
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.7; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Game Detail Screen */
+    .detail-content {
+      padding: 20px 16px;
+    }
+
+    .detail-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .matchup-title {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .detail-teams {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 8px;
+    }
+
+    .detail-team {
+      text-align: center;
+    }
+
+    .detail-team-logo {
+      width: 56px;
+      height: 56px;
+      background: var(--bg-card);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent-orange);
+      margin: 0 auto 8px;
+    }
+
+    .detail-team-name {
+      font-size: 13px;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .vs-badge {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      color: var(--text-muted);
+      background: var(--bg-card);
+      padding: 6px 12px;
+      border-radius: 8px;
+    }
+
+    /* Prediction Card */
+    .prediction-card {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .prediction-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 12px;
+    }
+
+    .prediction-tier {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .tier-badge {
+      font-size: 16px;
+      font-weight: 700;
+      padding: 8px 16px;
+      border-radius: 10px;
+    }
+
+    .tier-badge.strong-underdog {
+      background: linear-gradient(135deg, rgba(248, 81, 73, 0.2), rgba(248, 81, 73, 0.1));
+      color: #ff7b72;
+      border: 1px solid rgba(248, 81, 73, 0.3);
+    }
+
+    .tier-badge.moderate-favorite {
+      background: linear-gradient(135deg, rgba(63, 185, 80, 0.2), rgba(63, 185, 80, 0.1));
+      color: var(--accent-green);
+      border: 1px solid rgba(63, 185, 80, 0.3);
+    }
+
+    .tier-badge.lean-underdog {
+      background: linear-gradient(135deg, rgba(210, 153, 34, 0.2), rgba(210, 153, 34, 0.1));
+      color: var(--accent-yellow);
+      border: 1px solid rgba(210, 153, 34, 0.3);
+    }
+
+    .tier-badge.toss-up {
+      background: linear-gradient(135deg, rgba(188, 140, 255, 0.2), rgba(188, 140, 255, 0.1));
+      color: var(--accent-purple);
+      border: 1px solid rgba(188, 140, 255, 0.3);
+    }
+
+    /* Chart Container */
+    .chart-container {
+      width: 180px;
+      height: 180px;
+      margin: 0 auto 20px;
+      position: relative;
+    }
+
+    .chart-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .chart-percent {
+      font-family: 'Space Mono', monospace;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--accent-green);
+    }
+
+    .chart-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    /* Prediction Details */
+    .prediction-details {
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .detail-row .label {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .detail-row .value {
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .detail-row .value.favored {
+      color: var(--accent-green);
+    }
+
+    /* Elo Card */
+    .elo-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .elo-header {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 12px;
+    }
+
+    .elo-comparison {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .elo-team {
+      text-align: center;
+    }
+
+    .elo-abbrev {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+
+    .elo-rating {
+      font-family: 'Space Mono', monospace;
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .elo-rating.higher {
+      color: var(--accent-green);
+    }
+
+    .elo-rating.lower {
+      color: var(--text-secondary);
+    }
+
+    .elo-vs {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* Back Button */
+    .back-button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent-blue);
+      font-size: 14px;
+      cursor: pointer;
+      margin-bottom: 16px;
+    }
+
+    .back-button svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--accent-blue);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .empty-state svg {
+      width: 64px;
+      height: 64px;
+      fill: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .empty-state h3 {
+      font-size: 16px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .empty-state p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Arrow Icon */
+    .arrow-icon {
+      width: 20px;
+      height: 20px;
+      fill: var(--text-muted);
+    }
+
+    /* Info banner in game card */
+    .prediction-preview {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      padding: 8px 12px;
+      background: rgba(63, 185, 80, 0.1);
+      border-radius: 8px;
+      font-size: 12px;
+      color: var(--accent-green);
+    }
+
+    .prediction-preview svg {
+      width: 16px;
+      height: 16px;
+      fill: var(--accent-green);
+    }
+  </style>
+</head>
+<body>
+  <div class="phone-container">
+    
+    <!-- Screen 1: Home - Today's Games (Scheduled) -->
+    <div class="screen-wrapper">
+      <span class="screen-label">1. Home Screen</span>
+      <div class="phone-frame">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>100%</span>
+        </div>
+        
+        <div class="app-bar">
+          <h1>NBA Predictions</h1>
+          <div class="app-bar-icon">
+            <svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+          </div>
+        </div>
+        
+        <div class="content">
+          <div class="date-header">
+            <h2>January 4, 2026</h2>
+            <div class="line"></div>
+            <span class="games-count">3 games</span>
+          </div>
+          
+          <!-- Game Card 1 -->
+          <div class="game-card" onclick="showDetail()">
+            <div class="game-teams">
+              <div class="team-info">
+                <div class="team-row">
+                  <div class="team-logo">PHO</div>
+                  <span class="team-name">Phoenix Suns</span>
+                </div>
+                <div class="team-row">
+                  <div class="team-logo">OKC</div>
+                  <span class="team-name away">Oklahoma City Thunder</span>
+                </div>
+              </div>
+              <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+            </div>
+            <div class="prediction-preview">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+              <span>Tap to see model prediction</span>
+            </div>
+            <div class="game-meta">
+              <span class="game-time">Jan 4 • 7:00 PM</span>
+              <span class="status-badge scheduled">Scheduled</span>
+            </div>
+          </div>
+          
+          <!-- Game Card 2 -->
+          <div class="game-card">
+            <div class="game-teams">
+              <div class="team-info">
+                <div class="team-row">
+                  <div class="team-logo">MIL</div>
+                  <span class="team-name">Milwaukee Bucks</span>
+                </div>
+                <div class="team-row">
+                  <div class="team-logo">SAC</div>
+                  <span class="team-name away">Sacramento Kings</span>
+                </div>
+              </div>
+              <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+            </div>
+            <div class="prediction-preview">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+              <span>Tap to see model prediction</span>
+            </div>
+            <div class="game-meta">
+              <span class="game-time">Jan 4 • 6:00 PM</span>
+              <span class="status-badge scheduled">Scheduled</span>
+            </div>
+          </div>
+          
+          <!-- Game Card 3 -->
+          <div class="game-card">
+            <div class="game-teams">
+              <div class="team-info">
+                <div class="team-row">
+                  <div class="team-logo">MEM</div>
+                  <span class="team-name">Memphis Grizzlies</span>
+                </div>
+                <div class="team-row">
+                  <div class="team-logo">LAL</div>
+                  <span class="team-name away">Los Angeles Lakers</span>
+                </div>
+              </div>
+              <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+            </div>
+            <div class="prediction-preview">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+              <span>Tap to see model prediction</span>
+            </div>
+            <div class="game-meta">
+              <span class="game-time">Jan 4 • 6:30 PM</span>
+              <span class="status-badge scheduled">Scheduled</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bottom-nav">
+          <div class="nav-item active">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+            <span>Today</span>
+          </div>
+          <div class="nav-item" style="position: relative;">
+            <div class="live-dot"></div>
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            <span>Live</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen 2: Live / In Progress Games -->
+    <div class="screen-wrapper">
+      <span class="screen-label">2. Live Games</span>
+      <div class="phone-frame">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>100%</span>
+        </div>
+        
+        <div class="app-bar">
+          <h1>Live Games</h1>
+          <div class="app-bar-icon">
+            <svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+          </div>
+        </div>
+        
+        <div class="content">
+          <div class="date-header">
+            <h2>In Progress</h2>
+            <div class="line"></div>
+            <span class="games-count">2 live</span>
+          </div>
+          
+          <!-- Live Game Card 1 -->
+          <div class="game-card live">
+            <div class="game-teams">
+              <div class="team-info">
+                <div class="team-row">
+                  <div class="team-logo">BOS</div>
+                  <span class="team-name">Boston Celtics</span>
+                </div>
+                <div class="team-row">
+                  <div class="team-logo">NYK</div>
+                  <span class="team-name away">New York Knicks</span>
+                </div>
+              </div>
+              <div class="score-info">
+                <span class="score winning">98</span>
+                <span class="score">92</span>
+              </div>
+            </div>
+            <div class="game-meta">
+              <span class="game-time">Q4 • 3:42</span>
+              <span class="status-badge live">Live</span>
+            </div>
+          </div>
+          
+          <!-- Live Game Card 2 -->
+          <div class="game-card live">
+            <div class="game-teams">
+              <div class="team-info">
+                <div class="team-row">
+                  <div class="team-logo">GSW</div>
+                  <span class="team-name">Golden State Warriors</span>
+                </div>
+                <div class="team-row">
+                  <div class="team-logo">DEN</div>
+                  <span class="team-name away">Denver Nuggets</span>
+                </div>
+              </div>
+              <div class="score-info">
+                <span class="score">78</span>
+                <span class="score winning">85</span>
+              </div>
+            </div>
+            <div class="game-meta">
+              <span class="game-time">Q3 • 8:15</span>
+              <span class="status-badge live">Live</span>
+            </div>
+          </div>
+
+          <div class="date-header" style="margin-top: 24px;">
+            <h2>Final</h2>
+            <div class="line"></div>
+            <span class="games-count">1 game</span>
+          </div>
+          
+          <!-- Final Game Card -->
+          <div class="game-card">
+            <div class="game-teams">
+              <div class="team-info">
+                <div class="team-row">
+                  <div class="team-logo">MIA</div>
+                  <span class="team-name">Miami Heat</span>
+                </div>
+                <div class="team-row">
+                  <div class="team-logo">CHI</div>
+                  <span class="team-name away">Chicago Bulls</span>
+                </div>
+              </div>
+              <div class="score-info">
+                <span class="score winning">112</span>
+                <span class="score">104</span>
+              </div>
+            </div>
+            <div class="game-meta">
+              <span class="game-time">Final</span>
+              <span class="status-badge final">Final</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bottom-nav">
+          <div class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+            <span>Today</span>
+          </div>
+          <div class="nav-item active" style="position: relative;">
+            <div class="live-dot"></div>
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            <span>Live</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen 3: Game Detail with Prediction -->
+    <div class="screen-wrapper">
+      <span class="screen-label">3. Game Detail</span>
+      <div class="phone-frame">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>100%</span>
+        </div>
+        
+        <div class="app-bar">
+          <div class="back-button">
+            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            Back
+          </div>
+          <div class="app-bar-icon">
+            <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
+          </div>
+        </div>
+        
+        <div class="content" style="height: calc(812px - 44px - 56px); padding-bottom: 20px;">
+          <div class="detail-content">
+            <!-- Matchup Header -->
+            <div class="detail-header">
+              <p class="matchup-title">Today @ 7:00 PM</p>
+              <div class="detail-teams">
+                <div class="detail-team">
+                  <div class="detail-team-logo">PHO</div>
+                  <span class="detail-team-name">Phoenix Suns</span>
+                </div>
+                <span class="vs-badge">VS</span>
+                <div class="detail-team">
+                  <div class="detail-team-logo">OKC</div>
+                  <span class="detail-team-name">Oklahoma City</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Prediction Card -->
+            <div class="prediction-card">
+              <div class="prediction-label">Model Prediction</div>
+              
+              <div class="prediction-tier">
+                <span class="tier-badge strong-underdog">Strong Underdog</span>
+              </div>
+              
+              <!-- Pie Chart -->
+              <div class="chart-container">
+                <canvas id="predictionChart"></canvas>
+                <div class="chart-center">
+                  <span class="chart-percent">65.3%</span>
+                  <span class="chart-label">OKC Win</span>
+                </div>
+              </div>
+              
+              <!-- Prediction Details -->
+              <div class="prediction-details">
+                <div class="detail-row">
+                  <span class="label">Favored Team</span>
+                  <span class="value favored">Oklahoma City Thunder</span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">Win Probability</span>
+                  <span class="value">65.3%</span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">Confidence</span>
+                  <span class="value">Strong Underdog</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Elo Card -->
+            <div class="elo-card">
+              <div class="elo-header">Elo Ratings</div>
+              <div class="elo-comparison">
+                <div class="elo-team">
+                  <div class="elo-abbrev">PHO</div>
+                  <div class="elo-rating lower">1551</div>
+                </div>
+                <span class="elo-vs">vs</span>
+                <div class="elo-team">
+                  <div class="elo-abbrev">OKC</div>
+                  <div class="elo-rating higher">1728</div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Additional Context -->
+            <div class="elo-card">
+              <div class="elo-header">Game Context</div>
+              <div class="prediction-details" style="background: transparent; padding: 0;">
+                <div class="detail-row">
+                  <span class="label">Home Team Recent Form</span>
+                  <span class="value">60% (L10)</span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">Away Team Recent Form</span>
+                  <span class="value">80% (L10)</span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">Rest Advantage</span>
+                  <span class="value">Even</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize Pie Chart
+    const ctx = document.getElementById('predictionChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['OKC Thunder', 'Phoenix Suns'],
+        datasets: [{
+          data: [65.3, 34.7],
+          backgroundColor: [
+            '#3fb950',
+            '#30363d'
+          ],
+          borderColor: [
+            '#3fb950',
+            '#21262d'
+          ],
+          borderWidth: 2,
+          hoverOffset: 4
+        }]
+      },
+      options: {
+        cutout: '70%',
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        responsive: true,
+        maintainAspectRatio: true
+      }
+    });
+  </script>
+</body>
+</html>
+

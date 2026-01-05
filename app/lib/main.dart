@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'Screens/home_screen.dart';
+import 'Screens/main_navigation.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,14 +11,23 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'NBA Matchups',
+      title: 'NBA Predictions',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // Define the default brightness and colors.
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 102, 105, 76)),
-        //primaryColor: const Color.fromARGB(255, 41, 17, 126),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF1D428A), // NBA blue
+          brightness: Brightness.light,
+        ),
         useMaterial3: true,
+        appBarTheme: const AppBarTheme(
+          centerTitle: false,
+          elevation: 0,
+        ),
+        cardTheme: const CardThemeData(
+          elevation: 0,
+        ),
       ),
-      home: const HomeScreen(),
+      home: const MainNavigation(),
     );
   }
 }
