@@ -1,13 +1,22 @@
 import 'dart:convert';
 import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
+import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode, debugPrint;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
 /// API Service for handling all HTTP requests
 class ApiService {
-  /// FastAPI base URL - Android emulator uses 10.0.2.2 for localhost
+  /// Production API URL (Render)
+  static const String _productionUrl = 'https://nba-prediction-api-nq5b.onrender.com';
+
+  /// FastAPI base URL - uses production in release, localhost in debug
   String get fastApiBaseUrl {
+    // Use production URL for release builds
+    if (!kDebugMode) {
+      return _productionUrl;
+    }
+    
+    // Debug mode: use localhost
     if (kIsWeb) {
       return 'http://localhost:8000';
     } else if (Platform.isAndroid) {
