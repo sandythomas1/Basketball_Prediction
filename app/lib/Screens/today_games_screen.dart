@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../Models/game.dart';
 import '../Providers/games_provider.dart';
 import '../Widgets/team_logo.dart';
+import '../theme/app_theme.dart';
 import 'game_detail_screen.dart';
 
 /// Screen showing all of today's games with prediction access
@@ -15,26 +17,52 @@ class TodayGamesScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('NBA Predictions'),
+        backgroundColor: context.bgSecondary,
+        title: ShaderMask(
+          shaderCallback: (bounds) => const LinearGradient(
+            colors: [AppColors.accentOrange, AppColors.accentYellow],
+          ).createShader(bounds),
+          child: Text(
+            'NBA Predictions',
+            style: GoogleFonts.dmSans(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+        ),
         centerTitle: false,
         actions: [
-          IconButton(
-            icon: gamesAsync.isLoading
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.refresh),
-            onPressed: gamesAsync.isLoading
-                ? null
-                : () => _onRefresh(context, ref),
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: context.bgCard,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: gamesAsync.isLoading
+                  ? SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: context.textSecondary,
+                      ),
+                    )
+                  : Icon(Icons.refresh, color: context.textSecondary),
+              onPressed: gamesAsync.isLoading
+                  ? null
+                  : () => _onRefresh(context, ref),
+            ),
           ),
         ],
       ),
       body: gamesAsync.when(
-        data: (state) => _buildGamesList(context, ref, state.games, state.isRefreshing),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        data: (state) =>
+            _buildGamesList(context, ref, state.games, state.isRefreshing),
+        loading: () => Center(
+          child: CircularProgressIndicator(color: AppColors.accentOrange),
+        ),
         error: (error, _) => _buildError(context, ref, error.toString()),
       ),
     );
@@ -63,13 +91,16 @@ class TodayGamesScreen extends ConsumerWidget {
           Icon(
             Icons.error_outline,
             size: 48,
-            color: Colors.red[300],
+            color: AppColors.errorRed,
           ),
           const SizedBox(height: 16),
           Text(
             error,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 16),
+            style: GoogleFonts.dmSans(
+              fontSize: 16,
+              color: context.textSecondary,
+            ),
           ),
           const SizedBox(height: 16),
           ElevatedButton(
@@ -95,17 +126,23 @@ class TodayGamesScreen extends ConsumerWidget {
             Icon(
               Icons.sports_basketball,
               size: 48,
-              color: Colors.grey[400],
+              color: context.textMuted,
             ),
             const SizedBox(height: 16),
             Text(
               'No games today',
-              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+              style: GoogleFonts.dmSans(
+                fontSize: 16,
+                color: context.textSecondary,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               'Pull down to refresh',
-              style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+              style: GoogleFonts.dmSans(
+                fontSize: 14,
+                color: context.textMuted,
+              ),
             ),
           ],
         ),
@@ -114,6 +151,7 @@ class TodayGamesScreen extends ConsumerWidget {
 
     return RefreshIndicator(
       onRefresh: () => _onRefresh(context, ref),
+      color: AppColors.accentOrange,
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 8),
         itemCount: games.length + 1, // +1 for header
@@ -131,8 +169,18 @@ class TodayGamesScreen extends ConsumerWidget {
   Widget _buildHeader(BuildContext context, int gameCount) {
     final now = DateTime.now();
     final monthNames = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
     ];
     final dateString = '${monthNames[now.month - 1]} ${now.day}, ${now.year}';
 
@@ -142,33 +190,37 @@ class TodayGamesScreen extends ConsumerWidget {
         children: [
           Text(
             dateString.toUpperCase(),
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey[500],
-              letterSpacing: 1.2,
+            style: GoogleFonts.spaceMono(
+              fontSize: 13,
+              fontWeight: FontWeight.w400,
+              color: context.textSecondary,
+              letterSpacing: 1.5,
             ),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Container(
               height: 1,
-              color: Colors.grey[300],
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [context.borderColor, Colors.transparent],
+                ),
+              ),
             ),
           ),
           const SizedBox(width: 12),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primaryContainer,
+              color: AppColors.accentBlue.withOpacity(0.1),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
               '$gameCount games',
-              style: TextStyle(
+              style: GoogleFonts.spaceMono(
                 fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                fontWeight: FontWeight.w400,
+                color: AppColors.accentBlue,
               ),
             ),
           ),
@@ -185,99 +237,109 @@ class _GameCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Card(
+    return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey[200]!),
+      decoration: BoxDecoration(
+        color: context.bgCard,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.borderColor),
       ),
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => GameDetailScreen(game: game),
-            ),
-          );
-        },
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Teams
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _TeamRow(
-                          team: game.awayTeam,
-                          isAway: true,
-                        ),
-                        const SizedBox(height: 8),
-                        _TeamRow(
-                          team: game.homeTeam,
-                          isAway: false,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Icon(
-                    Icons.chevron_right,
-                    color: Colors.grey[400],
-                  ),
-                ],
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => GameDetailScreen(game: game),
               ),
-              const SizedBox(height: 12),
-              // Prediction hint
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(
-                  color: colorScheme.secondaryContainer.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
+            );
+          },
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Teams
+                Row(
                   children: [
-                    Icon(
-                      Icons.insights,
-                      size: 16,
-                      color: colorScheme.secondary,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      'Tap to see prediction',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: colorScheme.secondary,
-                        fontWeight: FontWeight.w500,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _TeamRow(
+                            team: game.homeTeam,
+                            isAway: false,
+                          ),
+                          const SizedBox(height: 8),
+                          _TeamRow(
+                            team: game.awayTeam,
+                            isAway: true,
+                          ),
+                        ],
                       ),
+                    ),
+                    Icon(
+                      Icons.chevron_right,
+                      color: context.textMuted,
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 12),
-              // Footer with time and status
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '${game.date} • ${game.time}',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey[600],
+                const SizedBox(height: 12),
+                // Prediction hint
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: AppColors.accentGreen.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.public,
+                        size: 16,
+                        color: AppColors.accentGreen,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Tap to see model prediction',
+                        style: GoogleFonts.dmSans(
+                          fontSize: 12,
+                          color: AppColors.accentGreen,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                // Footer with time and status
+                Container(
+                  padding: const EdgeInsets.only(top: 12),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      top: BorderSide(color: context.borderColor),
                     ),
                   ),
-                  _StatusBadge(status: game.status, isLive: game.isLive),
-                ],
-              ),
-            ],
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '${game.date} • ${game.time}',
+                        style: GoogleFonts.spaceMono(
+                          fontSize: 12,
+                          color: context.textSecondary,
+                        ),
+                      ),
+                      _StatusBadge(status: game.status, isLive: game.isLive),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -301,15 +363,16 @@ class _TeamRow extends StatelessWidget {
         TeamLogo(
           teamName: team,
           size: 32,
-          backgroundColor: Colors.grey[100],
+          backgroundColor: context.bgSecondary,
         ),
         const SizedBox(width: 10),
         Expanded(
           child: Text(
-            isAway ? team : '@ $team',
-            style: const TextStyle(
+            isAway ? '@ $team' : team,
+            style: GoogleFonts.dmSans(
               fontSize: 15,
               fontWeight: FontWeight.w500,
+              color: context.textPrimary,
             ),
             overflow: TextOverflow.ellipsis,
           ),
@@ -335,24 +398,24 @@ class _StatusBadge extends StatelessWidget {
 
     final statusLower = status.toLowerCase();
     if (isLive) {
-      bgColor = Colors.red.withOpacity(0.1);
-      textColor = Colors.red;
+      bgColor = AppColors.liveRed.withOpacity(0.15);
+      textColor = AppColors.liveRed;
     } else if (statusLower == 'final') {
-      bgColor = Colors.grey.withOpacity(0.1);
-      textColor = Colors.grey[600]!;
+      bgColor = context.textMuted.withOpacity(0.15);
+      textColor = context.textSecondary;
     } else {
-      bgColor = Colors.blue.withOpacity(0.1);
-      textColor = Colors.blue;
+      bgColor = AppColors.accentBlue.withOpacity(0.15);
+      textColor = AppColors.accentBlue;
     }
 
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: 8,
+        horizontal: 10,
         vertical: 4,
       ),
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(6),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -361,19 +424,20 @@ class _StatusBadge extends StatelessWidget {
             Container(
               width: 6,
               height: 6,
-              decoration: const BoxDecoration(
-                color: Colors.red,
+              decoration: BoxDecoration(
+                color: AppColors.liveRed,
                 shape: BoxShape.circle,
               ),
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: 6),
           ],
           Text(
-            status,
-            style: TextStyle(
+            status.toUpperCase(),
+            style: GoogleFonts.dmSans(
               fontSize: 11,
               fontWeight: FontWeight.w600,
               color: textColor,
+              letterSpacing: 0.5,
             ),
           ),
         ],

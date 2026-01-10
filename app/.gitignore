@@ -43,3 +43,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# hide firebase.options.dart
+lib/firebase_options.dart

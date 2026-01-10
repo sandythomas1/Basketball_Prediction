@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../Models/game.dart';
 import '../Providers/games_provider.dart';
 import '../Widgets/team_logo.dart';
+import '../theme/app_theme.dart';
 
 /// Screen showing live (in-progress) games with scores
 class LiveGamesScreen extends ConsumerWidget {
@@ -14,26 +16,52 @@ class LiveGamesScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Live Games'),
+        backgroundColor: context.bgSecondary,
+        title: ShaderMask(
+          shaderCallback: (bounds) => const LinearGradient(
+            colors: [AppColors.accentOrange, AppColors.accentYellow],
+          ).createShader(bounds),
+          child: Text(
+            'Live Games',
+            style: GoogleFonts.dmSans(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+        ),
         centerTitle: false,
         actions: [
-          IconButton(
-            icon: gamesAsync.isLoading
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.refresh),
-            onPressed: gamesAsync.isLoading
-                ? null
-                : () => _onRefresh(context, ref),
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: context.bgCard,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: gamesAsync.isLoading
+                  ? SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: context.textSecondary,
+                      ),
+                    )
+                  : Icon(Icons.refresh, color: context.textSecondary),
+              onPressed: gamesAsync.isLoading
+                  ? null
+                  : () => _onRefresh(context, ref),
+            ),
           ),
         ],
       ),
       body: gamesAsync.when(
-        data: (state) => _buildGamesList(context, ref, state.liveGames, state.isRefreshing),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        data: (state) =>
+            _buildGamesList(context, ref, state.liveGames, state.isRefreshing),
+        loading: () => Center(
+          child: CircularProgressIndicator(color: AppColors.accentOrange),
+        ),
         error: (error, _) => _buildError(context, ref, error.toString()),
       ),
     );
@@ -62,13 +90,16 @@ class LiveGamesScreen extends ConsumerWidget {
           Icon(
             Icons.error_outline,
             size: 48,
-            color: Colors.red[300],
+            color: AppColors.errorRed,
           ),
           const SizedBox(height: 16),
           Text(
             error,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 16),
+            style: GoogleFonts.dmSans(
+              fontSize: 16,
+              color: context.textSecondary,
+            ),
           ),
           const SizedBox(height: 16),
           ElevatedButton(
@@ -94,17 +125,23 @@ class LiveGamesScreen extends ConsumerWidget {
             Icon(
               Icons.sports_basketball_outlined,
               size: 48,
-              color: Colors.grey[400],
+              color: context.textMuted,
             ),
             const SizedBox(height: 16),
             Text(
               'No games in progress',
-              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+              style: GoogleFonts.dmSans(
+                fontSize: 16,
+                color: context.textSecondary,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               'Check the Today tab for upcoming games',
-              style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+              style: GoogleFonts.dmSans(
+                fontSize: 14,
+                color: context.textMuted,
+              ),
             ),
           ],
         ),
@@ -113,6 +150,7 @@ class LiveGamesScreen extends ConsumerWidget {
 
     return RefreshIndicator(
       onRefresh: () => _onRefresh(context, ref),
+      color: AppColors.accentOrange,
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 8),
         itemCount: games.length + 1, // +1 for header
@@ -149,38 +187,24 @@ class _SectionHeader extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       child: Row(
         children: [
-          if (isLive) ...[
-            Container(
-              width: 8,
-              height: 8,
-              decoration: BoxDecoration(
-                color: Colors.red,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.red.withOpacity(0.5),
-                    blurRadius: 6,
-                    spreadRadius: 1,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-          ],
           Text(
             title,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: isLive ? Colors.red : Colors.grey[500],
-              letterSpacing: 1.2,
+            style: GoogleFonts.spaceMono(
+              fontSize: 13,
+              fontWeight: FontWeight.w400,
+              color: context.textSecondary,
+              letterSpacing: 1.5,
             ),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Container(
               height: 1,
-              color: Colors.grey[300],
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [context.borderColor, Colors.transparent],
+                ),
+              ),
             ),
           ),
           const SizedBox(width: 12),
@@ -188,16 +212,16 @@ class _SectionHeader extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               color: isLive
-                  ? Colors.red.withOpacity(0.1)
-                  : Colors.grey.withOpacity(0.1),
+                  ? AppColors.liveRed.withOpacity(0.1)
+                  : context.textMuted.withOpacity(0.1),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
-              '$count ${count == 1 ? 'game' : 'games'}',
-              style: TextStyle(
+              '$count ${isLive ? 'live' : 'game${count == 1 ? '' : 's'}'}',
+              style: GoogleFonts.spaceMono(
                 fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: isLive ? Colors.red : Colors.grey[600],
+                fontWeight: FontWeight.w400,
+                color: isLive ? AppColors.liveRed : context.textSecondary,
               ),
             ),
           ),
@@ -220,97 +244,80 @@ class _LiveGameCard extends StatelessWidget {
     final homeWinning = homeScore > awayScore;
     final awayWinning = awayScore > homeScore;
 
-    return Card(
+    return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: isLive ? Colors.red.withOpacity(0.3) : Colors.grey[200]!,
-          width: isLive ? 2 : 1,
-        ),
+      decoration: BoxDecoration(
+        color: context.bgCard,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.borderColor),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Teams with scores
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _TeamScoreRow(
-                        team: game.awayTeam,
-                        score: game.awayScore,
-                        isWinning: awayWinning,
-                        isAway: true,
-                      ),
-                      const SizedBox(height: 8),
-                      _TeamScoreRow(
-                        team: game.homeTeam,
-                        score: game.homeScore,
-                        isWinning: homeWinning,
-                        isAway: false,
-                      ),
-                    ],
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: isLive
+              ? Border(
+                  left: BorderSide(
+                    color: AppColors.liveRed,
+                    width: 3,
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            // Footer with status
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  game.date,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[600],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isLive
-                        ? Colors.red.withOpacity(0.1)
-                        : Colors.grey.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (isLive) ...[
-                        Container(
-                          width: 6,
-                          height: 6,
-                          decoration: const BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
-                          ),
+                )
+              : null,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Teams with scores
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _TeamScoreRow(
+                          team: game.homeTeam,
+                          score: game.homeScore,
+                          isWinning: homeWinning,
+                          isAway: false,
                         ),
-                        const SizedBox(width: 6),
+                        const SizedBox(height: 8),
+                        _TeamScoreRow(
+                          team: game.awayTeam,
+                          score: game.awayScore,
+                          isWinning: awayWinning,
+                          isAway: true,
+                        ),
                       ],
-                      Text(
-                        game.status,
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: isLive ? Colors.red : Colors.grey[600],
-                        ),
-                      ),
-                    ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              // Footer with status
+              Container(
+                padding: const EdgeInsets.only(top: 12),
+                decoration: BoxDecoration(
+                  border: Border(
+                    top: BorderSide(color: context.borderColor),
                   ),
                 ),
-              ],
-            ),
-          ],
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      game.status,
+                      style: GoogleFonts.spaceMono(
+                        fontSize: 12,
+                        color: context.textSecondary,
+                      ),
+                    ),
+                    _StatusBadge(isLive: isLive),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -337,29 +344,118 @@ class _TeamScoreRow extends StatelessWidget {
         TeamLogo(
           teamName: team,
           size: 32,
-          backgroundColor: Colors.grey[100],
+          backgroundColor: context.bgSecondary,
         ),
         const SizedBox(width: 10),
         Expanded(
           child: Text(
-            isAway ? team : '@ $team',
-            style: TextStyle(
+            isAway ? '@ $team' : team,
+            style: GoogleFonts.dmSans(
               fontSize: 15,
               fontWeight: isWinning ? FontWeight.w600 : FontWeight.w500,
-              color: isWinning ? Colors.black : Colors.grey[700],
+              color: context.textPrimary,
             ),
             overflow: TextOverflow.ellipsis,
           ),
         ),
         Text(
           score.isEmpty ? '-' : score,
-          style: TextStyle(
-            fontSize: 20,
+          style: GoogleFonts.spaceMono(
+            fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: isWinning ? Colors.green[700] : Colors.grey[600],
+            color: isWinning ? AppColors.accentGreen : context.textPrimary,
           ),
         ),
       ],
+    );
+  }
+}
+
+class _StatusBadge extends StatelessWidget {
+  final bool isLive;
+
+  const _StatusBadge({required this.isLive});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 10,
+        vertical: 4,
+      ),
+      decoration: BoxDecoration(
+        color: isLive
+            ? AppColors.liveRed.withOpacity(0.15)
+            : context.textMuted.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (isLive) ...[
+            _PulsingDot(),
+            const SizedBox(width: 6),
+          ],
+          Text(
+            isLive ? 'LIVE' : 'FINAL',
+            style: GoogleFonts.dmSans(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: isLive ? AppColors.liveRed : context.textSecondary,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PulsingDot extends StatefulWidget {
+  @override
+  State<_PulsingDot> createState() => _PulsingDotState();
+}
+
+class _PulsingDotState extends State<_PulsingDot>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    )..repeat(reverse: true);
+    _animation = Tween<double>(begin: 0.5, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Opacity(
+          opacity: _animation.value,
+          child: Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(
+              color: AppColors.liveRed,
+              shape: BoxShape.circle,
+            ),
+          ),
+        );
+      },
     );
   }
 }

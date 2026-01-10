@@ -12,6 +12,10 @@ class ApiService {
   /// FastAPI base URL - uses production in release, localhost in debug
   String get fastApiBaseUrl {
     // Use production URL for release builds
+    // use true to use production URL
+    return _productionUrl;
+    // uncomment for local development
+    /*
     if (!kDebugMode) {
       return _productionUrl;
     }
@@ -24,6 +28,7 @@ class ApiService {
     } else {
       return 'http://localhost:8000';
     }
+    */
   }
 
   static const String espnBaseUrl =

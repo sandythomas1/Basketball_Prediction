@@ -38,6 +38,14 @@ dependencies:
   http: ^1.2.0
   cached_network_image: ^3.3.1
   flutter_riverpod: ^2.5.1
+  
+  # Firebase Authentication
+  firebase_core: ^3.8.1
+  firebase_auth: ^5.3.4
+  google_sign_in: ^6.2.2
+  
+  # Typography
+  google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_test:

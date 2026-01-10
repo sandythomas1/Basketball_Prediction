@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:pie_chart/pie_chart.dart';
 import '../Models/game.dart';
 import '../Widgets/team_logo.dart';
+import '../theme/app_theme.dart';
 
 /// Detailed game screen with prediction visualization
 class GameDetailScreen extends StatelessWidget {
@@ -16,8 +18,46 @@ class GameDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Game Prediction'),
-        centerTitle: true,
+        backgroundColor: context.bgSecondary,
+        leading: GestureDetector(
+          onTap: () => Navigator.of(context).pop(),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.arrow_back,
+                  size: 20,
+                  color: AppColors.accentBlue,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  'Back',
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14,
+                    color: AppColors.accentBlue,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        leadingWidth: 80,
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: context.bgCard,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: Icon(Icons.share, color: context.textSecondary),
+              onPressed: () {
+                // Share functionality
+              },
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -53,37 +93,37 @@ class _MatchupHeader extends StatelessWidget {
     return Column(
       children: [
         Text(
-          '${game.date} • ${game.time}',
-          style: TextStyle(
+          'Today @ ${game.time}',
+          style: GoogleFonts.dmSans(
             fontSize: 14,
-            color: Colors.grey[600],
+            color: context.textSecondary,
           ),
         ),
         const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _TeamBadge(team: game.awayTeam),
+            _TeamBadge(team: game.homeTeam),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: Colors.grey[200],
+                  color: context.bgCard,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   'VS',
-                  style: TextStyle(
+                  style: GoogleFonts.spaceMono(
                     fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey[600],
-                    letterSpacing: 1,
+                    fontWeight: FontWeight.w400,
+                    color: context.textMuted,
                   ),
                 ),
               ),
             ),
-            _TeamBadge(team: game.homeTeam),
+            _TeamBadge(team: game.awayTeam),
           ],
         ),
       ],
@@ -102,8 +142,8 @@ class _TeamBadge extends StatelessWidget {
       children: [
         Container(
           decoration: BoxDecoration(
+            color: context.bgCard,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey[300]!),
           ),
           child: TeamLogoLarge(
             teamName: team,
@@ -116,9 +156,10 @@ class _TeamBadge extends StatelessWidget {
           child: Text(
             team.split(' ').last, // Just the team name (e.g., "Lakers")
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: GoogleFonts.dmSans(
               fontSize: 13,
               fontWeight: FontWeight.w500,
+              color: context.textPrimary,
             ),
             overflow: TextOverflow.ellipsis,
           ),
@@ -137,21 +178,21 @@ class _PredictionCard extends StatelessWidget {
   Color _getTierColor(String? tier) {
     switch (tier?.toLowerCase()) {
       case 'strong favorite':
-        return Colors.green[700]!;
+        return AppColors.accentGreen;
       case 'moderate favorite':
-        return Colors.green[500]!;
+        return AppColors.accentGreen;
       case 'lean favorite':
-        return Colors.orange[600]!;
+        return AppColors.accentYellow;
       case 'toss-up':
-        return Colors.purple[500]!;
+        return AppColors.accentPurple;
       case 'lean underdog':
-        return Colors.orange[700]!;
+        return AppColors.accentYellow;
       case 'moderate underdog':
-        return Colors.red[400]!;
+        return AppColors.liveRed;
       case 'strong underdog':
-        return Colors.red[700]!;
+        return AppColors.liveRed;
       default:
-        return Colors.grey;
+        return AppColors.accentPurple;
     }
   }
 
@@ -164,127 +205,131 @@ class _PredictionCard extends StatelessWidget {
     final tier = game.confidenceTier ?? 'Toss-Up';
     final tierColor = _getTierColor(tier);
 
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.grey[200]!),
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: context.bgCard,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: context.borderColor),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Section title
-            Text(
-              'MODEL PREDICTION',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[500],
-                letterSpacing: 1.5,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Section title
+          Text(
+            'MODEL PREDICTION',
+            style: GoogleFonts.spaceMono(
+              fontSize: 11,
+              fontWeight: FontWeight.w400,
+              color: context.textMuted,
+              letterSpacing: 1.5,
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Confidence tier badge
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: tierColor.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: tierColor.withOpacity(0.3)),
+            ),
+            child: Text(
+              tier,
+              style: GoogleFonts.dmSans(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: tierColor,
               ),
             ),
-            const SizedBox(height: 16),
-            // Confidence tier badge
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              decoration: BoxDecoration(
-                color: tierColor.withOpacity(0.12),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: tierColor.withOpacity(0.3)),
-              ),
-              child: Text(
-                tier,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: tierColor,
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            // Pie Chart
-            Center(
-              child: SizedBox(
-                height: 180,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    PieChart(
-                      dataMap: {
-                        game.homeTeam: homeProb * 100,
-                        game.awayTeam: awayProb * 100,
-                      },
-                      chartType: ChartType.ring,
-                      ringStrokeWidth: 24,
-                      colorList: [
-                        game.isHomeFavored ? Colors.green[500]! : Colors.grey[400]!,
-                        !game.isHomeFavored ? Colors.green[500]! : Colors.grey[400]!,
-                      ],
-                      chartValuesOptions: const ChartValuesOptions(
-                        showChartValues: false,
-                      ),
-                      legendOptions: const LegendOptions(
-                        showLegends: false,
-                      ),
-                      chartRadius: 90,
-                    ),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          '${favoredProb.toStringAsFixed(1)}%',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.green[700],
-                          ),
-                        ),
-                        Text(
-                          _getShortName(favoredTeam),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            // Prediction details
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.grey[50],
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
+          ),
+          const SizedBox(height: 24),
+          // Pie Chart
+          Center(
+            child: SizedBox(
+              height: 180,
+              child: Stack(
+                alignment: Alignment.center,
                 children: [
-                  _DetailRow(
-                    label: 'Favored Team',
-                    value: favoredTeam,
-                    valueColor: Colors.green[700],
+                  PieChart(
+                    dataMap: {
+                      game.homeTeam: homeProb * 100,
+                      game.awayTeam: awayProb * 100,
+                    },
+                    chartType: ChartType.ring,
+                    ringStrokeWidth: 24,
+                    colorList: [
+                      game.isHomeFavored
+                          ? AppColors.accentGreen
+                          : context.borderColor,
+                      !game.isHomeFavored
+                          ? AppColors.accentGreen
+                          : context.borderColor,
+                    ],
+                    chartValuesOptions: const ChartValuesOptions(
+                      showChartValues: false,
+                    ),
+                    legendOptions: const LegendOptions(
+                      showLegends: false,
+                    ),
+                    chartRadius: 90,
                   ),
-                  const Divider(height: 20),
-                  _DetailRow(
-                    label: 'Win Probability',
-                    value: '${favoredProb.toStringAsFixed(1)}%',
-                  ),
-                  const Divider(height: 20),
-                  _DetailRow(
-                    label: 'Confidence',
-                    value: tier,
-                    valueColor: tierColor,
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '${favoredProb.toStringAsFixed(1)}%',
+                        style: GoogleFonts.spaceMono(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.accentGreen,
+                        ),
+                      ),
+                      Text(
+                        // bold the favored team in the prediction label
+                        '${_getShortName(favoredTeam)} Win',
+                        style: GoogleFonts.dmSans(
+                          fontSize: 10,
+                          color: context.textSecondary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 24),
+          // Prediction details
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: context.bgSecondary,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              children: [
+                _DetailRow(
+                  label: 'Favored Team',
+                  value: favoredTeam,
+                  valueColor: AppColors.accentGreen,
+                ),
+                Divider(height: 20, color: context.borderColor),
+                _DetailRow(
+                  label: 'Win Probability',
+                  value: '${favoredProb.toStringAsFixed(1)}%',
+                ),
+                Divider(height: 20, color: context.borderColor),
+                _DetailRow(
+                  label: 'Confidence',
+                  value: tier,
+                  valueColor: tierColor,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -313,18 +358,18 @@ class _DetailRow extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey[600],
+          style: GoogleFonts.dmSans(
+            fontSize: 13,
+            color: context.textSecondary,
           ),
         ),
         Flexible(
           child: Text(
             value,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: valueColor ?? Colors.black87,
+            style: GoogleFonts.spaceMono(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: valueColor ?? context.textPrimary,
             ),
             overflow: TextOverflow.ellipsis,
           ),
@@ -346,51 +391,49 @@ class _EloCard extends StatelessWidget {
     final awayElo = game.awayElo ?? 1500;
     final homeHigher = homeElo >= awayElo;
 
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: context.bgCard,
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.grey[200]!),
+        border: Border.all(color: context.borderColor),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'ELO RATINGS',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[500],
-                letterSpacing: 1.5,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'ELO RATINGS',
+            style: GoogleFonts.spaceMono(
+              fontSize: 11,
+              fontWeight: FontWeight.w400,
+              color: context.textMuted,
+              letterSpacing: 1.5,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _EloTeam(
+                team: game.homeTeam,
+                elo: homeElo,
+                isHigher: homeHigher,
               ),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _EloTeam(
-                  team: game.awayTeam,
-                  elo: awayElo,
-                  isHigher: !homeHigher,
+              Text(
+                'vs',
+                style: GoogleFonts.dmSans(
+                  fontSize: 14,
+                  color: context.textMuted,
                 ),
-                Text(
-                  'vs',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[500],
-                  ),
-                ),
-                _EloTeam(
-                  team: game.homeTeam,
-                  elo: homeElo,
-                  isHigher: homeHigher,
-                ),
-              ],
-            ),
-          ],
-        ),
+              ),
+              _EloTeam(
+                team: game.awayTeam,
+                elo: awayElo,
+                isHigher: !homeHigher,
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -413,18 +456,18 @@ class _EloTeam extends StatelessWidget {
       children: [
         Text(
           _getAbbreviation(team),
-          style: TextStyle(
+          style: GoogleFonts.dmSans(
             fontSize: 12,
-            color: Colors.grey[600],
+            color: context.textSecondary,
           ),
         ),
         const SizedBox(height: 4),
         Text(
           elo.toInt().toString(),
-          style: TextStyle(
-            fontSize: 28,
+          style: GoogleFonts.spaceMono(
+            fontSize: 24,
             fontWeight: FontWeight.w700,
-            color: isHigher ? Colors.green[700] : Colors.grey[500],
+            color: isHigher ? AppColors.accentGreen : context.textSecondary,
           ),
         ),
       ],
@@ -448,59 +491,57 @@ class _ContextCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: context.bgCard,
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.grey[200]!),
+        border: Border.all(color: context.borderColor),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'GAME CONTEXT',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[500],
-                letterSpacing: 1.5,
-              ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'GAME CONTEXT',
+            style: GoogleFonts.spaceMono(
+              fontSize: 11,
+              fontWeight: FontWeight.w400,
+              color: context.textMuted,
+              letterSpacing: 1.5,
             ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.grey[50],
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                children: [
-                  _DetailRow(
-                    label: 'Game Time',
-                    value: game.time,
-                  ),
-                  const Divider(height: 20),
-                  _DetailRow(
-                    label: 'Home Team',
-                    value: game.homeTeam,
-                  ),
-                  const Divider(height: 20),
-                  _DetailRow(
-                    label: 'Away Team',
-                    value: game.awayTeam,
-                  ),
-                  const Divider(height: 20),
-                  _DetailRow(
-                    label: 'Status',
-                    value: game.status,
-                  ),
-                ],
-              ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: context.bgSecondary,
+              borderRadius: BorderRadius.circular(12),
             ),
-          ],
-        ),
+            child: Column(
+              children: [
+                _DetailRow(
+                  label: 'Game Time',
+                  value: game.time,
+                ),
+                Divider(height: 20, color: context.borderColor),
+                _DetailRow(
+                  label: 'Home Team',
+                  value: game.homeTeam,
+                ),
+                Divider(height: 20, color: context.borderColor),
+                _DetailRow(
+                  label: 'Away Team',
+                  value: game.awayTeam,
+                ),
+                Divider(height: 20, color: context.borderColor),
+                _DetailRow(
+                  label: 'Status',
+                  value: game.status,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

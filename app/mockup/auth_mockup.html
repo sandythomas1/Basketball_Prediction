@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, maximum-scale=1.0, user-scalable=no">
+  <title>NBA Predictions - Auth Screens Mockup</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --bg-card: #21262d;
+      --bg-card-hover: #30363d;
+      --accent-orange: #f78166;
+      --accent-blue: #58a6ff;
+      --accent-green: #3fb950;
+      --accent-purple: #bc8cff;
+      --accent-yellow: #d29922;
+      --text-primary: #f0f6fc;
+      --text-secondary: #8b949e;
+      --text-muted: #6e7681;
+      --border-color: #30363d;
+      --error-red: #f85149;
+      --input-bg: #0d1117;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Phone Frame Container */
+    .phone-container {
+      display: flex;
+      gap: 40px;
+      padding: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+    }
+
+    .screen-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .screen-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 14px;
+      color: var(--accent-purple);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .phone-frame {
+      width: 375px;
+      height: 812px;
+      background: var(--bg-primary);
+      border-radius: 40px;
+      border: 3px solid var(--border-color);
+      overflow: hidden;
+      position: relative;
+      box-shadow: 
+        0 0 0 4px var(--bg-secondary),
+        0 25px 50px -12px rgba(0, 0, 0, 0.5),
+        0 0 100px -20px rgba(88, 166, 255, 0.15);
+    }
+
+    /* Status Bar */
+    .status-bar {
+      height: 44px;
+      background: var(--bg-primary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .notch {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 150px;
+      height: 30px;
+      background: #000;
+      border-radius: 0 0 20px 20px;
+      z-index: 10;
+    }
+
+    /* Content Area */
+    .auth-content {
+      height: calc(812px - 44px);
+      overflow-y: auto;
+      padding: 24px;
+      background: var(--bg-primary);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Logo and Branding */
+    .brand-section {
+      text-align: center;
+      margin-bottom: 40px;
+      margin-top: 20px;
+    }
+
+    .brand-logo {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--accent-orange) 0%, var(--accent-yellow) 100%);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      box-shadow: 0 8px 32px rgba(247, 129, 102, 0.3);
+    }
+
+    .brand-logo svg {
+      width: 48px;
+      height: 48px;
+      fill: white;
+    }
+
+    .brand-title {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--accent-orange) 0%, var(--accent-yellow) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .brand-subtitle {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    /* Form Styles */
+    .auth-form {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-input {
+      width: 100%;
+      height: 52px;
+      background: var(--input-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      padding: 0 16px;
+      font-size: 16px;
+      color: var(--text-primary);
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.2s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 4px rgba(88, 166, 255, 0.1);
+    }
+
+    .form-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .form-input.error {
+      border-color: var(--error-red);
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-icon {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      fill: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .error-message {
+      font-size: 12px;
+      color: var(--error-red);
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .error-message svg {
+      width: 14px;
+      height: 14px;
+      fill: var(--error-red);
+    }
+
+    /* Forgot Password Link */
+    .forgot-link {
+      text-align: right;
+      margin-top: -12px;
+      margin-bottom: 24px;
+    }
+
+    .forgot-link a {
+      font-size: 13px;
+      color: var(--accent-blue);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .forgot-link a:hover {
+      text-decoration: underline;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      width: 100%;
+      height: 52px;
+      background: linear-gradient(135deg, var(--accent-orange) 0%, var(--accent-yellow) 100%);
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'DM Sans', sans-serif;
+      box-shadow: 0 4px 16px rgba(247, 129, 102, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(247, 129, 102, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      width: 100%;
+      height: 52px;
+      background: var(--bg-card);
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'DM Sans', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--text-muted);
+    }
+
+    .btn-secondary svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Divider */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border-color);
+    }
+
+    .divider-text {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Footer Links */
+    .auth-footer {
+      text-align: center;
+      padding-top: 24px;
+      margin-top: auto;
+    }
+
+    .auth-footer p {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .auth-footer a {
+      color: var(--accent-blue);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .auth-footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Back Button */
+    .back-button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent-blue);
+      font-size: 14px;
+      cursor: pointer;
+      margin-bottom: 24px;
+      background: none;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .back-button svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--accent-blue);
+    }
+
+    /* Forgot Password Screen Specific */
+    .info-box {
+      background: rgba(88, 166, 255, 0.1);
+      border: 1px solid rgba(88, 166, 255, 0.2);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+
+    .info-box p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .info-box svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--accent-blue);
+      margin-bottom: 8px;
+    }
+
+    /* Success State */
+    .success-box {
+      background: rgba(63, 185, 80, 0.1);
+      border: 1px solid rgba(63, 185, 80, 0.2);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .success-icon {
+      width: 64px;
+      height: 64px;
+      background: rgba(63, 185, 80, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+
+    .success-icon svg {
+      width: 32px;
+      height: 32px;
+      fill: var(--accent-green);
+    }
+
+    .success-box h3 {
+      font-size: 18px;
+      color: var(--accent-green);
+      margin-bottom: 8px;
+    }
+
+    .success-box p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Password Strength Indicator */
+    .password-strength {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .strength-bar {
+      flex: 1;
+      height: 4px;
+      background: var(--border-color);
+      border-radius: 2px;
+      transition: background 0.2s ease;
+    }
+
+    .strength-bar.active.weak {
+      background: var(--error-red);
+    }
+
+    .strength-bar.active.medium {
+      background: var(--accent-yellow);
+    }
+
+    .strength-bar.active.strong {
+      background: var(--accent-green);
+    }
+
+    .strength-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Google Button */
+    .google-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Loading State */
+    .loading-spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid transparent;
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Small Logo for secondary screens */
+    .brand-section.small {
+      margin-bottom: 32px;
+      margin-top: 0;
+    }
+
+    .brand-section.small .brand-logo {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+    }
+
+    .brand-section.small .brand-logo svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .brand-section.small .brand-title {
+      font-size: 22px;
+    }
+
+    .page-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .page-subtitle {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone-container">
+    
+    <!-- Screen 1: Login -->
+    <div class="screen-wrapper">
+      <span class="screen-label">1. Login Screen</span>
+      <div class="phone-frame">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>100%</span>
+        </div>
+        
+        <div class="auth-content">
+          <div class="brand-section">
+            <div class="brand-logo">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            </div>
+            <h1 class="brand-title">NBA Predictions</h1>
+            <p class="brand-subtitle">AI-Powered Game Analysis</p>
+          </div>
+
+          <form class="auth-form">
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-input" placeholder="Enter your email">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <div class="input-wrapper">
+                <input type="password" class="form-input" placeholder="Enter your password">
+                <svg class="input-icon" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+              </div>
+            </div>
+
+            <div class="forgot-link">
+              <a href="#">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="btn-primary">Sign In</button>
+
+            <div class="divider">
+              <div class="divider-line"></div>
+              <span class="divider-text">or continue with</span>
+              <div class="divider-line"></div>
+            </div>
+
+            <button type="button" class="btn-secondary">
+              <svg class="google-icon" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+              </svg>
+              Continue with Google
+            </button>
+
+            <div class="auth-footer">
+              <p>Don't have an account? <a href="#">Sign up</a></p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen 2: Sign Up -->
+    <div class="screen-wrapper">
+      <span class="screen-label">2. Sign Up Screen</span>
+      <div class="phone-frame">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>100%</span>
+        </div>
+        
+        <div class="auth-content">
+          <div class="brand-section small">
+            <div class="brand-logo">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            </div>
+          </div>
+
+          <h1 class="page-title">Create Account</h1>
+          <p class="page-subtitle">Join thousands of NBA prediction enthusiasts</p>
+
+          <form class="auth-form">
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-input" placeholder="Enter your email">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <div class="input-wrapper">
+                <input type="password" class="form-input" placeholder="Create a password">
+                <svg class="input-icon" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+              </div>
+              <div class="password-strength">
+                <div class="strength-bar active strong"></div>
+                <div class="strength-bar active strong"></div>
+                <div class="strength-bar active strong"></div>
+                <div class="strength-bar active strong"></div>
+              </div>
+              <span class="strength-label">Strong password</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Confirm Password</label>
+              <div class="input-wrapper">
+                <input type="password" class="form-input" placeholder="Confirm your password">
+                <svg class="input-icon" viewBox="0 0 24 24" style="fill: var(--accent-green)"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-primary">Create Account</button>
+
+            <div class="divider">
+              <div class="divider-line"></div>
+              <span class="divider-text">or continue with</span>
+              <div class="divider-line"></div>
+            </div>
+
+            <button type="button" class="btn-secondary">
+              <svg class="google-icon" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+              </svg>
+              Continue with Google
+            </button>
+
+            <div class="auth-footer">
+              <p>Already have an account? <a href="#">Sign in</a></p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen 3: Login with Error -->
+    <div class="screen-wrapper">
+      <span class="screen-label">3. Login with Error</span>
+      <div class="phone-frame">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>100%</span>
+        </div>
+        
+        <div class="auth-content">
+          <div class="brand-section">
+            <div class="brand-logo">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            </div>
+            <h1 class="brand-title">NBA Predictions</h1>
+            <p class="brand-subtitle">AI-Powered Game Analysis</p>
+          </div>
+
+          <form class="auth-form">
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-input error" value="john@example.com">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <div class="input-wrapper">
+                <input type="password" class="form-input error" value="wrongpassword">
+                <svg class="input-icon" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+              </div>
+              <div class="error-message">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                Invalid email or password. Please try again.
+              </div>
+            </div>
+
+            <div class="forgot-link">
+              <a href="#">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="btn-primary">Sign In</button>
+
+            <div class="divider">
+              <div class="divider-line"></div>
+              <span class="divider-text">or continue with</span>
+              <div class="divider-line"></div>
+            </div>
+
+            <button type="button" class="btn-secondary">
+              <svg class="google-icon" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+              </svg>
+              Continue with Google
+            </button>
+
+            <div class="auth-footer">
+              <p>Don't have an account? <a href="#">Sign up</a></p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen 4: Forgot Password -->
+    <div class="screen-wrapper">
+      <span class="screen-label">4. Forgot Password</span>
+      <div class="phone-frame">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>100%</span>
+        </div>
+        
+        <div class="auth-content">
+          <button class="back-button">
+            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            Back to Sign In
+          </button>
+
+          <div class="brand-section small">
+            <div class="brand-logo">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            </div>
+          </div>
+
+          <h1 class="page-title">Reset Password</h1>
+          <p class="page-subtitle">Enter your email to receive a password reset link</p>
+
+          <form class="auth-form">
+            <div class="info-box">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+              <p>We'll send you an email with a link to reset your password. The link will expire in 24 hours.</p>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input type="email" class="form-input" placeholder="Enter your email">
+            </div>
+
+            <button type="submit" class="btn-primary">Send Reset Link</button>
+
+            <div class="auth-footer">
+              <p>Remember your password? <a href="#">Sign in</a></p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen 5: Reset Email Sent Success -->
+    <div class="screen-wrapper">
+      <span class="screen-label">5. Email Sent Success</span>
+      <div class="phone-frame">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>100%</span>
+        </div>
+        
+        <div class="auth-content">
+          <button class="back-button">
+            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            Back to Sign In
+          </button>
+
+          <div class="brand-section small">
+            <div class="brand-logo">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            </div>
+          </div>
+
+          <div class="success-box">
+            <div class="success-icon">
+              <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </div>
+            <h3>Check Your Email</h3>
+            <p>We've sent a password reset link to <strong>john@example.com</strong>. Check your inbox and click the link to reset your password.</p>
+          </div>
+
+          <form class="auth-form">
+            <div class="info-box">
+              <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+              <p>Didn't receive the email? Check your spam folder or click below to resend.</p>
+            </div>
+
+            <button type="button" class="btn-secondary">Resend Email</button>
+
+            <div class="auth-footer">
+              <p>Remember your password? <a href="#">Sign in</a></p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
+

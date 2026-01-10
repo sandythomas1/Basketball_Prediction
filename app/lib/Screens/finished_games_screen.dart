@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../Models/game.dart';
 import '../Providers/games_provider.dart';
 import '../Widgets/team_logo.dart';
+import '../theme/app_theme.dart';
 
 /// Screen showing finished games with final scores
 class FinishedGamesScreen extends ConsumerWidget {
@@ -14,26 +16,52 @@ class FinishedGamesScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Finished Games'),
+        backgroundColor: context.bgSecondary,
+        title: ShaderMask(
+          shaderCallback: (bounds) => const LinearGradient(
+            colors: [AppColors.accentOrange, AppColors.accentYellow],
+          ).createShader(bounds),
+          child: Text(
+            'Finished Games',
+            style: GoogleFonts.dmSans(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+        ),
         centerTitle: false,
         actions: [
-          IconButton(
-            icon: gamesAsync.isLoading
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.refresh),
-            onPressed: gamesAsync.isLoading
-                ? null
-                : () => _onRefresh(context, ref),
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: context.bgCard,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: gamesAsync.isLoading
+                  ? SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: context.textSecondary,
+                      ),
+                    )
+                  : Icon(Icons.refresh, color: context.textSecondary),
+              onPressed: gamesAsync.isLoading
+                  ? null
+                  : () => _onRefresh(context, ref),
+            ),
           ),
         ],
       ),
       body: gamesAsync.when(
-        data: (state) => _buildGamesList(context, ref, state.finishedGames, state.isRefreshing),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        data: (state) => _buildGamesList(
+            context, ref, state.finishedGames, state.isRefreshing),
+        loading: () => Center(
+          child: CircularProgressIndicator(color: AppColors.accentOrange),
+        ),
         error: (error, _) => _buildError(context, ref, error.toString()),
       ),
     );
@@ -62,13 +90,16 @@ class FinishedGamesScreen extends ConsumerWidget {
           Icon(
             Icons.error_outline,
             size: 48,
-            color: Colors.red[300],
+            color: AppColors.errorRed,
           ),
           const SizedBox(height: 16),
           Text(
             error,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 16),
+            style: GoogleFonts.dmSans(
+              fontSize: 16,
+              color: context.textSecondary,
+            ),
           ),
           const SizedBox(height: 16),
           ElevatedButton(
@@ -94,17 +125,23 @@ class FinishedGamesScreen extends ConsumerWidget {
             Icon(
               Icons.sports_basketball_outlined,
               size: 48,
-              color: Colors.grey[400],
+              color: context.textMuted,
             ),
             const SizedBox(height: 16),
             Text(
               'No finished games yet',
-              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+              style: GoogleFonts.dmSans(
+                fontSize: 16,
+                color: context.textSecondary,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               'Completed games will appear here',
-              style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+              style: GoogleFonts.dmSans(
+                fontSize: 14,
+                color: context.textMuted,
+              ),
             ),
           ],
         ),
@@ -113,6 +150,7 @@ class FinishedGamesScreen extends ConsumerWidget {
 
     return RefreshIndicator(
       onRefresh: () => _onRefresh(context, ref),
+      color: AppColors.accentOrange,
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 8),
         itemCount: games.length + 1, // +1 for header
@@ -135,38 +173,42 @@ class FinishedGamesScreen extends ConsumerWidget {
           Icon(
             Icons.check_circle,
             size: 14,
-            color: Colors.grey[500],
+            color: context.textMuted,
           ),
           const SizedBox(width: 8),
           Text(
-            'FINAL SCORES',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey[500],
-              letterSpacing: 1.2,
+            'FINAL',
+            style: GoogleFonts.spaceMono(
+              fontSize: 13,
+              fontWeight: FontWeight.w400,
+              color: context.textSecondary,
+              letterSpacing: 1.5,
             ),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Container(
               height: 1,
-              color: Colors.grey[300],
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [context.borderColor, Colors.transparent],
+                ),
+              ),
             ),
           ),
           const SizedBox(width: 12),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: Colors.grey.withOpacity(0.1),
+              color: context.textMuted.withOpacity(0.1),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
               '$gameCount ${gameCount == 1 ? 'game' : 'games'}',
-              style: TextStyle(
+              style: GoogleFonts.spaceMono(
                 fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[600],
+                fontWeight: FontWeight.w400,
+                color: context.textSecondary,
               ),
             ),
           ),
@@ -188,12 +230,12 @@ class _FinishedGameCard extends StatelessWidget {
     final homeWon = homeScore > awayScore;
     final awayWon = awayScore > homeScore;
 
-    return Card(
+    return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey[200]!),
+      decoration: BoxDecoration(
+        color: context.bgCard,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.borderColor),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -208,17 +250,17 @@ class _FinishedGameCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _TeamScoreRow(
-                        team: game.awayTeam,
-                        score: game.awayScore,
-                        isWinner: awayWon,
-                        isAway: true,
-                      ),
-                      const SizedBox(height: 10),
-                      _TeamScoreRow(
                         team: game.homeTeam,
                         score: game.homeScore,
                         isWinner: homeWon,
                         isAway: false,
+                      ),
+                      const SizedBox(height: 10),
+                      _TeamScoreRow(
+                        team: game.awayTeam,
+                        score: game.awayScore,
+                        isWinner: awayWon,
+                        isAway: true,
                       ),
                     ],
                   ),
@@ -227,35 +269,44 @@ class _FinishedGameCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             // Footer with date
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  game.date,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[600],
-                  ),
+            Container(
+              padding: const EdgeInsets.only(top: 12),
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(color: context.borderColor),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    'Final',
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey[600],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    game.date,
+                    style: GoogleFonts.spaceMono(
+                      fontSize: 12,
+                      color: context.textSecondary,
                     ),
                   ),
-                ),
-              ],
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: context.textMuted.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      'FINAL',
+                      style: GoogleFonts.dmSans(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: context.textSecondary,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -281,16 +332,11 @@ class _TeamScoreRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: isWinner ? Border.all(color: Colors.green[200]!) : null,
-          ),
-          child: TeamLogo(
-            teamName: team,
-            size: 32,
-            backgroundColor: isWinner ? Colors.green[50] : Colors.grey[100],
-          ),
+        TeamLogo(
+          teamName: team,
+          size: 32,
+          backgroundColor:
+              isWinner ? AppColors.accentGreen.withOpacity(0.1) : context.bgSecondary,
         ),
         const SizedBox(width: 10),
         Expanded(
@@ -298,11 +344,11 @@ class _TeamScoreRow extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  isAway ? team : '@ $team',
-                  style: TextStyle(
+                  isAway ? '@ $team' : team,
+                  style: GoogleFonts.dmSans(
                     fontSize: 15,
                     fontWeight: isWinner ? FontWeight.w600 : FontWeight.w500,
-                    color: isWinner ? Colors.black : Colors.grey[700],
+                    color: context.textPrimary,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -312,7 +358,7 @@ class _TeamScoreRow extends StatelessWidget {
                 Icon(
                   Icons.emoji_events,
                   size: 16,
-                  color: Colors.amber[600],
+                  color: AppColors.accentYellow,
                 ),
               ],
             ],
@@ -321,10 +367,10 @@ class _TeamScoreRow extends StatelessWidget {
         const SizedBox(width: 12),
         Text(
           score.isEmpty ? '-' : score,
-          style: TextStyle(
-            fontSize: 22,
+          style: GoogleFonts.spaceMono(
+            fontSize: 20,
             fontWeight: FontWeight.w700,
-            color: isWinner ? Colors.green[700] : Colors.grey[500],
+            color: isWinner ? AppColors.accentGreen : context.textSecondary,
           ),
         ),
       ],

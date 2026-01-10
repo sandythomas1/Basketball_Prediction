@@ -2,3 +2,10 @@
 
 *.sqlite
 
+# Firebase configuration files with API keys
+app/android/app/google-services.json
+app/lib/firebase_options.dart
+app/ios/Runner/GoogleService-Info.plist
+
+# Local properties
+app/android/local.properties
