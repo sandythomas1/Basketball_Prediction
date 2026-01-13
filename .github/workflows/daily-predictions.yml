@@ -6,6 +6,10 @@ on:
     - cron: '0 9 * * *'
   workflow_dispatch:  # Allows manual trigger
 
+  #permissions needed for github actions to commit to the repo
+  permissions:
+    contents: write #allows the workflow to commit to the repo
+
 jobs:
   predict:
     runs-on: ubuntu-latest
