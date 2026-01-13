@@ -6,6 +6,7 @@ import '../Providers/games_provider.dart';
 import '../Widgets/team_logo.dart';
 import '../theme/app_theme.dart';
 import 'game_detail_screen.dart';
+import 'profile_screen.dart';
 
 /// Screen showing all of today's games with prediction access
 class TodayGamesScreen extends ConsumerWidget {
@@ -16,6 +17,29 @@ class TodayGamesScreen extends ConsumerWidget {
     final gamesAsync = ref.watch(gamesProvider);
 
     return Scaffold(
+      backgroundColor: context.bgPrimary,
+      
+      drawer: Drawer(
+        backgroundColor: context.bgSecondary,
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(color: context.bgCard),
+              child: Text(
+                'Menu',
+                style: GoogleFonts.dmSans(color: context.textPrimary, fontSize: 24),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.person_4_outlined, color: context.textPrimary),
+              title: Text('Profile', style: TextStyle(color: context.textPrimary)),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen())),
+            ),
+            // Add more navigation items here
+          ],
+        ),
+      ),
       appBar: AppBar(
         backgroundColor: context.bgSecondary,
         title: ShaderMask(
@@ -23,6 +47,7 @@ class TodayGamesScreen extends ConsumerWidget {
             colors: [AppColors.accentOrange, AppColors.accentYellow],
           ).createShader(bounds),
           child: Text(
+            // center the text
             'NBA Predictions',
             style: GoogleFonts.dmSans(
               fontSize: 20,
@@ -31,7 +56,7 @@ class TodayGamesScreen extends ConsumerWidget {
             ),
           ),
         ),
-        centerTitle: false,
+        centerTitle: true,
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 8),
@@ -40,6 +65,7 @@ class TodayGamesScreen extends ConsumerWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             child: IconButton(
+              // adding left side hamburger menu icon
               icon: gamesAsync.isLoading
                   ? SizedBox(
                       width: 20,
