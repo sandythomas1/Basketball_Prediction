@@ -1,0 +1,33 @@
+name: Daily Predictions
+
+on:
+  schedule:
+    # Runs at 9 AM UTC (4 AM ET / 1 AM PT) - before most NBA games
+    - cron: '0 9 * * *'
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  predict:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+        
+      - name: Run predictions
+        run: python src/daily_predictions.py --output predictions/daily.json --app-format
+        
+      - name: Commit results
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add predictions/
+          git diff --staged --quiet || git commit -m "Update daily predictions"
+          git push
+
