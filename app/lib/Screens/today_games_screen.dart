@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../Models/game.dart';
 import '../Providers/games_provider.dart';
+import '../Providers/user_provider.dart';
 import '../Widgets/team_logo.dart';
 import '../theme/app_theme.dart';
 import 'game_detail_screen.dart';
@@ -19,27 +21,7 @@ class TodayGamesScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: context.bgPrimary,
       
-      drawer: Drawer(
-        backgroundColor: context.bgSecondary,
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(color: context.bgCard),
-              child: Text(
-                'Menu',
-                style: GoogleFonts.dmSans(color: context.textPrimary, fontSize: 24),
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.person_4_outlined, color: context.textPrimary),
-              title: Text('Profile', style: TextStyle(color: context.textPrimary)),
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen())),
-            ),
-            // Add more navigation items here
-          ],
-        ),
-      ),
+      drawer: _AppDrawer(),
       appBar: AppBar(
         backgroundColor: context.bgSecondary,
         title: ShaderMask(
@@ -468,6 +450,258 @@ class _StatusBadge extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// App drawer with user profile information
+class _AppDrawer extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userProfileAsync = ref.watch(userProfileProvider);
+
+    return Drawer(
+      backgroundColor: context.bgSecondary,
+      child: Column(
+        children: [
+          // User profile header
+          userProfileAsync.when(
+            data: (profile) => _buildDrawerHeader(context, profile),
+            loading: () => _buildDrawerHeader(context, null, isLoading: true),
+            error: (_, __) => _buildDrawerHeader(context, null),
+          ),
+          
+          // Navigation items
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                _DrawerItem(
+                  icon: Icons.person_outline,
+                  label: 'Profile',
+                  onTap: () {
+                    Navigator.pop(context); // Close drawer
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                    );
+                  },
+                ),
+                const Divider(height: 1),
+                _DrawerItem(
+                  icon: Icons.sports_basketball_outlined,
+                  label: 'Today\'s Games',
+                  onTap: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+          ),
+          
+          // App version at bottom
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                'NBA Predictions v1.0.0',
+                style: GoogleFonts.spaceMono(
+                  fontSize: 11,
+                  color: context.textMuted,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDrawerHeader(BuildContext context, dynamic profile, {bool isLoading = false}) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.only(
+        top: MediaQuery.of(context).padding.top + 24,
+        left: 20,
+        right: 20,
+        bottom: 20,
+      ),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.accentOrange.withOpacity(0.15),
+            AppColors.accentYellow.withOpacity(0.05),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border(
+          bottom: BorderSide(color: context.borderColor),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Profile photo
+          GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ProfileScreen()),
+              );
+            },
+            child: Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: AppColors.accentOrange.withOpacity(0.5),
+                  width: 2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.accentOrange.withOpacity(0.2),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: ClipOval(
+                child: isLoading
+                    ? Container(
+                        color: context.bgCard,
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.accentOrange,
+                          ),
+                        ),
+                      )
+                    : profile?.photoUrl != null && profile!.photoUrl!.isNotEmpty
+                        ? CachedNetworkImage(
+                            imageUrl: profile.photoUrl!,
+                            fit: BoxFit.cover,
+                            placeholder: (_, __) => _buildInitialsAvatar(context, profile.initials),
+                            errorWidget: (_, __, ___) => _buildInitialsAvatar(context, profile.initials),
+                          )
+                        : _buildInitialsAvatar(context, profile?.initials ?? ''),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          
+          // User name
+          if (isLoading)
+            Container(
+              width: 120,
+              height: 20,
+              decoration: BoxDecoration(
+                color: context.bgCard,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            )
+          else
+            Text(
+              profile?.displayName.isNotEmpty == true 
+                  ? profile!.displayName 
+                  : 'Welcome',
+              style: GoogleFonts.dmSans(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: context.textPrimary,
+              ),
+            ),
+          const SizedBox(height: 4),
+          
+          // Username
+          if (isLoading)
+            Container(
+              width: 80,
+              height: 14,
+              decoration: BoxDecoration(
+                color: context.bgCard,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            )
+          else if (profile != null)
+            Text(
+              '@${profile.username}',
+              style: GoogleFonts.dmSans(
+                fontSize: 14,
+                color: AppColors.accentBlue,
+              ),
+            )
+          else
+            Text(
+              'Tap to view profile',
+              style: GoogleFonts.dmSans(
+                fontSize: 14,
+                color: context.textMuted,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInitialsAvatar(BuildContext context, String initials) {
+    return Container(
+      color: context.bgCard,
+      child: Center(
+        child: Text(
+          initials.isNotEmpty ? initials : '?',
+          style: GoogleFonts.dmSans(
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
+            color: AppColors.accentOrange,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Individual drawer menu item
+class _DrawerItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _DrawerItem({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: context.bgCard,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Icon(
+          icon,
+          color: context.textSecondary,
+          size: 22,
+        ),
+      ),
+      title: Text(
+        label,
+        style: GoogleFonts.dmSans(
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
+          color: context.textPrimary,
+        ),
+      ),
+      trailing: Icon(
+        Icons.chevron_right,
+        color: context.textMuted,
+        size: 20,
+      ),
+      onTap: onTap,
     );
   }
 }

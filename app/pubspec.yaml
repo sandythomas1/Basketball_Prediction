@@ -44,6 +44,13 @@ dependencies:
   firebase_auth: ^5.3.4
   google_sign_in: ^6.2.2
   
+  # Firebase Database & Storage
+  firebase_database: ^11.2.0
+  firebase_storage: ^12.3.7
+  
+  # Image Picker
+  image_picker: ^1.1.2
+  
   # Typography
   google_fonts: ^6.2.1
 

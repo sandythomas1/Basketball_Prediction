@@ -1,10 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../Providers/auth_provider.dart';
+import '../Providers/user_provider.dart';
 import '../theme/app_theme.dart';
 
-/// Sign up screen with email/password registration
+/// Sign up screen with email/password registration and profile creation
 class SignupScreen extends ConsumerStatefulWidget {
   const SignupScreen({super.key});
 
@@ -14,6 +16,9 @@ class SignupScreen extends ConsumerStatefulWidget {
 
 class _SignupScreenState extends ConsumerState<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -21,17 +26,68 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   bool _obscureConfirmPassword = true;
   bool _isLoading = false;
   String? _errorMessage;
+  
+  // Username validation state
+  Timer? _usernameDebounce;
+  bool _isCheckingUsername = false;
+  bool _isUsernameAvailable = false;
+  String? _usernameError;
 
   @override
   void dispose() {
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _usernameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _usernameDebounce?.cancel();
     super.dispose();
+  }
+
+  void _onUsernameChanged(String value) {
+    _usernameDebounce?.cancel();
+    
+    final userService = ref.read(userServiceProvider);
+    final validationError = userService.validateUsername(value);
+    
+    if (validationError != null) {
+      setState(() {
+        _isCheckingUsername = false;
+        _isUsernameAvailable = false;
+        _usernameError = validationError;
+      });
+      return;
+    }
+    
+    setState(() {
+      _isCheckingUsername = true;
+      _isUsernameAvailable = false;
+      _usernameError = null;
+    });
+    
+    _usernameDebounce = Timer(const Duration(milliseconds: 500), () async {
+      final isAvailable = await userService.isUsernameAvailable(value);
+      if (mounted && _usernameController.text == value) {
+        setState(() {
+          _isCheckingUsername = false;
+          _isUsernameAvailable = isAvailable;
+          _usernameError = isAvailable ? null : 'Username is already taken';
+        });
+      }
+    });
   }
 
   Future<void> _signUpWithEmail() async {
     if (!_formKey.currentState!.validate()) return;
+    
+    // Check username one more time
+    if (!_isUsernameAvailable) {
+      setState(() {
+        _errorMessage = 'Please choose a valid username';
+      });
+      return;
+    }
 
     setState(() {
       _isLoading = true;
@@ -39,20 +95,43 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     });
 
     final authService = ref.read(authServiceProvider);
-    final result = await authService.signUpWithEmail(
+    final userService = ref.read(userServiceProvider);
+    
+    // First create the Firebase Auth account
+    final authResult = await authService.signUpWithEmail(
       _emailController.text,
       _passwordController.text,
     );
 
     if (!mounted) return;
 
-    if (result.success) {
-      // Pop back to login or go directly to main app
-      Navigator.of(context).pop();
+    if (authResult.success && authResult.user != null) {
+      // Create user profile in database
+      final profileResult = await userService.createProfile(
+        uid: authResult.user!.uid,
+        email: _emailController.text.trim(),
+        firstName: _firstNameController.text.trim(),
+        lastName: _lastNameController.text.trim(),
+        username: _usernameController.text.trim(),
+      );
+      
+      if (!mounted) return;
+      
+      if (profileResult.success) {
+        // Pop back to login - AuthGate will handle navigation
+        Navigator.of(context).pop();
+      } else {
+        // Profile creation failed - sign out and show error
+        await authService.signOut();
+        setState(() {
+          _isLoading = false;
+          _errorMessage = profileResult.errorMessage;
+        });
+      }
     } else {
       setState(() {
         _isLoading = false;
-        _errorMessage = result.errorMessage;
+        _errorMessage = authResult.errorMessage;
       });
     }
   }
@@ -64,11 +143,58 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     });
 
     final authService = ref.read(authServiceProvider);
+    final userService = ref.read(userServiceProvider);
     final result = await authService.signInWithGoogle();
 
     if (!mounted) return;
 
-    if (result.success) {
+    if (result.success && result.user != null) {
+      // Check if profile already exists
+      final existingProfile = await userService.getProfile(result.user!.uid);
+      
+      if (existingProfile == null) {
+        // New Google user - need to collect additional info
+        // For now, create with default values from Google account
+        final displayName = result.user!.displayName ?? '';
+        final nameParts = displayName.split(' ');
+        final firstName = nameParts.isNotEmpty ? nameParts.first : '';
+        final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+        
+        // Generate a unique username from email
+        final emailPrefix = result.user!.email?.split('@').first ?? 'user';
+        var username = emailPrefix.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '').toLowerCase();
+        if (username.length < 3) username = '${username}user';
+        if (username.length > 20) username = username.substring(0, 20);
+        
+        // Check if username is available, if not add random suffix
+        var isAvailable = await userService.isUsernameAvailable(username);
+        var attempts = 0;
+        while (!isAvailable && attempts < 10) {
+          username = '${username.substring(0, (username.length > 15 ? 15 : username.length))}${DateTime.now().millisecondsSinceEpoch % 10000}';
+          isAvailable = await userService.isUsernameAvailable(username);
+          attempts++;
+        }
+        
+        final profileResult = await userService.createProfile(
+          uid: result.user!.uid,
+          email: result.user!.email ?? '',
+          firstName: firstName,
+          lastName: lastName,
+          username: username,
+        );
+        
+        if (!mounted) return;
+        
+        if (!profileResult.success) {
+          await authService.signOut();
+          setState(() {
+            _isLoading = false;
+            _errorMessage = profileResult.errorMessage;
+          });
+          return;
+        }
+      }
+      
       Navigator.of(context).pop();
     } else {
       setState(() {
@@ -151,6 +277,107 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   _buildErrorBanner(context),
                   const SizedBox(height: 16),
                 ],
+
+                // First Name field
+                _buildLabel(context, 'FIRST NAME'),
+                const SizedBox(height: 8),
+                TextFormField(
+                  controller: _firstNameController,
+                  textCapitalization: TextCapitalization.words,
+                  textInputAction: TextInputAction.next,
+                  style: GoogleFonts.dmSans(
+                    fontSize: 16,
+                    color: context.textPrimary,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'Enter your first name',
+                    hintStyle: GoogleFonts.dmSans(
+                      color: context.textMuted,
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Please enter your first name';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 20),
+
+                // Last Name field
+                _buildLabel(context, 'LAST NAME'),
+                const SizedBox(height: 8),
+                TextFormField(
+                  controller: _lastNameController,
+                  textCapitalization: TextCapitalization.words,
+                  textInputAction: TextInputAction.next,
+                  style: GoogleFonts.dmSans(
+                    fontSize: 16,
+                    color: context.textPrimary,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'Enter your last name',
+                    hintStyle: GoogleFonts.dmSans(
+                      color: context.textMuted,
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Please enter your last name';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 20),
+
+                // Username field
+                _buildLabel(context, 'USERNAME'),
+                const SizedBox(height: 8),
+                TextFormField(
+                  controller: _usernameController,
+                  textInputAction: TextInputAction.next,
+                  onChanged: _onUsernameChanged,
+                  style: GoogleFonts.dmSans(
+                    fontSize: 16,
+                    color: context.textPrimary,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'Choose a unique username',
+                    hintStyle: GoogleFonts.dmSans(
+                      color: context.textMuted,
+                    ),
+                    prefixText: '@',
+                    prefixStyle: GoogleFonts.dmSans(
+                      fontSize: 16,
+                      color: context.textSecondary,
+                    ),
+                    suffixIcon: _buildUsernameSuffix(),
+                  ),
+                  validator: (value) {
+                    final userService = ref.read(userServiceProvider);
+                    return userService.validateUsername(value);
+                  },
+                ),
+                if (_usernameError != null && _usernameController.text.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    _usernameError!,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 12,
+                      color: AppColors.errorRed,
+                    ),
+                  ),
+                ] else if (_isUsernameAvailable) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    'Username is available',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 12,
+                      color: AppColors.accentGreen,
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 20),
 
                 // Email field
                 _buildLabel(context, 'EMAIL'),
@@ -328,6 +555,31 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         ),
       ),
     );
+  }
+
+  Widget? _buildUsernameSuffix() {
+    if (_usernameController.text.isEmpty) return null;
+    
+    if (_isCheckingUsername) {
+      return const Padding(
+        padding: EdgeInsets.all(12),
+        child: SizedBox(
+          width: 20,
+          height: 20,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
+      );
+    }
+    
+    if (_isUsernameAvailable) {
+      return const Icon(Icons.check_circle, color: AppColors.accentGreen);
+    }
+    
+    if (_usernameError != null) {
+      return const Icon(Icons.error, color: AppColors.errorRed);
+    }
+    
+    return null;
   }
 
   Widget _buildSmallLogo(BuildContext context) {
