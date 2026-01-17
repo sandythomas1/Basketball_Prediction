@@ -487,12 +487,12 @@ class _AppDrawer extends ConsumerWidget {
                     );
                   },
                 ),
-                const Divider(height: 1),
-                _DrawerItem(
-                  icon: Icons.sports_basketball_outlined,
-                  label: 'Today\'s Games',
-                  onTap: () => Navigator.pop(context),
-                ),
+                // const Divider(height: 1),
+                // _DrawerItem(
+                //   icon: Icons.sports_basketball_outlined,
+                //   label: 'Today\'s Games',
+                //   onTap: () => Navigator.pop(context),
+                // ),
               ],
             ),
           ),

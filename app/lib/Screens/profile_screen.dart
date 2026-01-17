@@ -94,10 +94,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     try {
       final authService = ref.read(authServiceProvider);
       await authService.signOut();
-      // AuthGate will automatically navigate to login screen
+      
+      // Pop all screens and let AuthGate handle navigation to login
+      if (mounted) {
+        Navigator.of(context).popUntil((route) => route.isFirst);
+      }
     } catch (e) {
       if (mounted) {
-        _showErrorSnackBar('Failed to log out');
+        _showErrorSnackBar('Failed to log out: $e');
         setState(() => _isLoggingOut = false);
       }
     }

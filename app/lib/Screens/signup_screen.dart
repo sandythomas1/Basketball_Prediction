@@ -119,7 +119,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       
       if (profileResult.success) {
         // Pop back to login - AuthGate will handle navigation
-        Navigator.of(context).pop();
+      Navigator.of(context).pop();
       } else {
         // Profile creation failed - sign out and show error
         await authService.signOut();
