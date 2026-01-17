@@ -9,6 +9,7 @@ import '../Widgets/team_logo.dart';
 import '../theme/app_theme.dart';
 import 'game_detail_screen.dart';
 import 'profile_screen.dart';
+import '../Screens/forums_discussions_screen.dart';
 
 /// Screen showing all of today's games with prediction access
 class TodayGamesScreen extends ConsumerWidget {
@@ -487,12 +488,18 @@ class _AppDrawer extends ConsumerWidget {
                     );
                   },
                 ),
-                // const Divider(height: 1),
-                // _DrawerItem(
-                //   icon: Icons.sports_basketball_outlined,
-                //   label: 'Today\'s Games',
-                //   onTap: () => Navigator.pop(context),
-                // ),
+                const Divider(height: 1),
+                _DrawerItem(
+                  icon: Icons.sports_basketball_outlined,
+                  label: 'Forums',
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ForumsDiscussionsScreen()),
+                    );
+                  }
+                ),
               ],
             ),
           ),
