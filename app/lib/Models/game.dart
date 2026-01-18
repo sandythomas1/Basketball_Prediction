@@ -1,5 +1,6 @@
 /// Game model with prediction data
 class Game {
+  final String id;
   final String homeTeam;
   final String awayTeam;
   final String date;
@@ -17,6 +18,7 @@ class Game {
   final double? awayElo;
 
   Game({
+    required this.id,
     required this.homeTeam,
     required this.awayTeam,
     required this.date,
@@ -68,6 +70,7 @@ class Game {
 
   /// Copy with new values
   Game copyWith({
+    String? id,
     String? homeTeam,
     String? awayTeam,
     String? date,
@@ -83,6 +86,7 @@ class Game {
     double? awayElo,
   }) {
     return Game(
+      id: id ?? this.id,
       homeTeam: homeTeam ?? this.homeTeam,
       awayTeam: awayTeam ?? this.awayTeam,
       date: date ?? this.date,

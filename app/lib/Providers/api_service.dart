@@ -1,30 +1,51 @@
 import 'dart:convert';
+// ignore: unused_import - needed when using LOCAL DEVELOPMENT mode
 import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode, debugPrint;
+// ignore: unused_shown_name - kIsWeb needed when using LOCAL DEVELOPMENT mode
+import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
 /// API Service for handling all HTTP requests
 class ApiService {
-  /// Production API URL (Render)
-  static const String _productionUrl = 'https://nba-prediction-api-nq5b.onrender.com';
+  // ===========================================================================
+  // API CONFIGURATION - Toggle between Production and Local Development
+  // ===========================================================================
+  //
+  // PRODUCTION MODE (default):
+  //   - Uses Render-hosted API at https://nba-prediction-api-nq5b.onrender.com
+  //   - Note: Free tier may take 30-60s to wake from cold start
+  //
+  // LOCAL DEVELOPMENT MODE:
+  //   1. Start your local API server:
+  //      cd C:\Users\sandy\Desktop\dev\Basketball_Prediction
+  //      python -m uvicorn src.api.main:app --reload --port 8000
+  //
+  //   2. Comment out the PRODUCTION line and uncomment the LOCAL line below:
+  //
+  // ===========================================================================
 
-  /// FastAPI base URL - uses production in release, localhost in debug
-  String get fastApiBaseUrl {
-    // Use production URL for release builds
-    if (!kDebugMode) {
-      return _productionUrl;
-    }
-    
-    // Debug mode: use localhost
+  /// PRODUCTION - Uses Render-hosted API (DEFAULT)
+  // static const String _baseUrl = 'https://nba-prediction-api-nq5b.onrender.com';
+
+  /// LOCAL DEVELOPMENT - Uncomment below and comment out PRODUCTION above
+  static String get _baseUrl {
+    // Web browser: use localhost directly
     if (kIsWeb) {
       return 'http://localhost:8000';
-    } else if (Platform.isAndroid) {
+    }
+    // Android emulator: 10.0.2.2 maps to host machine's localhost
+    else if (Platform.isAndroid) {
       return 'http://10.0.2.2:8000';
-    } else {
+    }
+    // iOS simulator / Desktop: use localhost
+    else {
       return 'http://localhost:8000';
     }
   }
+
+  /// Get the API base URL
+  String get fastApiBaseUrl => _baseUrl;
 
   static const String espnBaseUrl =
       'https://site.api.espn.com/apis/site/v2/sports/basketball/nba';
@@ -51,7 +72,9 @@ class ApiService {
   }
 
   /// Fetch predictions from FastAPI backend
+  /// Note: Render free tier can take 30-60s to wake from cold start
   Future<Map<String, dynamic>?> fetchPredictions() async {
+    debugPrint('Fetching predictions from: $fastApiBaseUrl/predict/today');
     try {
       final response = await http
           .get(
@@ -59,14 +82,15 @@ class ApiService {
             headers: {'Accept': 'application/json'},
           )
           .timeout(
-            const Duration(seconds: 15),
-            onTimeout: () => throw Exception('Prediction API timed out'),
+            const Duration(seconds: 90), // Increased for Render cold starts
+            onTimeout: () => throw Exception('Prediction API timed out (90s)'),
           );
 
+      debugPrint('Prediction API response: ${response.statusCode}');
       if (response.statusCode == 200) {
         return json.decode(response.body) as Map<String, dynamic>;
       } else {
-        debugPrint('Prediction API error: ${response.statusCode}');
+        debugPrint('Prediction API error: ${response.statusCode} - ${response.body}');
         return null;
       }
     } catch (e) {

@@ -94,6 +94,12 @@ class GamesNotifier extends AsyncNotifier<GamesState> {
 
     final events = espnData['events'] as List<dynamic>? ?? [];
     final predictionsList = predictionsData?['games'] as List<dynamic>? ?? [];
+    
+    debugPrint('Fetched ${events.length} games from ESPN');
+    debugPrint('Fetched ${predictionsList.length} predictions from API');
+    if (predictionsData == null) {
+      debugPrint('Warning: Predictions API returned null - check API connection');
+    }
 
     final List<Game> games = [];
 
@@ -118,6 +124,7 @@ class GamesNotifier extends AsyncNotifier<GamesState> {
 
   /// Parse a single game from ESPN event data
   Game? _parseGame(Map<String, dynamic> event, List<dynamic> predictions) {
+    final gameId = event['id'] as String? ?? _fallbackGameId(event);
     final competitions = event['competitions'] as List<dynamic>?;
     if (competitions == null || competitions.isEmpty) return null;
 
@@ -160,6 +167,11 @@ class GamesNotifier extends AsyncNotifier<GamesState> {
 
     // Find matching prediction from API
     final prediction = _findPrediction(predictions, homeTeam, awayTeam);
+    if (prediction != null) {
+      debugPrint('✓ Matched prediction for $homeTeam vs $awayTeam');
+    } else if (predictions.isNotEmpty) {
+      debugPrint('✗ No prediction match for $homeTeam vs $awayTeam');
+    }
 
     // Extract prediction data
     double? homeWinProb;
@@ -193,6 +205,7 @@ class GamesNotifier extends AsyncNotifier<GamesState> {
     }
 
     return Game(
+      id: gameId,
       homeTeam: homeTeam,
       awayTeam: awayTeam,
       date: formattedDate,
@@ -245,6 +258,26 @@ class GamesNotifier extends AsyncNotifier<GamesState> {
     if (hour == 0) return '12';
     if (hour > 12) return (hour - 12).toString();
     return hour.toString();
+  }
+
+  String _fallbackGameId(Map<String, dynamic> event) {
+    final dateStr = event['date'] as String? ?? '';
+    final competitions = event['competitions'] as List<dynamic>? ?? [];
+    final competition = competitions.isNotEmpty ? competitions[0] : null;
+    final competitors = competition?['competitors'] as List<dynamic>? ?? [];
+    String homeTeam = '';
+    String awayTeam = '';
+    for (final competitor in competitors) {
+      final team = competitor['team'];
+      final teamName = team?['displayName'] ?? 'unknown';
+      if (competitor['homeAway'] == 'home') {
+        homeTeam = teamName;
+      } else {
+        awayTeam = teamName;
+      }
+    }
+    final raw = '${homeTeam}_vs_${awayTeam}_$dateStr'.toLowerCase();
+    return raw.replaceAll(RegExp(r'[^a-z0-9]+'), '_').replaceAll(RegExp(r'^_+|_+$'), '');
   }
 }
 

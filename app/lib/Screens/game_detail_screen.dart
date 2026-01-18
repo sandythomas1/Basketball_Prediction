@@ -4,6 +4,7 @@ import 'package:pie_chart/pie_chart.dart';
 import '../Models/game.dart';
 import '../Widgets/team_logo.dart';
 import '../theme/app_theme.dart';
+import 'forums_discussions_screen.dart';
 
 /// Detailed game screen with prediction visualization
 class GameDetailScreen extends StatelessWidget {
@@ -44,6 +45,24 @@ class GameDetailScreen extends StatelessWidget {
         ),
         leadingWidth: 80,
         actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: context.bgCard,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: Icon(Icons.forum_outlined, color: context.textSecondary),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ForumsDiscussionScreen(gameId: game.id),
+                  ),
+                );
+              },
+            ),
+          ),
           Container(
             margin: const EdgeInsets.only(right: 8),
             decoration: BoxDecoration(

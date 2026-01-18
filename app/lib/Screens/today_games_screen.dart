@@ -343,7 +343,34 @@ class _GameCard extends StatelessWidget {
                           color: context.textSecondary,
                         ),
                       ),
-                      _StatusBadge(status: game.status, isLive: game.isLive),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TextButton.icon(
+                            onPressed: () => _openGameForum(context),
+                            icon: Icon(
+                              Icons.forum_outlined,
+                              size: 16,
+                              color: AppColors.accentBlue,
+                            ),
+                            label: Text(
+                              'Forum',
+                              style: GoogleFonts.dmSans(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.accentBlue,
+                              ),
+                            ),
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              minimumSize: const Size(0, 0),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          _StatusBadge(status: game.status, isLive: game.isLive),
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -351,6 +378,15 @@ class _GameCard extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  void _openGameForum(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ForumsDiscussionScreen(gameId: game.id),
       ),
     );
   }
@@ -491,12 +527,12 @@ class _AppDrawer extends ConsumerWidget {
                 const Divider(height: 1),
                 _DrawerItem(
                   icon: Icons.sports_basketball_outlined,
-                  label: 'Forums',
+                  label: 'Global Forums',
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const ForumsDiscussionsScreen()),
+                      MaterialPageRoute(builder: (_) => const ForumsDiscussionScreen()),
                     );
                   }
                 ),
