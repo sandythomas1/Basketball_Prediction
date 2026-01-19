@@ -4,6 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import '../Models/user_profile.dart';
+import 'notification_service.dart';
 
 /// Service class for user profile management with Firebase
 class UserService {
@@ -11,6 +12,7 @@ class UserService {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final ImagePicker _imagePicker = ImagePicker();
+  final NotificationService _notificationService = NotificationService();
 
   /// Reference to users node
   DatabaseReference get _usersRef => _database.ref('users');
@@ -309,6 +311,22 @@ class UserService {
 
       // Update followers count on target user
       await _updateFollowersCount(targetUid, 1);
+
+      // Create notification for the target user
+      try {
+        final currentUserProfile = await getProfile(uid);
+        if (currentUserProfile != null) {
+          await _notificationService.createFollowerNotification(
+            targetUid,
+            uid,
+            currentUserProfile.username,
+            currentUserProfile.photoUrl,
+          );
+        }
+      } catch (e) {
+        // Don't fail the follow action if notification fails
+        print('Failed to create follow notification: $e');
+      }
 
       return UserServiceResult(success: true);
     } catch (e) {

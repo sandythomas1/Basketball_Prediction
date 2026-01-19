@@ -5,10 +5,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../Models/game.dart';
 import '../Providers/games_provider.dart';
 import '../Providers/user_provider.dart';
+import '../Providers/notification_provider.dart';
 import '../Widgets/team_logo.dart';
 import '../theme/app_theme.dart';
 import 'game_detail_screen.dart';
 import 'profile_screen.dart';
+import 'notifications_screen.dart';
 import '../Screens/forums_discussions_screen.dart';
 import '../Screens/user_search_screen.dart';
 
@@ -526,6 +528,18 @@ class _AppDrawer extends ConsumerWidget {
                   },
                 ),
                 const Divider(height: 1),
+                _DrawerItemWithBadge(
+                  icon: Icons.notifications_outlined,
+                  label: 'Notifications',
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+                    );
+                  },
+                ),
+                const Divider(height: 1),
                 _DrawerItem(
                   icon: Icons.sports_basketball_outlined,
                   label: 'Global Forums',
@@ -737,6 +751,89 @@ class _DrawerItem extends StatelessWidget {
           color: context.textSecondary,
           size: 22,
         ),
+      ),
+      title: Text(
+        label,
+        style: GoogleFonts.dmSans(
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
+          color: context.textPrimary,
+        ),
+      ),
+      trailing: Icon(
+        Icons.chevron_right,
+        color: context.textMuted,
+        size: 20,
+      ),
+      onTap: onTap,
+    );
+  }
+}
+
+/// Drawer menu item with notification badge
+class _DrawerItemWithBadge extends ConsumerWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _DrawerItemWithBadge({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final unreadCount = ref.watch(unreadNotificationCountProvider);
+
+    return ListTile(
+      leading: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: context.bgCard,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              icon,
+              color: context.textSecondary,
+              size: 22,
+            ),
+          ),
+          if (unreadCount.valueOrNull != null && unreadCount.value! > 0)
+            Positioned(
+              top: -2,
+              right: -2,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: AppColors.liveRed,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: context.bgSecondary,
+                    width: 2,
+                  ),
+                ),
+                constraints: const BoxConstraints(
+                  minWidth: 18,
+                  minHeight: 18,
+                ),
+                child: Center(
+                  child: Text(
+                    unreadCount.value! > 99 ? '99+' : '${unreadCount.value}',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                      height: 1,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
       title: Text(
         label,

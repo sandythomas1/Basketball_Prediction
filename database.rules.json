@@ -1,0 +1,74 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.uid == $uid",
+        "followersCount": {
+          ".write": "auth != null"
+        }
+      }
+    },
+    
+    "usernames": {
+      ".read": true,
+      "$username": {
+        ".write": "auth != null && (!data.exists() || data.child('uid').val() == auth.uid)"
+      }
+    },
+   
+    "followers": {
+      "$userId": {
+        ".read": "auth != null",
+        "$followerId": {
+          ".write": "auth != null && auth.uid == $followerId",
+          ".validate": "newData.hasChildren(['timestamp'])"
+        }
+      }
+    },
+   
+    "following": {
+      "$userId": {
+        ".read": "auth != null && auth.uid == $userId",
+        "$followedId": {
+          ".write": "auth != null && auth.uid == $userId",
+          ".validate": "newData.hasChildren(['timestamp'])"
+        }
+      }
+    },
+    
+    "notifications": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null",
+        "$notificationId": {
+          ".validate": "newData.hasChildren(['type', 'actorUid', 'message', 'timestamp', 'isRead'])"
+        }
+      }
+    },
+    
+    "forums": {
+      "general": {
+        "messages": {
+          ".read": "auth != null",
+          "$messageId": {
+            ".write": "auth != null && (!data.exists() || data.child('senderId').val() == auth.uid)",
+            ".validate": "newData.hasChildren(['senderId', 'senderName', 'text', 'timestamp']) && newData.child('senderId').val() == auth.uid"
+          }
+        }
+      },
+      
+      "games": {
+        "$gameId": {
+          "messages": {
+            ".read": "auth != null",
+            "$messageId": {
+              ".write": "auth != null && (!data.exists() || data.child('senderId').val() == auth.uid)",
+              ".validate": "newData.hasChildren(['senderId', 'senderName', 'text', 'timestamp']) && newData.child('senderId').val() == auth.uid"
+            }
+          }
+        }
+      }
+    }
+  }
+}
