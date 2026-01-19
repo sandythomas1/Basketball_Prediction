@@ -1,24 +1,24 @@
 {
-  "generated_at": "2026-01-18T09:16:41.909402",
-  "count": 6,
+  "generated_at": "2026-01-19T09:29:40.219760",
+  "count": 9,
   "games": [
     {
-      "game_date": "2026-01-18",
-      "game_time": "17:00",
-      "home_team": "Memphis Grizzlies",
-      "away_team": "Orlando Magic",
-      "home_team_id": 1610612763,
-      "away_team_id": 1610612753,
+      "game_date": "2026-01-19",
+      "game_time": "18:00",
+      "home_team": "Atlanta Hawks",
+      "away_team": "Milwaukee Bucks",
+      "home_team_id": 1610612737,
+      "away_team_id": 1610612749,
       "prediction": {
-        "home_win_prob": 0.519,
-        "away_win_prob": 0.48,
-        "confidence": "Toss-Up",
+        "home_win_prob": 0.613,
+        "away_win_prob": 0.387,
+        "confidence": "Lean Favorite",
         "favored": "home"
       },
       "context": {
-        "home_elo": 1464.0,
-        "away_elo": 1524.5,
-        "home_recent_wins": 0.4,
+        "home_elo": 1488.1,
+        "away_elo": 1476.5,
+        "home_recent_wins": 0.5,
         "away_recent_wins": 0.5,
         "home_rest_days": 7,
         "away_rest_days": 7,
@@ -28,22 +28,70 @@
     },
     {
       "game_date": "2026-01-19",
-      "game_time": "00:00",
-      "home_team": "Chicago Bulls",
-      "away_team": "Brooklyn Nets",
-      "home_team_id": 1610612741,
-      "away_team_id": 1610612751,
+      "game_time": "19:30",
+      "home_team": "Cleveland Cavaliers",
+      "away_team": "Oklahoma City Thunder",
+      "home_team_id": 1610612739,
+      "away_team_id": 1610612760,
       "prediction": {
-        "home_win_prob": 0.709,
-        "away_win_prob": 0.291,
-        "confidence": "Moderate Favorite",
+        "home_win_prob": 0.414,
+        "away_win_prob": 0.586,
+        "confidence": "Lean Underdog",
+        "favored": "away"
+      },
+      "context": {
+        "home_elo": 1542.0,
+        "away_elo": 1719.5,
+        "home_recent_wins": 0.6,
+        "away_recent_wins": 0.7,
+        "home_rest_days": 9,
+        "away_rest_days": 7,
+        "home_b2b": false,
+        "away_b2b": false
+      }
+    },
+    {
+      "game_date": "2026-01-19",
+      "game_time": "20:00",
+      "home_team": "Washington Wizards",
+      "away_team": "LA Clippers",
+      "home_team_id": 1610612764,
+      "away_team_id": 1610612746,
+      "prediction": {
+        "home_win_prob": 0.331,
+        "away_win_prob": 0.669,
+        "confidence": "Strong Underdog",
+        "favored": "away"
+      },
+      "context": {
+        "home_elo": 1346.8,
+        "away_elo": 1517.9,
+        "home_recent_wins": 0.5,
+        "away_recent_wins": 0.8,
+        "home_rest_days": 7,
+        "away_rest_days": 8,
+        "home_b2b": false,
+        "away_b2b": false
+      }
+    },
+    {
+      "game_date": "2026-01-19",
+      "game_time": "22:00",
+      "home_team": "New York Knicks",
+      "away_team": "Dallas Mavericks",
+      "home_team_id": 1610612752,
+      "away_team_id": 1610612742,
+      "prediction": {
+        "home_win_prob": 0.767,
+        "away_win_prob": 0.233,
+        "confidence": "Heavy Favorite",
         "favored": "home"
       },
       "context": {
-        "home_elo": 1470.7,
-        "away_elo": 1361.5,
+        "home_elo": 1588.6,
+        "away_elo": 1432.8,
         "home_recent_wins": 0.5,
-        "away_recent_wins": 0.4,
+        "away_recent_wins": 0.3,
         "home_rest_days": 8,
         "away_rest_days": 8,
         "home_b2b": false,
@@ -52,95 +100,119 @@
     },
     {
       "game_date": "2026-01-19",
+      "game_time": "22:00",
+      "home_team": "San Antonio Spurs",
+      "away_team": "Utah Jazz",
+      "home_team_id": 1610612759,
+      "away_team_id": 1610612762,
+      "prediction": {
+        "home_win_prob": 0.781,
+        "away_win_prob": 0.219,
+        "confidence": "Heavy Favorite",
+        "favored": "home"
+      },
+      "context": {
+        "home_elo": 1594.2,
+        "away_elo": 1377.4,
+        "home_recent_wins": 0.5,
+        "away_recent_wins": 0.3,
+        "home_rest_days": 7,
+        "away_rest_days": 8,
+        "home_b2b": false,
+        "away_b2b": false
+      }
+    },
+    {
+      "game_date": "2026-01-20",
       "game_time": "00:00",
-      "home_team": "Houston Rockets",
-      "away_team": "New Orleans Pelicans",
-      "home_team_id": 1610612745,
-      "away_team_id": 1610612740,
+      "home_team": "Philadelphia 76ers",
+      "away_team": "Indiana Pacers",
+      "home_team_id": 1610612755,
+      "away_team_id": 1610612754,
       "prediction": {
-        "home_win_prob": 0.755,
-        "away_win_prob": 0.245,
-        "confidence": "Heavy Favorite",
-        "favored": "home"
-      },
-      "context": {
-        "home_elo": 1571.8,
-        "away_elo": 1327.0,
-        "home_recent_wins": 0.5,
-        "away_recent_wins": 0.1,
-        "home_rest_days": 7,
-        "away_rest_days": 8,
-        "home_b2b": false,
-        "away_b2b": false
-      }
-    },
-    {
-      "game_date": "2026-01-19",
-      "game_time": "01:00",
-      "home_team": "Denver Nuggets",
-      "away_team": "Charlotte Hornets",
-      "home_team_id": 1610612743,
-      "away_team_id": 1610612766,
-      "prediction": {
-        "home_win_prob": 0.762,
-        "away_win_prob": 0.238,
-        "confidence": "Heavy Favorite",
-        "favored": "home"
-      },
-      "context": {
-        "home_elo": 1606.8,
-        "away_elo": 1387.3,
-        "home_recent_wins": 0.5,
-        "away_recent_wins": 0.5,
-        "home_rest_days": 7,
-        "away_rest_days": 8,
-        "home_b2b": false,
-        "away_b2b": false
-      }
-    },
-    {
-      "game_date": "2026-01-19",
-      "game_time": "02:00",
-      "home_team": "Sacramento Kings",
-      "away_team": "Portland Trail Blazers",
-      "home_team_id": 1610612758,
-      "away_team_id": 1610612757,
-      "prediction": {
-        "home_win_prob": 0.398,
-        "away_win_prob": 0.602,
-        "confidence": "Lean Underdog",
-        "favored": "away"
-      },
-      "context": {
-        "home_elo": 1386.5,
-        "away_elo": 1503.6,
-        "home_recent_wins": 0.3,
-        "away_recent_wins": 0.7,
-        "home_rest_days": 7,
-        "away_rest_days": 8,
-        "home_b2b": false,
-        "away_b2b": false
-      }
-    },
-    {
-      "game_date": "2026-01-19",
-      "game_time": "02:30",
-      "home_team": "Los Angeles Lakers",
-      "away_team": "Toronto Raptors",
-      "home_team_id": 1610612747,
-      "away_team_id": 1610612761,
-      "prediction": {
-        "home_win_prob": 0.648,
-        "away_win_prob": 0.352,
+        "home_win_prob": 0.576,
+        "away_win_prob": 0.424,
         "confidence": "Lean Favorite",
         "favored": "home"
       },
       "context": {
-        "home_elo": 1535.6,
-        "away_elo": 1523.3,
+        "home_elo": 1483.3,
+        "away_elo": 1403.4,
+        "home_recent_wins": 0.5,
+        "away_recent_wins": 0.2,
+        "home_rest_days": 9,
+        "away_rest_days": 9,
+        "home_b2b": false,
+        "away_b2b": false
+      }
+    },
+    {
+      "game_date": "2026-01-20",
+      "game_time": "00:30",
+      "home_team": "Brooklyn Nets",
+      "away_team": "Phoenix Suns",
+      "home_team_id": 1610612751,
+      "away_team_id": 1610612756,
+      "prediction": {
+        "home_win_prob": 0.339,
+        "away_win_prob": 0.661,
+        "confidence": "Strong Underdog",
+        "favored": "away"
+      },
+      "context": {
+        "home_elo": 1361.5,
+        "away_elo": 1566.3,
         "home_recent_wins": 0.4,
+        "away_recent_wins": 0.8,
+        "home_rest_days": 9,
+        "away_rest_days": 8,
+        "home_b2b": false,
+        "away_b2b": false
+      }
+    },
+    {
+      "game_date": "2026-01-20",
+      "game_time": "01:00",
+      "home_team": "Detroit Pistons",
+      "away_team": "Boston Celtics",
+      "home_team_id": 1610612765,
+      "away_team_id": 1610612738,
+      "prediction": {
+        "home_win_prob": 0.509,
+        "away_win_prob": 0.491,
+        "confidence": "Toss-Up",
+        "favored": "home"
+      },
+      "context": {
+        "home_elo": 1599.0,
+        "away_elo": 1610.7,
+        "home_recent_wins": 0.6,
         "away_recent_wins": 0.7,
         "home_rest_days": 9,
+        "away_rest_days": 9,
+        "home_b2b": false,
+        "away_b2b": false
+      }
+    },
+    {
+      "game_date": "2026-01-20",
+      "game_time": "03:00",
+      "home_team": "Golden State Warriors",
+      "away_team": "Miami Heat",
+      "home_team_id": 1610612744,
+      "away_team_id": 1610612748,
+      "prediction": {
+        "home_win_prob": 0.7,
+        "away_win_prob": 0.3,
+        "confidence": "Moderate Favorite",
+        "favored": "home"
+      },
+      "context": {
+        "home_elo": 1532.7,
+        "away_elo": 1467.0,
+        "home_recent_wins": 0.6,
+        "away_recent_wins": 0.4,
+        "home_rest_days": 8,
         "away_rest_days": 8,
         "home_b2b": false,
         "away_b2b": false
