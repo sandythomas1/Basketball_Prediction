@@ -7,6 +7,7 @@ class UserProfile {
   final String username;
   final String? photoUrl;
   final DateTime createdAt;
+  final int followersCount;
 
   UserProfile({
     required this.uid,
@@ -16,6 +17,7 @@ class UserProfile {
     required this.username,
     this.photoUrl,
     required this.createdAt,
+    this.followersCount = 0,
   });
 
   /// Create from Firebase Realtime Database JSON
@@ -30,6 +32,7 @@ class UserProfile {
       createdAt: json['createdAt'] != null
           ? DateTime.fromMillisecondsSinceEpoch(json['createdAt'] as int)
           : DateTime.now(),
+      followersCount: json['followersCount'] as int? ?? 0,
     );
   }
 
@@ -42,6 +45,7 @@ class UserProfile {
       'username': username,
       'photoUrl': photoUrl,
       'createdAt': createdAt.millisecondsSinceEpoch,
+      'followersCount': followersCount,
     };
   }
 
@@ -54,6 +58,7 @@ class UserProfile {
     String? username,
     String? photoUrl,
     DateTime? createdAt,
+    int? followersCount,
   }) {
     return UserProfile(
       uid: uid ?? this.uid,
@@ -63,6 +68,7 @@ class UserProfile {
       username: username ?? this.username,
       photoUrl: photoUrl ?? this.photoUrl,
       createdAt: createdAt ?? this.createdAt,
+      followersCount: followersCount ?? this.followersCount,
     );
   }
 

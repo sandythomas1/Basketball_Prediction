@@ -10,6 +10,7 @@ import '../theme/app_theme.dart';
 import 'game_detail_screen.dart';
 import 'profile_screen.dart';
 import '../Screens/forums_discussions_screen.dart';
+import '../Screens/user_search_screen.dart';
 
 /// Screen showing all of today's games with prediction access
 class TodayGamesScreen extends ConsumerWidget {
@@ -535,6 +536,12 @@ class _AppDrawer extends ConsumerWidget {
                       MaterialPageRoute(builder: (_) => const ForumsDiscussionScreen()),
                     );
                   }
+                ),
+                const Divider(height: 1),
+                // User Search Section
+                UserSearchWidget(
+                  showAsDrawerSection: true,
+                  onUserSelected: () => Navigator.pop(context),
                 ),
               ],
             ),

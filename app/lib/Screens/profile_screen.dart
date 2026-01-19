@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../Providers/auth_provider.dart';
 import '../Providers/user_provider.dart';
 import '../theme/app_theme.dart';
+import 'followers_list_screen.dart';
 
 /// Enhanced profile screen with user info display, photo upload, and logout
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -144,6 +145,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
                 // Profile Photo Section
                 _buildProfilePhoto(context, profile?.photoUrl, profile?.initials ?? ''),
+                
+                // Followers Badge
+                if (profile != null)
+                  _buildFollowersBadge(context, profile.uid, profile.followersCount),
+                
                 const SizedBox(height: 32),
 
                 // User Info Card
@@ -289,6 +295,63 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildFollowersBadge(BuildContext context, String userId, int followersCount) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => FollowersListScreen(userId: userId),
+            ),
+          );
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          decoration: BoxDecoration(
+            color: context.bgCard,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: context.borderColor),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.people_outline,
+                size: 18,
+                color: AppColors.accentBlue,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                '$followersCount',
+                style: GoogleFonts.dmSans(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: context.textPrimary,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                'Followers',
+                style: GoogleFonts.dmSans(
+                  fontSize: 14,
+                  color: context.textSecondary,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Icon(
+                Icons.chevron_right,
+                size: 18,
+                color: context.textMuted,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, maximum-scale=1.0, user-scalable=no">
+  <title>NBA Predictions - Social Features Mockup</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --bg-card: #21262d;
+      --bg-card-hover: #30363d;
+      --accent-orange: #f78166;
+      --accent-blue: #58a6ff;
+      --accent-green: #3fb950;
+      --accent-purple: #bc8cff;
+      --accent-yellow: #d29922;
+      --text-primary: #f0f6fc;
+      --text-secondary: #8b949e;
+      --text-muted: #6e7681;
+      --border-color: #30363d;
+      --error-red: #f85149;
+      --input-bg: #0d1117;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: auto;
+    }
+
+    /* Phone Frame Container */
+    .phone-container {
+      display: flex;
+      gap: 40px;
+      padding: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .screen-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .screen-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 14px;
+      color: var(--accent-purple);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .phone-frame {
+      width: 375px;
+      height: 812px;
+      background: var(--bg-primary);
+      border-radius: 40px;
+      border: 3px solid var(--border-color);
+      overflow: hidden;
+      position: relative;
+      box-shadow: 
+        0 0 0 4px var(--bg-secondary),
+        0 25px 50px -12px rgba(0, 0, 0, 0.5),
+        0 0 100px -20px rgba(88, 166, 255, 0.15);
+    }
+
+    /* Status Bar */
+    .status-bar {
+      height: 44px;
+      background: var(--bg-primary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .notch {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 150px;
+      height: 30px;
+      background: #000;
+      border-radius: 0 0 20px 20px;
+      z-index: 10;
+    }
+
+    /* App Bar */
+    .app-bar {
+      height: 56px;
+      background: var(--bg-secondary);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .app-bar-back {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--accent-blue);
+      font-size: 14px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .app-bar-back svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--accent-blue);
+    }
+
+    .app-bar-title {
+      flex: 1;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .app-bar-spacer {
+      width: 60px;
+    }
+
+    /* Content Area */
+    .content {
+      height: calc(812px - 44px - 56px);
+      overflow-y: auto;
+      background: var(--bg-primary);
+    }
+
+    .content.no-appbar {
+      height: calc(812px - 44px);
+    }
+
+    /* Profile Screen Styles */
+    .profile-content {
+      padding: 24px;
+    }
+
+    .profile-photo-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .profile-photo {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 3px solid var(--border-color);
+      background: linear-gradient(135deg, var(--accent-orange), var(--accent-yellow));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      font-weight: 700;
+      color: white;
+      box-shadow: 0 8px 32px rgba(247, 129, 102, 0.3);
+      position: relative;
+    }
+
+    .profile-photo-camera {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--accent-orange), var(--accent-yellow));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(247, 129, 102, 0.3);
+    }
+
+    .profile-photo-camera svg {
+      width: 18px;
+      height: 18px;
+      fill: white;
+    }
+
+    .profile-photo-hint {
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Followers Badge - NEW */
+    .followers-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+      padding: 10px 20px;
+      background: var(--bg-card);
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .followers-badge:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-blue);
+    }
+
+    .followers-badge svg {
+      width: 18px;
+      height: 18px;
+      fill: var(--accent-blue);
+    }
+
+    .followers-count {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .followers-label {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .followers-arrow {
+      fill: var(--text-muted) !important;
+      margin-left: 4px;
+    }
+
+    /* Info Card */
+    .info-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .info-card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+    }
+
+    .info-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 0;
+    }
+
+    .info-row:not(:last-child) {
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .info-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--bg-secondary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .info-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--text-secondary);
+    }
+
+    .info-content {
+      flex: 1;
+    }
+
+    .info-label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .info-value {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-top: 2px;
+    }
+
+    .info-value.highlight {
+      color: var(--accent-blue);
+    }
+
+    /* Followers List Styles */
+    .followers-list {
+      padding: 8px 0;
+    }
+
+    .follower-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .follower-item:hover {
+      background: var(--bg-card);
+    }
+
+    .follower-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 600;
+      color: white;
+    }
+
+    .follower-avatar.green {
+      background: linear-gradient(135deg, var(--accent-green), #2ea043);
+    }
+
+    .follower-avatar.orange {
+      background: linear-gradient(135deg, var(--accent-orange), var(--accent-yellow));
+    }
+
+    .follower-info {
+      flex: 1;
+    }
+
+    .follower-name {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .follower-username {
+      font-size: 13px;
+      color: var(--accent-blue);
+    }
+
+    .follower-arrow {
+      width: 20px;
+      height: 20px;
+      fill: var(--text-muted);
+    }
+
+    /* Empty State */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 24px;
+      text-align: center;
+    }
+
+    .empty-state svg {
+      width: 64px;
+      height: 64px;
+      fill: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .empty-state-title {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .empty-state-subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* Drawer Styles */
+    .drawer {
+      position: absolute;
+      top: 44px;
+      left: 0;
+      width: 300px;
+      height: calc(812px - 44px);
+      background: var(--bg-secondary);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .drawer-header {
+      padding: 24px 20px 20px;
+      background: linear-gradient(135deg, 
+        rgba(247, 129, 102, 0.15),
+        rgba(210, 153, 34, 0.05)
+      );
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .drawer-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 2px solid rgba(247, 129, 102, 0.5);
+      background: linear-gradient(135deg, var(--accent-orange), var(--accent-yellow));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 12px rgba(247, 129, 102, 0.2);
+    }
+
+    .drawer-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .drawer-username {
+      font-size: 14px;
+      color: var(--accent-blue);
+      margin-top: 4px;
+    }
+
+    .drawer-menu {
+      flex: 1;
+      padding: 8px 0;
+    }
+
+    .drawer-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .drawer-item:hover {
+      background: var(--bg-card);
+    }
+
+    .drawer-item-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--bg-card);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .drawer-item-icon svg {
+      width: 22px;
+      height: 22px;
+      fill: var(--text-secondary);
+    }
+
+    .drawer-item-label {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .drawer-item-arrow {
+      width: 20px;
+      height: 20px;
+      fill: var(--text-muted);
+    }
+
+    /* Search Section in Drawer - NEW */
+    .drawer-search-section {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .drawer-search-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 12px;
+    }
+
+    .drawer-search-input {
+      width: 100%;
+      height: 44px;
+      background: var(--bg-primary);
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      padding: 0 16px 0 40px;
+      font-size: 14px;
+      color: var(--text-primary);
+      font-family: 'DM Sans', sans-serif;
+      position: relative;
+    }
+
+    .drawer-search-input:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+    }
+
+    .drawer-search-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .drawer-search-wrapper {
+      position: relative;
+    }
+
+    .drawer-search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      fill: var(--text-muted);
+    }
+
+    /* Search Results in Drawer */
+    .drawer-search-results {
+      margin-top: 12px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .search-result-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .search-result-item:last-child {
+      border-bottom: none;
+    }
+
+    .search-result-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: white;
+    }
+
+    .search-result-info {
+      flex: 1;
+    }
+
+    .search-result-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .search-result-username {
+      font-size: 12px;
+      color: var(--accent-blue);
+    }
+
+    .follow-btn {
+      padding: 6px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .follow-btn.follow {
+      background: var(--accent-blue);
+      color: white;
+    }
+
+    .follow-btn.follow:hover {
+      background: #4a9aee;
+    }
+
+    .follow-btn.following {
+      background: transparent;
+      border: 2px solid var(--border-color);
+      color: var(--text-secondary);
+    }
+
+    .follow-btn.following:hover {
+      border-color: var(--error-red);
+      color: var(--error-red);
+    }
+
+    /* Other User Profile */
+    .other-profile-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px;
+      background: linear-gradient(180deg, 
+        rgba(88, 166, 255, 0.1) 0%, 
+        transparent 100%
+      );
+    }
+
+    .other-profile-photo {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 3px solid var(--border-color);
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 16px;
+    }
+
+    .other-profile-name {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .other-profile-username {
+      font-size: 15px;
+      color: var(--accent-blue);
+      margin-top: 4px;
+    }
+
+    .other-profile-followers {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 12px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .other-profile-followers strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .other-profile-follow-btn {
+      margin-top: 20px;
+      padding: 12px 48px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .other-profile-follow-btn.follow {
+      background: linear-gradient(135deg, var(--accent-blue), #4a9aee);
+      color: white;
+      box-shadow: 0 4px 16px rgba(88, 166, 255, 0.3);
+    }
+
+    .other-profile-follow-btn.follow:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(88, 166, 255, 0.4);
+    }
+
+    .other-profile-follow-btn.following {
+      background: var(--bg-card);
+      border: 2px solid var(--accent-green);
+      color: var(--accent-green);
+    }
+
+    .other-profile-follow-btn.following:hover {
+      border-color: var(--error-red);
+      color: var(--error-red);
+    }
+
+    .other-profile-stats {
+      padding: 20px 24px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      padding: 20px;
+    }
+
+    .stat-card-title {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 16px;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+    }
+
+    .stat-row:not(:last-child) {
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .stat-value {
+      font-family: 'Space Mono', monospace;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    /* Drawer Footer */
+    .drawer-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .drawer-footer-text {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Logout Button */
+    .logout-btn {
+      width: 100%;
+      height: 52px;
+      background: transparent;
+      border: 2px solid var(--error-red);
+      border-radius: 12px;
+      color: var(--error-red);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: 'DM Sans', sans-serif;
+      margin-top: 24px;
+    }
+
+    .logout-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--error-red);
+    }
+
+    /* Annotations */
+    .annotation {
+      position: absolute;
+      background: rgba(247, 129, 102, 0.9);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+      z-index: 30;
+    }
+
+    .annotation::before {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 0;
+      border: 6px solid transparent;
+    }
+
+    .annotation.arrow-left::before {
+      left: -12px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-right-color: rgba(247, 129, 102, 0.9);
+    }
+
+    .annotation.arrow-down::before {
+      bottom: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-top-color: rgba(247, 129, 102, 0.9);
+    }
+
+    .annotation.arrow-up::before {
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-bottom-color: rgba(247, 129, 102, 0.9);
+    }
+  </style>
+</head>
+<body>
+  <div class="phone-container">
+    
+    <!-- Screen 1: Profile with Followers Count -->
+    <div class="screen-wrapper">
+      <span class="screen-label">1. Profile + Followers</span>
+      <div class="phone-frame">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>100%</span>
+        </div>
+        
+        <div class="app-bar">
+          <button class="app-bar-back">
+            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            Back
+          </button>
+          <span class="app-bar-title">Profile</span>
+          <span class="app-bar-spacer"></span>
+        </div>
+
+        <div class="content">
+          <div class="profile-content">
+            <!-- Profile Photo Section -->
+            <div class="profile-photo-section">
+              <div class="profile-photo">
+                JD
+                <div class="profile-photo-camera">
+                  <svg viewBox="0 0 24 24"><path d="M12 12c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8-6h-3.17L15 4H9L7.17 6H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+                </div>
+              </div>
+              <span class="profile-photo-hint">Tap to change photo</span>
+              
+              <!-- NEW: Clickable Followers Badge -->
+              <div class="followers-badge" style="position: relative;">
+                <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                <span class="followers-count">24</span>
+                <span class="followers-label">Followers</span>
+                <svg class="followers-arrow" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+                
+                <div class="annotation arrow-left" style="left: calc(100% + 12px); top: 50%; transform: translateY(-50%);">
+                  Tap to see followers
+                </div>
+              </div>
+            </div>
+
+            <!-- Account Information Card -->
+            <div class="info-card">
+              <h3 class="info-card-title">Account Information</h3>
+              
+              <div class="info-row">
+                <div class="info-icon">
+                  <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                </div>
+                <div class="info-content">
+                  <span class="info-label">Name</span>
+                  <span class="info-value">John Doe</span>
+                </div>
+              </div>
+
+              <div class="info-row">
+                <div class="info-icon">
+                  <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+                </div>
+                <div class="info-content">
+                  <span class="info-label">Username</span>
+                  <span class="info-value highlight">@johndoe</span>
+                </div>
+              </div>
+
+              <div class="info-row">
+                <div class="info-icon">
+                  <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                </div>
+                <div class="info-content">
+                  <span class="info-label">Email</span>
+                  <span class="info-value">john.doe@email.com</span>
+                </div>
+              </div>
+
+              <div class="info-row">
+                <div class="info-icon">
+                  <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm-8 4H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/></svg>
+                </div>
+                <div class="info-content">
+                  <span class="info-label">Member Since</span>
+                  <span class="info-value">Jan 15, 2026</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Logout Button -->
+            <button class="logout-btn">
+              <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+              Log Out
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen 2: Followers List -->
+    <div class="screen-wrapper">
+      <span class="screen-label">2. Followers List</span>
+      <div class="phone-frame">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>100%</span>
+        </div>
+        
+        <div class="app-bar">
+          <button class="app-bar-back">
+            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            Back
+          </button>
+          <span class="app-bar-title">Followers</span>
+          <span class="app-bar-spacer"></span>
+        </div>
+
+        <div class="content">
+          <div class="followers-list">
+            <!-- Follower Item 1 -->
+            <div class="follower-item" style="position: relative;">
+              <div class="follower-avatar">MJ</div>
+              <div class="follower-info">
+                <div class="follower-name">Mike Johnson</div>
+                <div class="follower-username">@mikej</div>
+              </div>
+              <svg class="follower-arrow" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+              
+              <div class="annotation arrow-left" style="left: calc(100% + 12px); top: 50%; transform: translateY(-50%);">
+                Tap to view profile
+              </div>
+            </div>
+
+            <!-- Follower Item 2 -->
+            <div class="follower-item">
+              <div class="follower-avatar green">SW</div>
+              <div class="follower-info">
+                <div class="follower-name">Sarah Williams</div>
+                <div class="follower-username">@sarahw</div>
+              </div>
+              <svg class="follower-arrow" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+            </div>
+
+            <!-- Follower Item 3 -->
+            <div class="follower-item">
+              <div class="follower-avatar orange">AB</div>
+              <div class="follower-info">
+                <div class="follower-name">Alex Brown</div>
+                <div class="follower-username">@alexb</div>
+              </div>
+              <svg class="follower-arrow" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+            </div>
+
+            <!-- Follower Item 4 -->
+            <div class="follower-item">
+              <div class="follower-avatar">EL</div>
+              <div class="follower-info">
+                <div class="follower-name">Emily Lee</div>
+                <div class="follower-username">@emilyl</div>
+              </div>
+              <svg class="follower-arrow" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+            </div>
+
+            <!-- Follower Item 5 -->
+            <div class="follower-item">
+              <div class="follower-avatar green">DK</div>
+              <div class="follower-info">
+                <div class="follower-name">David Kim</div>
+                <div class="follower-username">@davidk</div>
+              </div>
+              <svg class="follower-arrow" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+            </div>
+
+            <!-- Follower Item 6 -->
+            <div class="follower-item">
+              <div class="follower-avatar orange">JT</div>
+              <div class="follower-info">
+                <div class="follower-name">Jessica Taylor</div>
+                <div class="follower-username">@jesst</div>
+              </div>
+              <svg class="follower-arrow" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+            </div>
+
+            <!-- More followers would continue... -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen 3: Sidebar with Search -->
+    <div class="screen-wrapper">
+      <span class="screen-label">3. Sidebar + User Search</span>
+      <div class="phone-frame">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>100%</span>
+        </div>
+        
+        <!-- Drawer overlay -->
+        <div class="drawer">
+          <div class="drawer-header">
+            <div class="drawer-avatar">JD</div>
+            <div class="drawer-name">John Doe</div>
+            <div class="drawer-username">@johndoe</div>
+          </div>
+
+          <div class="drawer-menu">
+            <!-- Profile -->
+            <div class="drawer-item">
+              <div class="drawer-item-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              </div>
+              <span class="drawer-item-label">Profile</span>
+              <svg class="drawer-item-arrow" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+            </div>
+
+            <!-- Global Forums -->
+            <div class="drawer-item">
+              <div class="drawer-item-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM6.5 9L10 5.5 13.5 9H11v4H9V9H6.5zm11 6L14 18.5 10.5 15H13v-4h2v4h2.5z"/></svg>
+              </div>
+              <span class="drawer-item-label">Global Forums</span>
+              <svg class="drawer-item-arrow" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+            </div>
+          </div>
+
+          <!-- NEW: Search Section -->
+          <div class="drawer-search-section" style="position: relative;">
+            <div class="drawer-search-label">Find Users</div>
+            <div class="drawer-search-wrapper">
+              <svg class="drawer-search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+              <input type="text" class="drawer-search-input" placeholder="Search by username..." value="sarah">
+            </div>
+
+            <!-- Search Results -->
+            <div class="drawer-search-results">
+              <div class="search-result-item">
+                <div class="search-result-avatar" style="background: linear-gradient(135deg, #3fb950, #2ea043);">SW</div>
+                <div class="search-result-info">
+                  <div class="search-result-name">Sarah Williams</div>
+                  <div class="search-result-username">@sarahw</div>
+                </div>
+                <button class="follow-btn following">Following</button>
+              </div>
+
+              <div class="search-result-item" style="position: relative;">
+                <div class="search-result-avatar">SM</div>
+                <div class="search-result-info">
+                  <div class="search-result-name">Sarah Miller</div>
+                  <div class="search-result-username">@sarahm</div>
+                </div>
+                <button class="follow-btn follow">Follow</button>
+                
+                <div class="annotation arrow-up" style="bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%);">
+                  Quick follow from search
+                </div>
+              </div>
+
+              <div class="search-result-item">
+                <div class="search-result-avatar" style="background: linear-gradient(135deg, #f78166, #d29922);">SC</div>
+                <div class="search-result-info">
+                  <div class="search-result-name">Sarah Chen</div>
+                  <div class="search-result-username">@sarahc</div>
+                </div>
+                <button class="follow-btn follow">Follow</button>
+              </div>
+            </div>
+            
+            <div class="annotation arrow-left" style="left: calc(100% + 12px); top: 20px;">
+              New search section
+            </div>
+          </div>
+
+          <div class="drawer-footer">
+            <span class="drawer-footer-text">NBA Predictions v1.0.0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen 4: Other User Profile (Not Following) -->
+    <div class="screen-wrapper">
+      <span class="screen-label">4. Other User Profile</span>
+      <div class="phone-frame">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>100%</span>
+        </div>
+        
+        <div class="app-bar">
+          <button class="app-bar-back">
+            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            Back
+          </button>
+          <span class="app-bar-title">Profile</span>
+          <span class="app-bar-spacer"></span>
+        </div>
+
+        <div class="content">
+          <!-- Profile Header -->
+          <div class="other-profile-header">
+            <div class="other-profile-photo">SM</div>
+            <div class="other-profile-name">Sarah Miller</div>
+            <div class="other-profile-username">@sarahm</div>
+            <div class="other-profile-followers">
+              <svg style="width: 16px; height: 16px; fill: var(--text-muted);" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+              <strong>156</strong> Followers
+            </div>
+            
+            <!-- Follow Button (Not Following state) -->
+            <button class="other-profile-follow-btn follow" style="position: relative;">
+              Follow
+              <div class="annotation arrow-down" style="top: calc(100% + 12px); left: 50%; transform: translateX(-50%);">
+                Tap to follow user
+              </div>
+            </button>
+          </div>
+
+          <!-- Stats Card -->
+          <div class="other-profile-stats">
+            <div class="stat-card">
+              <div class="stat-card-title">Member Info</div>
+              
+              <div class="stat-row">
+                <span class="stat-label">Member Since</span>
+                <span class="stat-value">Dec 8, 2025</span>
+              </div>
+              
+              <div class="stat-row">
+                <span class="stat-label">Followers</span>
+                <span class="stat-value">156</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen 5: Other User Profile (Following) -->
+    <div class="screen-wrapper">
+      <span class="screen-label">5. Following State</span>
+      <div class="phone-frame">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>100%</span>
+        </div>
+        
+        <div class="app-bar">
+          <button class="app-bar-back">
+            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            Back
+          </button>
+          <span class="app-bar-title">Profile</span>
+          <span class="app-bar-spacer"></span>
+        </div>
+
+        <div class="content">
+          <!-- Profile Header -->
+          <div class="other-profile-header">
+            <div class="other-profile-photo" style="background: linear-gradient(135deg, #3fb950, #2ea043);">SW</div>
+            <div class="other-profile-name">Sarah Williams</div>
+            <div class="other-profile-username">@sarahw</div>
+            <div class="other-profile-followers">
+              <svg style="width: 16px; height: 16px; fill: var(--text-muted);" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+              <strong>89</strong> Followers
+            </div>
+            
+            <!-- Following Button (Already Following state) -->
+            <button class="other-profile-follow-btn following" style="position: relative;">
+              ✓ Following
+              <div class="annotation arrow-down" style="top: calc(100% + 12px); left: 50%; transform: translateX(-50%);">
+                Hover shows "Unfollow"
+              </div>
+            </button>
+          </div>
+
+          <!-- Stats Card -->
+          <div class="other-profile-stats">
+            <div class="stat-card">
+              <div class="stat-card-title">Member Info</div>
+              
+              <div class="stat-row">
+                <span class="stat-label">Member Since</span>
+                <span class="stat-value">Nov 22, 2025</span>
+              </div>
+              
+              <div class="stat-row">
+                <span class="stat-label">Followers</span>
+                <span class="stat-value">89</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
