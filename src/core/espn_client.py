@@ -196,12 +196,14 @@ class ESPNClient:
         date_str = event.get("date", "")
         game_datetime = None
         game_time = None
+        game_date = ""
         try:
             game_datetime = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
-            game_date = game_datetime.strftime("%Y-%m-%d")
-            # Convert to local time for display
+            # Convert to local time for both date and time display
+            # This fixes the issue where a 7pm PT game on Jan 20 was being labeled as Jan 21 (UTC)
             local_dt = game_datetime.astimezone()
-            game_time = local_dt.strftime("%H:%M")
+            game_date = local_dt.strftime("%Y-%m-%d")  # Use local date
+            game_time = local_dt.strftime("%H:%M")     # Use local time
         except ValueError:
             game_date = date_str[:10] if len(date_str) >= 10 else ""
 

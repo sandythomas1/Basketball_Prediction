@@ -52,9 +52,13 @@ class ApiService {
 
   /// Fetch today's games from ESPN API
   Future<Map<String, dynamic>> fetchEspnScoreboard() async {
+    // Use explicit date to ensure we get today's games, not yesterday's lingering scoreboard
+    final now = DateTime.now();
+    final dateParam = '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
+    
     final response = await http
         .get(
-          Uri.parse('$espnBaseUrl/scoreboard'),
+          Uri.parse('$espnBaseUrl/scoreboard?dates=$dateParam'),
           headers: {'Accept': 'application/json'},
         )
         .timeout(
