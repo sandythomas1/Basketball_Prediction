@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../Providers/auth_provider.dart';
 import '../Providers/user_provider.dart';
+import '../Services/validators.dart';
 import '../theme/app_theme.dart';
 
 /// Sign up screen with email/password registration and profile creation
@@ -204,28 +205,13 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     }
   }
 
-  String? _validatePassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter a password';
-    }
-    if (value.length < 6) {
-      return 'Password must be at least 6 characters';
-    }
-    return null;
-  }
-
   PasswordStrength _getPasswordStrength(String password) {
     if (password.isEmpty) return PasswordStrength.none;
-    if (password.length < 6) return PasswordStrength.weak;
     
-    int score = 0;
-    if (password.length >= 8) score++;
-    if (password.contains(RegExp(r'[A-Z]'))) score++;
-    if (password.contains(RegExp(r'[0-9]'))) score++;
-    if (password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) score++;
-
-    if (score >= 3) return PasswordStrength.strong;
-    if (score >= 1) return PasswordStrength.medium;
+    final strength = Validators.calculatePasswordStrength(password);
+    if (strength >= 3) return PasswordStrength.strong;
+    if (strength >= 2) return PasswordStrength.medium;
+    if (strength >= 1) return PasswordStrength.weak;
     return PasswordStrength.weak;
   }
 
@@ -295,12 +281,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       color: context.textMuted,
                     ),
                   ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please enter your first name';
-                    }
-                    return null;
-                  },
+                  validator: (value) => Validators.validateName(value, field: 'first name'),
                 ),
                 const SizedBox(height: 20),
 
@@ -321,12 +302,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       color: context.textMuted,
                     ),
                   ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please enter your last name';
-                    }
-                    return null;
-                  },
+                  validator: (value) => Validators.validateName(value, field: 'last name'),
                 ),
                 const SizedBox(height: 20),
 
@@ -396,15 +372,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       color: context.textMuted,
                     ),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
-                    }
-                    if (!value.contains('@')) {
-                      return 'Please enter a valid email';
-                    }
-                    return null;
-                  },
+                  validator: Validators.validateEmail,
                 ),
                 const SizedBox(height: 20),
 
@@ -439,7 +407,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       },
                     ),
                   ),
-                  validator: _validatePassword,
+                  validator: Validators.validatePassword,
                 ),
                 const SizedBox(height: 8),
 

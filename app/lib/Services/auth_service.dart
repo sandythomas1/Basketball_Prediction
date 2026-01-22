@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'secure_storage_service.dart';
 
 /// Result class for authentication operations
 class AuthResult {
@@ -28,6 +29,7 @@ class AuthResult {
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final SecureStorageService _secureStorage = SecureStorageService.instance;
 
   /// Stream of auth state changes
   Stream<User?> get authStateChanges => _auth.authStateChanges();
@@ -42,6 +44,7 @@ class AuthService {
         email: email.trim(),
         password: password,
       );
+      await _recordSuccessfulLogin(credential.user!);
       return AuthResult.success(credential.user!);
     } on FirebaseAuthException catch (e) {
       return AuthResult.failure(_getErrorMessage(e.code));
@@ -87,6 +90,7 @@ class AuthService {
 
       // Sign in to Firebase with the Google credential
       final userCredential = await _auth.signInWithCredential(credential);
+      await _recordSuccessfulLogin(userCredential.user!);
       return AuthResult.success(userCredential.user!);
     } on FirebaseAuthException catch (e) {
       return AuthResult.failure(_getErrorMessage(e.code));
@@ -107,12 +111,27 @@ class AuthService {
     }
   }
 
-  /// Sign out
+  /// Sign out and clear all secure storage
   Future<void> signOut() async {
+    // Clear secure storage first
+    await _secureStorage.clearAuthData();
+    
+    // Then sign out from Firebase and Google
     await Future.wait([
       _auth.signOut(),
       _googleSignIn.signOut(),
     ]);
+  }
+  
+  /// Record successful login in secure storage
+  Future<void> _recordSuccessfulLogin(User user) async {
+    await _secureStorage.saveUserId(user.uid);
+    await _secureStorage.recordLogin();
+    
+    // Set session expiry (e.g., 7 days)
+    await _secureStorage.saveSessionExpiry(
+      DateTime.now().add(const Duration(days: 7)),
+    );
   }
 
   /// Convert Firebase error codes to user-friendly messages

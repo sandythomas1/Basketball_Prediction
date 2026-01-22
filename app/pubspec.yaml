@@ -53,8 +53,16 @@ dependencies:
   
   # Typography
   google_fonts: ^6.2.1
+  
+  # Security
+  flutter_secure_storage: ^9.2.2
 
 dev_dependencies:
+  # Testing packages
+  mockito: ^5.4.4
+  build_runner: ^2.4.9
+  integration_test:
+    sdk: flutter
   flutter_test:
     sdk: flutter
 

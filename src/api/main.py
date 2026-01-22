@@ -1,11 +1,16 @@
 """
 NBA Prediction API - FastAPI Application
 
-Run with:
-    uvicorn src.api.main:app --reload --port 8000
+Production-grade API with security headers, rate limiting, and CORS.
 
-Production:
-    uvicorn src.api.main:app --host 0.0.0.0 --port 8000
+Run with:
+    Development:  uvicorn src.api.main:app --reload --port 8000
+    Production:   uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --workers 4
+
+Environment Variables (see .env.example):
+    ENVIRONMENT=production|development
+    ALLOWED_ORIGINS=https://your-domain.com
+    RATE_LIMIT_PER_MINUTE=60
 """
 
 import sys
@@ -16,8 +21,19 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 
+from .config import get_settings
 from .routes import predictions, games, health
+from .middleware import RateLimiter, SecurityHeadersMiddleware
+
+
+# =============================================================================
+# Configuration
+# =============================================================================
+
+settings = get_settings()
 
 
 # =============================================================================
@@ -25,7 +41,7 @@ from .routes import predictions, games, health
 # =============================================================================
 
 app = FastAPI(
-    title="NBA Game Prediction API",
+    title=settings.api_title,
     description="""
     REST API for NBA game predictions.
     
@@ -34,6 +50,12 @@ app = FastAPI(
     - **Predictions**: Get win probability predictions for upcoming games
     - **Games**: Fetch game schedules from ESPN with optional predictions
     - **Teams**: List all NBA teams with current Elo ratings
+    
+    ## Rate Limiting
+    
+    API requests are rate-limited to prevent abuse:
+    - Default: 60 requests per minute per IP
+    - Burst: 10 requests per second max
     
     ## Usage
     
@@ -50,31 +72,44 @@ app = FastAPI(
         "away_team": "Celtics"
     }
     ```
-    
-    Get games with predictions:
-    ```
-    GET /games/today/with-predictions
-    ```
     """,
-    version="1.0.0",
-    docs_url="/docs",
-    redoc_url="/redoc",
+    version=settings.api_version,
+    docs_url="/docs" if settings.should_show_docs else None,
+    redoc_url="/redoc" if settings.should_show_docs else None,
 )
 
 
 # =============================================================================
-# CORS Middleware
+# Middleware Stack (order matters - last added = first executed)
 # =============================================================================
 
-# Allow all origins for development
-# In production, restrict to your Flutter app's domain
+# 1. Security Headers Middleware
+app.add_middleware(
+    SecurityHeadersMiddleware,
+    is_production=settings.is_production,
+)
+
+# 2. CORS Middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Change to specific origins in production
+    allow_origins=settings.cors_origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],  # Restrict to needed methods
+    allow_headers=["Accept", "Content-Type", "Authorization"],
+    max_age=600,  # Cache preflight requests for 10 minutes
 )
+
+
+# =============================================================================
+# Rate Limiting
+# =============================================================================
+
+# Register rate limiter with app
+limiter = RateLimiter.get_limiter()
+app.state.limiter = limiter
+
+# Custom rate limit exceeded handler
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
 # =============================================================================
@@ -91,14 +126,16 @@ app.include_router(games.router)
 # =============================================================================
 
 @app.get("/", tags=["root"])
-async def root():
+@limiter.limit("30/minute")
+async def root(request):  # request param required for rate limiting
     """
     API root - basic info and links.
     """
     return {
-        "name": "NBA Game Prediction API",
-        "version": "1.0.0",
-        "docs": "/docs",
+        "name": settings.api_title,
+        "version": settings.api_version,
+        "environment": settings.environment,
+        "docs": "/docs" if settings.should_show_docs else None,
         "health": "/health",
         "endpoints": {
             "predictions": {
@@ -116,7 +153,6 @@ async def root():
                 "health": "/health",
                 "state_info": "/state/info",
                 "teams": "/teams",
-                "reload_state": "POST /state/reload",
             },
         },
     }
@@ -133,6 +169,11 @@ async def startup_event():
     """
     from .dependencies import get_prediction_service
     
+    print(f"🚀 Starting {settings.api_title} v{settings.api_version}")
+    print(f"📍 Environment: {settings.environment}")
+    print(f"🌐 CORS Origins: {settings.cors_origins}")
+    print(f"⏱️  Rate Limit: {settings.rate_limit_per_minute}/minute")
+    
     try:
         service = get_prediction_service()
         print(f"✓ Loaded predictor: {service.predictor}")
@@ -142,3 +183,14 @@ async def startup_event():
         print(f"⚠ Warning: Could not load prediction service: {e}")
         print("  Run bootstrap_state.py and xgb_boost_model.py first")
 
+
+# =============================================================================
+# Shutdown Event
+# =============================================================================
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """
+    Cleanup on shutdown.
+    """
+    print("👋 Shutting down NBA Prediction API")

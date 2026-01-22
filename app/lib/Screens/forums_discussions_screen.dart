@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../Models/forum_message.dart';
 import '../Models/user_profile.dart';
 import '../Providers/user_provider.dart';
+import '../Services/validators.dart';
 import '../theme/app_theme.dart';
 
 class ForumsDiscussionScreen extends ConsumerStatefulWidget {
@@ -108,8 +109,25 @@ class _ForumsDiscussionScreenState extends ConsumerState<ForumsDiscussionScreen>
   }
 
   Future<void> _sendMessage(UserProfile profile) async {
-    final messageText = _messageController.text.trim();
-    if (messageText.isEmpty || _isSending) return;
+    final rawText = _messageController.text.trim();
+    if (rawText.isEmpty || _isSending) return;
+
+    // Validate message
+    final validationError = Validators.validateMessage(rawText);
+    if (validationError != null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(validationError),
+          backgroundColor: AppColors.liveRed,
+        ),
+      );
+      return;
+    }
+
+    // Sanitize message to prevent XSS
+    final sanitizedText = Validators.sanitizeMessage(rawText);
+    if (sanitizedText.isEmpty) return;
 
     setState(() => _isSending = true);
 
@@ -118,7 +136,7 @@ class _ForumsDiscussionScreenState extends ConsumerState<ForumsDiscussionScreen>
       senderId: profile.uid,
       senderName: profile.username,
       senderPhoto: profile.photoUrl,
-      text: messageText,
+      text: sanitizedText,
       timestamp: DateTime.now().millisecondsSinceEpoch,
     );
 

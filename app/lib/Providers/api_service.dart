@@ -1,106 +1,155 @@
 import 'dart:convert';
-// ignore: unused_import - needed when using LOCAL DEVELOPMENT mode
-import 'dart:io' show Platform;
-// ignore: unused_shown_name - kIsWeb needed when using LOCAL DEVELOPMENT mode
 import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import '../Services/app_config.dart';
 
-/// API Service for handling all HTTP requests
+/// API Service for handling all HTTP requests.
+///
+/// Handles all network requests with proper error handling, timeouts,
+/// and environment-aware configuration.
 class ApiService {
-  // ===========================================================================
-  // API CONFIGURATION - Toggle between Production and Local Development
-  // ===========================================================================
-  //
-  // PRODUCTION MODE (default):
-  //   - Uses Render-hosted API at https://nba-prediction-api-nq5b.onrender.com
-  //   - Note: Free tier may take 30-60s to wake from cold start
-  //
-  // LOCAL DEVELOPMENT MODE:
-  //   1. Start your local API server:
-  //      cd C:\Users\sandy\Desktop\dev\Basketball_Prediction
-  //      python -m uvicorn src.api.main:app --reload --port 8000
-  //
-  //   2. Comment out the PRODUCTION line and uncomment the LOCAL line below:
-  //
-  // ===========================================================================
+  final AppConfig _config = AppConfig.instance;
 
-  /// PRODUCTION - Uses Render-hosted API (DEFAULT)
-  // static const String _baseUrl = 'https://nba-prediction-api-nq5b.onrender.com';
+  /// Get the API base URL based on environment and platform.
+  String get fastApiBaseUrl => _config.getApiBaseUrl(isWeb: kIsWeb);
 
-  /// LOCAL DEVELOPMENT - Uncomment below and comment out PRODUCTION above
-  static String get _baseUrl {
-    // Web browser: use localhost directly
-    if (kIsWeb) {
-      return 'http://localhost:8000';
-    }
-    // Android emulator: 10.0.2.2 maps to host machine's localhost
-    else if (Platform.isAndroid) {
-      return 'http://10.0.2.2:8000';
-    }
-    // iOS simulator / Desktop: use localhost
-    else {
-      return 'http://localhost:8000';
-    }
-  }
+  /// ESPN API base URL (always same regardless of environment)
+  String get espnBaseUrl => AppConfig.espnApiUrl;
 
-  /// Get the API base URL
-  String get fastApiBaseUrl => _baseUrl;
-
-  static const String espnBaseUrl =
-      'https://site.api.espn.com/apis/site/v2/sports/basketball/nba';
-
-  /// Fetch today's games from ESPN API
+  /// Fetch today's games from ESPN API.
+  ///
+  /// Throws [ApiException] on network or server errors.
   Future<Map<String, dynamic>> fetchEspnScoreboard() async {
-    // Use explicit date to ensure we get today's games, not yesterday's lingering scoreboard
     final now = DateTime.now();
     final dateParam = '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
-    
-    final response = await http
-        .get(
-          Uri.parse('$espnBaseUrl/scoreboard?dates=$dateParam'),
-          headers: {'Accept': 'application/json'},
-        )
-        .timeout(
-          const Duration(seconds: 10),
-          onTimeout: () => throw Exception('ESPN API timed out'),
-        );
 
-    if (response.statusCode == 200) {
-      return json.decode(response.body) as Map<String, dynamic>;
-    } else if (response.statusCode == 429) {
-      throw Exception('Too many requests. Please try again later.');
-    } else {
-      throw Exception('Failed to load games (${response.statusCode})');
-    }
-  }
-
-  /// Fetch predictions from FastAPI backend
-  /// Note: Render free tier can take 30-60s to wake from cold start
-  Future<Map<String, dynamic>?> fetchPredictions() async {
-    debugPrint('Fetching predictions from: $fastApiBaseUrl/predict/today');
     try {
       final response = await http
           .get(
-            Uri.parse('$fastApiBaseUrl/predict/today'),
-            headers: {'Accept': 'application/json'},
+            Uri.parse('$espnBaseUrl/scoreboard?dates=$dateParam'),
+            headers: {
+              'Accept': 'application/json',
+              'User-Agent': 'NBA-Predictions-App/1.0',
+            },
           )
           .timeout(
-            const Duration(seconds: 90), // Increased for Render cold starts
-            onTimeout: () => throw Exception('Prediction API timed out (90s)'),
+            Duration(seconds: AppConfig.espnTimeoutSeconds),
+            onTimeout: () => throw ApiException(
+              'ESPN API timed out',
+              statusCode: 408,
+              isTimeout: true,
+            ),
           );
 
-      debugPrint('Prediction API response: ${response.statusCode}');
       if (response.statusCode == 200) {
         return json.decode(response.body) as Map<String, dynamic>;
+      } else if (response.statusCode == 429) {
+        throw ApiException(
+          'Too many requests. Please try again later.',
+          statusCode: 429,
+          isRateLimited: true,
+        );
       } else {
-        debugPrint('Prediction API error: ${response.statusCode} - ${response.body}');
+        throw ApiException(
+          'Failed to load games',
+          statusCode: response.statusCode,
+        );
+      }
+    } on ApiException {
+      rethrow;
+    } catch (e) {
+      if (AppConfig.enableDebugLogging) {
+        debugPrint('ESPN API error: $e');
+      }
+      throw ApiException('Network error: ${e.runtimeType}');
+    }
+  }
+
+  /// Fetch predictions from FastAPI backend.
+  ///
+  /// Returns null on error (graceful degradation).
+  /// Note: Render free tier can take 30-60s to wake from cold start.
+  Future<Map<String, dynamic>?> fetchPredictions() async {
+    final url = '$fastApiBaseUrl/predict/today';
+
+    if (AppConfig.enableDebugLogging) {
+      debugPrint('Fetching predictions from: $url');
+    }
+
+    try {
+      final response = await http
+          .get(
+            Uri.parse(url),
+            headers: {
+              'Accept': 'application/json',
+              'User-Agent': 'NBA-Predictions-App/1.0',
+            },
+          )
+          .timeout(
+            Duration(seconds: AppConfig.apiLongTimeoutSeconds),
+            onTimeout: () => throw ApiException(
+              'Prediction API timed out',
+              statusCode: 408,
+              isTimeout: true,
+            ),
+          );
+
+      if (AppConfig.enableDebugLogging) {
+        debugPrint('Prediction API response: ${response.statusCode}');
+      }
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body) as Map<String, dynamic>;
+      } else if (response.statusCode == 429) {
+        if (AppConfig.enableDebugLogging) {
+          debugPrint('Rate limited by prediction API');
+        }
+        return null;
+      } else {
+        if (AppConfig.enableDebugLogging) {
+          debugPrint('Prediction API error: ${response.statusCode}');
+        }
         return null;
       }
     } catch (e) {
-      debugPrint('Failed to fetch predictions: $e');
+      if (AppConfig.enableDebugLogging) {
+        debugPrint('Failed to fetch predictions: $e');
+      }
       return null;
     }
+  }
+}
+
+/// Custom exception for API errors.
+class ApiException implements Exception {
+  final String message;
+  final int? statusCode;
+  final bool isTimeout;
+  final bool isRateLimited;
+
+  ApiException(
+    this.message, {
+    this.statusCode,
+    this.isTimeout = false,
+    this.isRateLimited = false,
+  });
+
+  @override
+  String toString() => 'ApiException: $message (status: $statusCode)';
+
+  /// User-friendly error message.
+  String get userMessage {
+    if (isTimeout) {
+      return 'Request timed out. Please check your connection and try again.';
+    }
+    if (isRateLimited) {
+      return 'Too many requests. Please wait a moment and try again.';
+    }
+    if (statusCode != null && statusCode! >= 500) {
+      return 'Server error. Please try again later.';
+    }
+    return 'Something went wrong. Please try again.';
   }
 }
 

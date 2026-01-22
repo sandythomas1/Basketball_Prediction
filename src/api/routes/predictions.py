@@ -1,11 +1,13 @@
 """
-Prediction endpoints.
+Prediction endpoints with rate limiting.
 """
 
 from datetime import datetime, date
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 from ..schemas import (
     PredictGameRequest,
@@ -19,6 +21,8 @@ from ..schemas import (
 )
 from ..dependencies import get_prediction_service, PredictionService
 
+# Rate limiter
+limiter = Limiter(key_func=get_remote_address)
 
 router = APIRouter(prefix="/predict", tags=["predictions"])
 
@@ -75,7 +79,9 @@ def build_prediction_response(
 
 
 @router.get("/today", response_model=PredictionsListResponse)
+@limiter.limit("30/minute")
 async def predict_today(
+    request: Request,
     service: PredictionService = Depends(get_prediction_service),
 ):
     """
@@ -83,12 +89,14 @@ async def predict_today(
     
     Fetches today's games from ESPN and returns predictions for each.
     """
-    return await predict_date(date.today().isoformat(), service)
+    return await predict_date(date.today().isoformat(), request, service)
 
 
 @router.get("/{game_date}", response_model=PredictionsListResponse)
+@limiter.limit("30/minute")
 async def predict_date(
     game_date: str,
+    request: Request,
     service: PredictionService = Depends(get_prediction_service),
 ):
     """
@@ -140,8 +148,10 @@ async def predict_date(
 
 
 @router.post("/game", response_model=SinglePredictionResponse)
+@limiter.limit("60/minute")
 async def predict_game(
-    request: PredictGameRequest,
+    request: Request,
+    game_request: PredictGameRequest,
     service: PredictionService = Depends(get_prediction_service),
 ):
     """
@@ -150,18 +160,18 @@ async def predict_game(
     Provide home and away team names (or abbreviations) and optionally a date.
     """
     # Resolve team IDs
-    home_id = service.team_mapper.get_team_id(request.home_team)
-    away_id = service.team_mapper.get_team_id(request.away_team)
+    home_id = service.team_mapper.get_team_id(game_request.home_team)
+    away_id = service.team_mapper.get_team_id(game_request.away_team)
     
     if home_id is None:
         raise HTTPException(
             status_code=400,
-            detail=f"Could not find team: {request.home_team}"
+            detail=f"Could not find team: {game_request.home_team}"
         )
     if away_id is None:
         raise HTTPException(
             status_code=400,
-            detail=f"Could not find team: {request.away_team}"
+            detail=f"Could not find team: {game_request.away_team}"
         )
     
     # Get full team names
@@ -169,7 +179,7 @@ async def predict_game(
     away_name = service.team_mapper.get_team_name(away_id)
     
     # Determine game date
-    game_date = request.game_date or date.today().isoformat()
+    game_date = game_request.game_date or date.today().isoformat()
     
     # Get prediction
     result = service.predictor.predict_game(
@@ -204,18 +214,22 @@ async def predict_game(
 
 
 @router.post("/batch", response_model=BatchPredictionResponse)
+@limiter.limit("10/minute")
 async def predict_batch(
-    request: PredictBatchRequest,
+    request: Request,
+    batch_request: PredictBatchRequest,
     service: PredictionService = Depends(get_prediction_service),
 ):
     """
     Predict multiple game matchups at once.
+    
+    Limited to 10 requests per minute due to computational cost.
     """
     predictions = []
     
-    for game in request.games:
+    for game in batch_request.games:
         try:
-            pred = await predict_game(game, service)
+            pred = await predict_game(request, game, service)
             predictions.append(pred)
         except HTTPException:
             # Skip games that fail (e.g., unknown teams)

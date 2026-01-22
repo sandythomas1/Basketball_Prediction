@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../Providers/auth_provider.dart';
+import '../Services/validators.dart';
 import '../theme/app_theme.dart';
 import 'signup_screen.dart';
 import 'forgot_password_screen.dart';
@@ -124,15 +125,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       color: context.textMuted,
                     ),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
-                    }
-                    if (!value.contains('@')) {
-                      return 'Please enter a valid email';
-                    }
-                    return null;
-                  },
+                  validator: Validators.validateEmail,
                 ),
                 const SizedBox(height: 20),
 
@@ -167,12 +160,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       },
                     ),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
-                    }
-                    return null;
-                  },
+                  validator: Validators.validateLoginPassword,
                 ),
                 const SizedBox(height: 8),
 
