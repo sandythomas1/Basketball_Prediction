@@ -6,6 +6,7 @@ import 'Widgets/auth_gate.dart';
 import 'theme/app_theme.dart';
 // git tutorial feature
 // try again// test
+// MC
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
