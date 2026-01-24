@@ -551,6 +551,19 @@ class _AppDrawer extends ConsumerWidget {
                     );
                   }
                 ),
+                // git tutorial
+                const Divider(height: 1),
+                _DrawerItem(
+                  icon: Icons.sports_football_sharp,
+                  label: 'Added for Git Tutorial',
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                    );
+                  }
+                ),
                 const Divider(height: 1),
                 // User Search Section
                 UserSearchWidget(

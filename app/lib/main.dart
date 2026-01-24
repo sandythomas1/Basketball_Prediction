@@ -4,6 +4,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'Widgets/auth_gate.dart';
 import 'theme/app_theme.dart';
+// git tutorial feature
+// try again// test
+// MC
+//pr request
+//DG test
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
