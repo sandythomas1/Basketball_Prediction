@@ -89,6 +89,10 @@ class GamesNotifier extends AsyncNotifier<GamesState> {
     final espnFuture = apiService.fetchEspnScoreboard();
     final predictionsFuture = apiService.fetchPredictions();
 
+    final previousGamesById = {
+      for (final game in state.valueOrNull?.games ?? <Game>[]) game.id: game,
+    };
+
     final espnData = await espnFuture;
     final predictionsData = await predictionsFuture;
 
@@ -107,7 +111,8 @@ class GamesNotifier extends AsyncNotifier<GamesState> {
       try {
         final game = _parseGame(event, predictionsList);
         if (game != null) {
-          games.add(game);
+          final previous = previousGamesById[game.id];
+          games.add(_mergeWithCachedPrediction(game, previous));
         }
       } catch (e) {
         debugPrint('Error parsing game: $e');
@@ -119,6 +124,30 @@ class GamesNotifier extends AsyncNotifier<GamesState> {
       games: games,
       lastFetchTime: DateTime.now(),
       isRefreshing: false,
+    );
+  }
+
+  Game _mergeWithCachedPrediction(Game current, Game? previous) {
+    if (previous == null) return current;
+
+    final hasCurrentPrediction = current.homeWinProb != null ||
+        current.awayWinProb != null ||
+        current.confidenceTier != null ||
+        current.favoredTeam != null ||
+        current.homeElo != null ||
+        current.awayElo != null;
+
+    if (hasCurrentPrediction || !current.isLive) {
+      return current;
+    }
+
+    return current.copyWith(
+      homeWinProb: previous.homeWinProb,
+      awayWinProb: previous.awayWinProb,
+      confidenceTier: previous.confidenceTier,
+      favoredTeam: previous.favoredTeam,
+      homeElo: previous.homeElo,
+      awayElo: previous.awayElo,
     );
   }
 
@@ -303,4 +332,3 @@ final hasLiveGamesProvider = Provider<bool>((ref) {
   final gamesState = ref.watch(gamesProvider);
   return gamesState.valueOrNull?.hasLiveGames ?? false;
 });
-

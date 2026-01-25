@@ -6,6 +6,11 @@ import 'package:firebase_app_check/firebase_app_check.dart';
 import 'firebase_options.dart';
 import 'Widgets/auth_gate.dart';
 import 'theme/app_theme.dart';
+// git tutorial feature
+// try again// test
+// MC
+//pr request
+//DG test
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
