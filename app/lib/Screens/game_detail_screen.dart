@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pie_chart/pie_chart.dart';
 import '../Models/game.dart';
 import '../Widgets/team_logo.dart';
+import '../Widgets/ai_chat_widget.dart';
 import '../theme/app_theme.dart';
 import 'forums_discussions_screen.dart';
 
 /// Detailed game screen with prediction visualization
-class GameDetailScreen extends StatelessWidget {
+class GameDetailScreen extends ConsumerWidget {
   final Game game;
 
   const GameDetailScreen({
@@ -16,7 +18,7 @@ class GameDetailScreen extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: context.bgSecondary,
@@ -86,6 +88,9 @@ class GameDetailScreen extends StatelessWidget {
             // Matchup Header
             _MatchupHeader(game: game),
             const SizedBox(height: 24),
+            // AI Insights Chat Widget (replaces static narrative)
+            AIChatWidget(game: game),
+            const SizedBox(height: 16),
             // Prediction Card
             _PredictionCard(game: game),
             const SizedBox(height: 16),

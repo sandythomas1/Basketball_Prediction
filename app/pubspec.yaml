@@ -56,6 +56,12 @@ dependencies:
   
   # Security
   flutter_secure_storage: ^9.2.2
+  
+  # Firebase AI (Vertex AI / Gemini)
+  firebase_ai: ^2.3.0
+  
+  # Firebase App Check (Security)
+  firebase_app_check: ^0.3.2+3
 
 dev_dependencies:
   # Testing packages
