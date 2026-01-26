@@ -1,12 +1,20 @@
+import 'dart:convert';
 import 'package:firebase_ai/firebase_ai.dart';
+import 'package:http/http.dart' as http;
 import '../Models/game.dart';
+import 'app_config.dart';
 
 /// Service for interacting with Firebase Vertex AI (Gemini)
+/// 
+/// Enhanced with function calling for real-time game data queries
 class AIChatService {
   GenerativeModel? _model;
   ChatSession? _chatSession;
   
-  /// Initialize the Vertex AI model
+  // API configuration for function calling
+  final String _apiBaseUrl = AppConfig.instance.getApiBaseUrl();
+  
+  /// Initialize the Vertex AI model with function calling tools
   Future<void> initialize() async {
     _model = FirebaseAI.vertexAI().generativeModel(
       model: 'gemini-2.0-flash',
@@ -17,8 +25,47 @@ class AIChatService {
         topK: 40,
         maxOutputTokens: 1024,
       ),
+      tools: [
+        Tool.functionDeclarations([
+          _getPredictionTool,
+          _getTodaysGamesTool,
+          _getTeamStatsTool,
+        ]),
+      ],
     );
   }
+  
+  /// Tool: Get prediction for a specific matchup
+  static FunctionDeclaration get _getPredictionTool => FunctionDeclaration(
+    'get_game_prediction',
+    'Get the AI model prediction for a specific NBA game matchup. Returns win probabilities, Elo ratings, and confidence level.',
+    parameters: {
+      'home_team': Schema.string(
+        description: 'The home team name (e.g., "Lakers", "Celtics", "Warriors")',
+      ),
+      'away_team': Schema.string(
+        description: 'The away team name (e.g., "Lakers", "Celtics", "Warriors")',
+      ),
+    },
+  );
+  
+  /// Tool: Get today's games with predictions
+  static FunctionDeclaration get _getTodaysGamesTool => FunctionDeclaration(
+    'get_todays_games',
+    'Get all NBA games scheduled for today along with their predictions',
+    parameters: {},
+  );
+  
+  /// Tool: Get team Elo and recent performance
+  static FunctionDeclaration get _getTeamStatsTool => FunctionDeclaration(
+    'get_team_stats',
+    'Get the current Elo rating and recent performance for an NBA team',
+    parameters: {
+      'team_name': Schema.string(
+        description: 'The team name (e.g., "Lakers", "Celtics")',
+      ),
+    },
+  );
   
   /// Start a new chat session with game context
   Future<void> startGameChat(Game game) async {
@@ -35,7 +82,90 @@ class AIChatService {
     );
   }
   
-  /// Send a message and get a streaming response
+  /// Execute a function call from the model
+  Future<Map<String, dynamic>> _executeFunctionCall(FunctionCall call) async {
+    switch (call.name) {
+      case 'get_game_prediction':
+        return await _fetchPrediction(
+          homeTeam: call.args['home_team'] as String,
+          awayTeam: call.args['away_team'] as String,
+        );
+      case 'get_todays_games':
+        return await _fetchTodaysGames();
+      case 'get_team_stats':
+        return await _fetchTeamStats(call.args['team_name'] as String);
+      default:
+        return {'error': 'Unknown function: ${call.name}'};
+    }
+  }
+  
+  /// Fetch prediction from API
+  Future<Map<String, dynamic>> _fetchPrediction({
+    required String homeTeam,
+    required String awayTeam,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$_apiBaseUrl/predict/game'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'home_team': homeTeam,
+          'away_team': awayTeam,
+        }),
+      ).timeout(const Duration(seconds: AppConfig.apiTimeoutSeconds));
+      
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      }
+      return {'error': 'Failed to fetch prediction: ${response.statusCode}'};
+    } catch (e) {
+      return {'error': 'API error: $e'};
+    }
+  }
+  
+  /// Fetch today's games from API
+  Future<Map<String, dynamic>> _fetchTodaysGames() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_apiBaseUrl/games/today/with-predictions'),
+      ).timeout(const Duration(seconds: AppConfig.apiTimeoutSeconds));
+      
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      }
+      return {'error': 'Failed to fetch games: ${response.statusCode}'};
+    } catch (e) {
+      return {'error': 'API error: $e'};
+    }
+  }
+  
+  /// Fetch team stats from API
+  Future<Map<String, dynamic>> _fetchTeamStats(String teamName) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_apiBaseUrl/teams'),
+      ).timeout(const Duration(seconds: AppConfig.apiTimeoutSeconds));
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final teams = data['teams'] as List? ?? [];
+        final team = teams.firstWhere(
+          (t) => (t['name'] as String).toLowerCase().contains(teamName.toLowerCase()),
+          orElse: () => null,
+        );
+        
+        if (team != null) {
+          return team as Map<String, dynamic>;
+        }
+        return {'error': 'Team not found: $teamName'};
+      }
+      return {'error': 'Failed to fetch teams: ${response.statusCode}'};
+    } catch (e) {
+      return {'error': 'API error: $e'};
+    }
+  }
+  
+  /// Send a message and get a streaming response with function calling support
   Stream<String> sendMessageStream(String message) async* {
     if (_chatSession == null) {
       throw Exception('Chat session not initialized. Call startGameChat first.');
@@ -45,21 +175,68 @@ class AIChatService {
     final response = _chatSession!.sendMessageStream(content);
     
     await for (final chunk in response) {
-      if (chunk.text != null) {
+      // Check if the model wants to call a function
+      if (chunk.functionCalls.isNotEmpty) {
+        for (final call in chunk.functionCalls) {
+          yield '\n🔍 Looking up ${_getFriendlyFunctionName(call.name)}...\n';
+          
+          // Execute the function
+          final result = await _executeFunctionCall(call);
+          
+          // Send the function result back to the model
+          final functionResponse = Content.functionResponse(call.name, result);
+          final followUp = _chatSession!.sendMessageStream(functionResponse);
+          
+          await for (final followUpChunk in followUp) {
+            if (followUpChunk.text != null) {
+              yield followUpChunk.text!;
+            }
+          }
+        }
+      } else if (chunk.text != null) {
         yield chunk.text!;
       }
     }
   }
   
-  /// Send a message and get a complete response
+  /// Send a message and get a complete response with function calling support
   Future<String> sendMessage(String message) async {
     if (_chatSession == null) {
       throw Exception('Chat session not initialized. Call startGameChat first.');
     }
     
     final content = Content.text(message);
-    final response = await _chatSession!.sendMessage(content);
+    var response = await _chatSession!.sendMessage(content);
+    
+    // Handle function calls (may need multiple rounds)
+    int maxIterations = 5; // Prevent infinite loops
+    int iteration = 0;
+    
+    while (response.functionCalls.isNotEmpty && iteration < maxIterations) {
+      iteration++;
+      
+      for (final call in response.functionCalls) {
+        final result = await _executeFunctionCall(call);
+        final functionResponse = Content.functionResponse(call.name, result);
+        response = await _chatSession!.sendMessage(functionResponse);
+      }
+    }
+    
     return response.text ?? 'No response generated.';
+  }
+  
+  /// Get user-friendly name for function
+  String _getFriendlyFunctionName(String name) {
+    switch (name) {
+      case 'get_game_prediction':
+        return 'game prediction';
+      case 'get_todays_games':
+        return "today's games";
+      case 'get_team_stats':
+        return 'team statistics';
+      default:
+        return name;
+    }
   }
   
   /// Generate a quick game analysis without chat context

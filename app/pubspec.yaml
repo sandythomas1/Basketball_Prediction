@@ -48,6 +48,9 @@ dependencies:
   firebase_database: ^11.2.0
   firebase_storage: ^12.3.7
   
+  # Firebase Cloud Functions (for AI Agent)
+  cloud_functions: ^5.1.4
+  
   # Image Picker
   image_picker: ^1.1.2
   
