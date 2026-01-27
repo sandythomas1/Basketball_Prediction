@@ -171,31 +171,51 @@ class AIChatService {
       throw Exception('Chat session not initialized. Call startGameChat first.');
     }
     
-    final content = Content.text(message);
-    final response = _chatSession!.sendMessageStream(content);
-    
-    await for (final chunk in response) {
-      // Check if the model wants to call a function
-      if (chunk.functionCalls.isNotEmpty) {
-        for (final call in chunk.functionCalls) {
-          yield '\n🔍 Looking up ${_getFriendlyFunctionName(call.name)}...\n';
-          
-          // Execute the function
-          final result = await _executeFunctionCall(call);
-          
-          // Send the function result back to the model
-          final functionResponse = Content.functionResponse(call.name, result);
-          final followUp = _chatSession!.sendMessageStream(functionResponse);
-          
-          await for (final followUpChunk in followUp) {
-            if (followUpChunk.text != null) {
-              yield followUpChunk.text!;
+    try {
+      final content = Content.text(message);
+      final response = _chatSession!.sendMessageStream(content);
+      
+      bool hasYieldedContent = false;
+      
+      await for (final chunk in response) {
+        // Check if the model wants to call a function
+        if (chunk.functionCalls.isNotEmpty) {
+          for (final call in chunk.functionCalls) {
+            yield '\n🔍 Looking up ${_getFriendlyFunctionName(call.name)}...\n';
+            hasYieldedContent = true;
+            
+            try {
+              // Execute the function
+              final result = await _executeFunctionCall(call);
+              
+              // Send the function result back to the model
+              final functionResponse = Content.functionResponse(call.name, result);
+              final followUp = _chatSession!.sendMessageStream(functionResponse);
+              
+              await for (final followUpChunk in followUp) {
+                if (followUpChunk.text != null && followUpChunk.text!.isNotEmpty) {
+                  yield followUpChunk.text!;
+                  hasYieldedContent = true;
+                }
+              }
+            } catch (funcError) {
+              yield '\n⚠️ Could not fetch data: $funcError\n';
+              yield 'Let me answer based on what I know about the game.\n\n';
+              hasYieldedContent = true;
             }
           }
+        } else if (chunk.text != null && chunk.text!.isNotEmpty) {
+          yield chunk.text!;
+          hasYieldedContent = true;
         }
-      } else if (chunk.text != null) {
-        yield chunk.text!;
       }
+      
+      // If nothing was yielded, provide a fallback response
+      if (!hasYieldedContent) {
+        yield 'I apologize, but I could not generate a response. Please try rephrasing your question.';
+      }
+    } catch (e) {
+      yield 'Sorry, I encountered an error: ${e.toString().replaceAll('Exception:', '').trim()}';
     }
   }
   

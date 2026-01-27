@@ -108,14 +108,21 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
   
   /// Send a message and get streaming response
   Future<void> sendMessage(String text) async {
-    if (!state.isInitialized || state.isLoading) return;
+    // Allow sending if initialized, even if previous message is still loading
+    if (!state.isInitialized) {
+      state = state.copyWith(error: 'Chat not initialized. Please try again.');
+      return;
+    }
+    
+    // Prevent double-sending while loading
+    if (state.isLoading) return;
     
     // Add user message
     final userMessage = ChatMessage(text: text, isUser: true);
     
     // Add placeholder for AI response
     final aiPlaceholder = ChatMessage(
-      text: '',
+      text: '...',
       isUser: false,
       isLoading: true,
     );
@@ -123,6 +130,7 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
     state = state.copyWith(
       messages: [...state.messages, userMessage, aiPlaceholder],
       isLoading: true,
+      error: null, // Clear any previous error
     );
     
     try {
@@ -141,6 +149,11 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
         state = state.copyWith(messages: updatedMessages);
       }
       
+      // Handle empty response
+      if (fullResponse.trim().isEmpty) {
+        fullResponse = 'I apologize, but I could not generate a response. Please try asking your question differently.';
+      }
+      
       // Mark as complete
       final updatedMessages = [...state.messages];
       updatedMessages[updatedMessages.length - 1] = ChatMessage(
@@ -153,12 +166,17 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
         isLoading: false,
       );
     } catch (e) {
-      // Remove the placeholder and show error
-      final updatedMessages = state.messages.sublist(0, state.messages.length - 1);
+      // Update the placeholder with error message instead of removing it
+      final updatedMessages = [...state.messages];
+      updatedMessages[updatedMessages.length - 1] = ChatMessage(
+        text: 'Sorry, I encountered an error. Please try again.\n\nError: ${e.toString().replaceAll('Exception:', '').trim()}',
+        isUser: false,
+        isLoading: false,
+      );
       state = state.copyWith(
         messages: updatedMessages,
         isLoading: false,
-        error: 'Failed to get response: ${e.toString()}',
+        error: null, // Don't set error state, message shows the error
       );
     }
   }

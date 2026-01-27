@@ -17,10 +17,13 @@ const db = admin.database();
 // AI Agent Configuration
 // =============================================================================
 
+// Agent config from Firebase Functions config or environment
+// Set with: firebase functions:config:set agent.project_id="xxx" agent.agent_id="xxx"
+// Or uses defaults for this project
 const AGENT_CONFIG = {
-  projectId: 'nba-predictions-29e45',
-  location: 'global',
-  agentId: 'f034d8e9-09e6-4afd-b528-31af050510fe',
+  projectId: functions.config().agent?.project_id || process.env.GCP_PROJECT_ID || 'nba-predictions-29e45',
+  location: functions.config().agent?.location || process.env.GCP_LOCATION || 'global',
+  agentId: functions.config().agent?.agent_id || process.env.GCP_AGENT_ID || 'f034d8e9-09e6-4afd-b528-31af050510fe',
   languageCode: 'en',
 };
 
