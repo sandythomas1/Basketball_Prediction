@@ -1,6 +1,8 @@
 import pandas as pd
+import numpy as np
 from pathlib import Path
 from sklearn.metrics import log_loss, brier_score_loss
+from core import StatsTracker, ConfidenceScorer
 
 # =========================
 # PATHS
@@ -54,6 +56,12 @@ def main():
         "market_prob_home": "consensus_prob_home",
         "model_edge": "prob_delta"
     })
+    
+    # Load state for confidence scoring
+    from pathlib import Path as P
+    state_path = P(__file__).parent.parent / "state" / "stats.json"
+    stats_tracker = StatsTracker.from_file(state_path)
+    confidence_scorer = ConfidenceScorer(stats_tracker)
 
     # =========================
     # GLOBAL METRICS
@@ -102,6 +110,63 @@ def main():
     )
 
     # =========================
+    # CONFIDENCE SCORING
+    # =========================
+    print("\nCalculating confidence scores...")
+    
+    # Calculate confidence scores for each game
+    confidence_scores = []
+    confidence_qualifiers = []
+    
+    for _, row in df.iterrows():
+        # Reconstruct feature vector (simplified - using available columns)
+        # Note: Full feature reconstruction would require all 23 features
+        features = np.array([
+            row.get("elo_home", 1500),
+            row.get("elo_away", 1500),
+            row.get("elo_diff", 0),
+            row.get("elo_prob", 0.5),
+            row.get("pf_roll_home", 110),
+            row.get("pf_roll_away", 110),
+            row.get("pf_roll_diff", 0),
+            row.get("pa_roll_home", 110),
+            row.get("pa_roll_away", 110),
+            row.get("pa_roll_diff", 0),
+            row.get("win_roll_home", 0.5),
+            row.get("win_roll_away", 0.5),
+            row.get("win_roll_diff", 0),
+            row.get("margin_roll_home", 0),
+            row.get("margin_roll_away", 0),
+            row.get("margin_roll_diff", 0),
+            row.get("games_in_window_home", 10),
+            row.get("games_in_window_away", 10),
+            row.get("home_rest_days", 2),
+            row.get("away_rest_days", 2),
+            row.get("home_b2b", 0),
+            row.get("away_b2b", 0),
+            row.get("rest_diff", 0),
+            row.get("consensus_prob_home", 0.5),
+            1 - row.get("consensus_prob_home", 0.5),
+        ])
+        
+        try:
+            conf_data = confidence_scorer.calculate_confidence_score(
+                prob_home=row["model_prob_home"],
+                features=features,
+                home_id=int(row["team_id_home"]),
+                away_id=int(row["team_id_away"]),
+            )
+            confidence_scores.append(conf_data["score"])
+            confidence_qualifiers.append(conf_data["qualifier"])
+        except Exception:
+            # If scoring fails, use neutral values
+            confidence_scores.append(50)
+            confidence_qualifiers.append("Moderate")
+    
+    df["confidence_score"] = confidence_scores
+    df["confidence_qualifier"] = confidence_qualifiers
+
+    # =========================
     # APP OUTPUT
     # =========================
     app_cols = [
@@ -115,6 +180,8 @@ def main():
         "high_disagreement",
         "high_confidence",
         "high_uncertainty",
+        "confidence_score",
+        "confidence_qualifier",
     ]
 
     app_df = df[app_cols].copy()

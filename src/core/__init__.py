@@ -7,6 +7,7 @@ from .elo_tracker import EloTracker
 from .stats_tracker import StatsTracker
 from .feature_builder import FeatureBuilder
 from .predictor import Predictor
+from .confidence_scorer import ConfidenceScorer, get_confidence_qualifier
 from .state_manager import StateManager
 from .espn_client import ESPNClient, GameResult
 from .game_processor import GameProcessor
@@ -19,6 +20,8 @@ __all__ = [
     "StatsTracker",
     "FeatureBuilder",
     "Predictor",
+    "ConfidenceScorer",
+    "get_confidence_qualifier",
     "StateManager",
     "ESPNClient",
     "GameResult",

@@ -267,6 +267,15 @@ class _PredictionCard extends StatelessWidget {
               ),
             ),
           ),
+          // Confidence Score Indicator
+          if (game.confidenceScore != null) ...[
+            const SizedBox(height: 20),
+            _ConfidenceScoreIndicator(
+              score: game.confidenceScore!,
+              qualifier: game.confidenceQualifier,
+              factors: game.confidenceFactors,
+            ),
+          ],
           const SizedBox(height: 24),
           // Pie Chart
           Center(
@@ -567,6 +576,239 @@ class _ContextCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Confidence score indicator with expandable factor breakdown
+class _ConfidenceScoreIndicator extends StatefulWidget {
+  final int score;
+  final String? qualifier;
+  final Map<String, dynamic>? factors;
+
+  const _ConfidenceScoreIndicator({
+    required this.score,
+    this.qualifier,
+    this.factors,
+  });
+
+  @override
+  State<_ConfidenceScoreIndicator> createState() => _ConfidenceScoreIndicatorState();
+}
+
+class _ConfidenceScoreIndicatorState extends State<_ConfidenceScoreIndicator> {
+  bool _isExpanded = false;
+
+  Color _getScoreColor() {
+    if (widget.score >= 75) return AppColors.accentGreen;
+    if (widget.score >= 50) return AppColors.accentYellow;
+    return AppColors.liveRed;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scoreColor = _getScoreColor();
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Header with qualifier
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Confidence Score',
+              style: GoogleFonts.dmSans(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: context.textSecondary,
+              ),
+            ),
+            if (widget.qualifier != null)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: scoreColor.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  widget.qualifier!,
+                  style: GoogleFonts.dmSans(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: scoreColor,
+                  ),
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        // Progress bar
+        Row(
+          children: [
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: LinearProgressIndicator(
+                  value: widget.score / 100,
+                  minHeight: 10,
+                  backgroundColor: context.bgSecondary,
+                  valueColor: AlwaysStoppedAnimation<Color>(scoreColor),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              '${widget.score}/100',
+              style: GoogleFonts.spaceMono(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: scoreColor,
+              ),
+            ),
+          ],
+        ),
+        // Expandable factors breakdown
+        if (widget.factors != null) ...[
+          const SizedBox(height: 12),
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _isExpanded = !_isExpanded;
+              });
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  _isExpanded ? 'Hide Details' : 'Show Details',
+                  style: GoogleFonts.dmSans(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.accentBlue,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Icon(
+                  _isExpanded ? Icons.expand_less : Icons.expand_more,
+                  size: 16,
+                  color: AppColors.accentBlue,
+                ),
+              ],
+            ),
+          ),
+          if (_isExpanded) ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: context.bgSecondary,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                children: [
+                  _FactorRow(
+                    label: 'Consensus Agreement',
+                    value: widget.factors!['consensus_agreement'],
+                    maxValue: 25,
+                  ),
+                  const SizedBox(height: 8),
+                  _FactorRow(
+                    label: 'Feature Alignment',
+                    value: widget.factors!['feature_alignment'],
+                    maxValue: 25,
+                  ),
+                  const SizedBox(height: 8),
+                  _FactorRow(
+                    label: 'Form Stability',
+                    value: widget.factors!['form_stability'],
+                    maxValue: 20,
+                  ),
+                  const SizedBox(height: 8),
+                  _FactorRow(
+                    label: 'Schedule Context',
+                    value: widget.factors!['schedule_context'],
+                    maxValue: 15,
+                  ),
+                  const SizedBox(height: 8),
+                  _FactorRow(
+                    label: 'Matchup History',
+                    value: widget.factors!['matchup_history'],
+                    maxValue: 15,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ],
+    );
+  }
+}
+
+/// Individual factor row in breakdown
+class _FactorRow extends StatelessWidget {
+  final String label;
+  final dynamic value;
+  final int maxValue;
+
+  const _FactorRow({
+    required this.label,
+    required this.value,
+    required this.maxValue,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final numValue = (value is num) ? value.toDouble() : 0.0;
+    final percentage = numValue / maxValue;
+    
+    return Row(
+      children: [
+        Expanded(
+          flex: 2,
+          child: Text(
+            label,
+            style: GoogleFonts.dmSans(
+              fontSize: 11,
+              color: context.textSecondary,
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 3,
+          child: Row(
+            children: [
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: LinearProgressIndicator(
+                    value: percentage,
+                    minHeight: 6,
+                    backgroundColor: context.borderColor,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.accentBlue.withOpacity(0.7),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              SizedBox(
+                width: 32,
+                child: Text(
+                  numValue.toStringAsFixed(1),
+                  textAlign: TextAlign.right,
+                  style: GoogleFonts.spaceMono(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: context.textPrimary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

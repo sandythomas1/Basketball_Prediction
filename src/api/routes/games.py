@@ -62,6 +62,9 @@ def build_game_with_prediction(
                 away_win_prob=round(result["prob_away_win"], 3),
                 confidence=result["confidence_tier"],
                 favored="home" if result["prob_home_win"] > 0.5 else "away",
+                confidence_score=result.get("confidence_score"),
+                confidence_qualifier=result.get("confidence_qualifier"),
+                confidence_factors=result.get("confidence_factors"),
             )
             
             # Get context

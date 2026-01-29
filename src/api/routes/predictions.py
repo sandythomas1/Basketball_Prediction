@@ -55,6 +55,9 @@ def build_prediction_response(
         away_win_prob=round(result["prob_away_win"], 3),
         confidence=result["confidence_tier"],
         favored="home" if result["prob_home_win"] > 0.5 else "away",
+        confidence_score=result.get("confidence_score"),
+        confidence_qualifier=result.get("confidence_qualifier"),
+        confidence_factors=result.get("confidence_factors"),
     )
     
     context = None
@@ -218,6 +221,9 @@ async def predict_game(
         away_win_prob=round(result["prob_away_win"], 3),
         confidence=result["confidence_tier"],
         context=context,
+        confidence_score=result.get("confidence_score"),
+        confidence_qualifier=result.get("confidence_qualifier"),
+        confidence_factors=result.get("confidence_factors"),
     )
 
 

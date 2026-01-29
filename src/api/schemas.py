@@ -45,6 +45,11 @@ class PredictionInfo(BaseModel):
     away_win_prob: float = Field(..., description="Probability away team wins (0-1)")
     confidence: str = Field(..., description="Confidence tier label")
     favored: str = Field(..., description="Which team is favored: 'home' or 'away'")
+    
+    # Game-specific confidence metrics
+    confidence_score: Optional[int] = Field(None, description="0-100 confidence score")
+    confidence_qualifier: Optional[str] = Field(None, description="High Certainty | Moderate | Volatile")
+    confidence_factors: Optional[dict] = Field(None, description="Factor breakdown")
 
 
 class GameContext(BaseModel):
@@ -82,6 +87,11 @@ class SinglePredictionResponse(BaseModel):
     away_win_prob: float
     confidence: str
     context: Optional[GameContext] = None
+    
+    # Game-specific confidence metrics
+    confidence_score: Optional[int] = None
+    confidence_qualifier: Optional[str] = None
+    confidence_factors: Optional[dict] = None
 
 
 class PredictionsListResponse(BaseModel):

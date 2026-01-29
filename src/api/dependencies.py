@@ -19,6 +19,7 @@ from core import (
     StateManager,
     FeatureBuilder,
     Predictor,
+    ConfidenceScorer,
     ESPNClient,
     OddsClient,
 )
@@ -115,10 +116,12 @@ class PredictionService:
         self.state_manager = get_state_manager()
         self.espn_client = get_espn_client()
         self.odds_client = get_odds_client()
-        self.predictor = get_predictor()
+        self._base_predictor = get_predictor()  # Base predictor without confidence scorer
+        self._predictor_with_confidence = None
         self._elo_tracker = None
         self._stats_tracker = None
         self._feature_builder = None
+        self._confidence_scorer = None
         self._odds_dict = None
     
     def _ensure_trackers(self):
@@ -126,6 +129,24 @@ class PredictionService:
         if self._elo_tracker is None or self._stats_tracker is None:
             self._elo_tracker, self._stats_tracker = get_trackers()
             self._feature_builder = FeatureBuilder(self._elo_tracker, self._stats_tracker)
+            self._confidence_scorer = ConfidenceScorer(self._stats_tracker)
+            
+            # Create predictor with confidence scorer
+            models_dir = get_models_dir()
+            model_path = models_dir / "xgb_v2_modern.json"
+            calibrator_path = models_dir / "calibrator.pkl"
+            
+            self._predictor_with_confidence = Predictor(
+                model_path,
+                calibrator_path if calibrator_path.exists() else None,
+                confidence_scorer=self._confidence_scorer,
+            )
+    
+    @property
+    def predictor(self) -> Predictor:
+        """Get predictor with confidence scoring."""
+        self._ensure_trackers()
+        return self._predictor_with_confidence
     
     @property
     def elo_tracker(self) -> EloTracker:
@@ -141,6 +162,11 @@ class PredictionService:
     def feature_builder(self) -> FeatureBuilder:
         self._ensure_trackers()
         return self._feature_builder
+    
+    @property
+    def confidence_scorer(self) -> ConfidenceScorer:
+        self._ensure_trackers()
+        return self._confidence_scorer
     
     @property
     def odds_dict(self) -> dict:
@@ -161,6 +187,8 @@ class PredictionService:
         self._elo_tracker = None
         self._stats_tracker = None
         self._feature_builder = None
+        self._confidence_scorer = None
+        self._predictor_with_confidence = None
         self._odds_dict = None
         self._ensure_trackers()
 

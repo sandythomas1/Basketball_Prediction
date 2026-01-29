@@ -148,6 +148,9 @@ class GamesNotifier extends AsyncNotifier<GamesState> {
       favoredTeam: previous.favoredTeam,
       homeElo: previous.homeElo,
       awayElo: previous.awayElo,
+      confidenceScore: previous.confidenceScore,
+      confidenceQualifier: previous.confidenceQualifier,
+      confidenceFactors: previous.confidenceFactors,
     );
   }
 
@@ -209,6 +212,9 @@ class GamesNotifier extends AsyncNotifier<GamesState> {
     String? favoredTeam;
     double? homeElo;
     double? awayElo;
+    int? confidenceScore;
+    String? confidenceQualifier;
+    Map<String, dynamic>? confidenceFactors;
 
     if (prediction != null) {
       final predInfo = prediction['prediction'] as Map<String, dynamic>?;
@@ -218,6 +224,11 @@ class GamesNotifier extends AsyncNotifier<GamesState> {
         homeWinProb = (predInfo['home_win_prob'] as num?)?.toDouble();
         awayWinProb = (predInfo['away_win_prob'] as num?)?.toDouble();
         confidenceTier = predInfo['confidence'] as String?;
+        
+        // Extract new confidence fields
+        confidenceScore = predInfo['confidence_score'] as int?;
+        confidenceQualifier = predInfo['confidence_qualifier'] as String?;
+        confidenceFactors = predInfo['confidence_factors'] as Map<String, dynamic>?;
 
         final favored = predInfo['favored'] as String?;
         if (favored == 'home') {
@@ -248,6 +259,9 @@ class GamesNotifier extends AsyncNotifier<GamesState> {
       favoredTeam: favoredTeam,
       homeElo: homeElo,
       awayElo: awayElo,
+      confidenceScore: confidenceScore,
+      confidenceQualifier: confidenceQualifier,
+      confidenceFactors: confidenceFactors,
     );
   }
 

@@ -67,6 +67,14 @@ def build_explanation(row):
     # Confidence framing
     if row.get("high_confidence", False):
         reasons.append("Strong model confidence")
+    
+    # Add confidence qualifier if available
+    if row.get("confidence_qualifier"):
+        qualifier = row["confidence_qualifier"]
+        if qualifier == "High Certainty":
+            reasons.append("High prediction certainty")
+        elif qualifier == "Volatile":
+            reasons.append("Volatile matchup dynamics")
 
     if not reasons:
         reasons.append("Balanced matchup")
@@ -115,6 +123,12 @@ def main():
         "high_disagreement",
         "upset_alert",
     ]
+    
+    # Add confidence score columns if they exist
+    if "confidence_score" in df.columns:
+        app_cols.append("confidence_score")
+    if "confidence_qualifier" in df.columns:
+        app_cols.append("confidence_qualifier")
 
     df_out = df[app_cols].copy()
 

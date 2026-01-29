@@ -13,6 +13,7 @@ from xgboost import XGBClassifier
 from .elo_tracker import EloTracker
 from .stats_tracker import StatsTracker
 from .feature_builder import FeatureBuilder
+from .confidence_scorer import ConfidenceScorer
 
 
 def confidence_tier(prob: float) -> str:
@@ -40,13 +41,14 @@ class Predictor:
     Main inference class for NBA game predictions.
     
     Loads XGBoost model and optional calibrator for generating
-    win probability predictions.
+    win probability predictions with game-specific confidence scores.
     """
 
     def __init__(
         self,
         model_path: Union[str, Path],
         calibrator_path: Optional[Union[str, Path]] = None,
+        confidence_scorer: Optional[ConfidenceScorer] = None,
     ):
         """
         Initialize Predictor with model artifacts.
@@ -55,9 +57,12 @@ class Predictor:
             model_path: Path to XGBoost model JSON file
             calibrator_path: Optional path to calibrator pickle file.
                             If provided, predictions are calibrated.
+            confidence_scorer: Optional ConfidenceScorer instance.
+                             If provided, confidence scores are calculated.
         """
         self.model_path = Path(model_path)
         self.calibrator_path = Path(calibrator_path) if calibrator_path else None
+        self.confidence_scorer = confidence_scorer
 
         # Load XGBoost model
         self._model = XGBClassifier()
@@ -94,12 +99,19 @@ class Predictor:
             return float(proba[0])
         return proba
 
-    def predict(self, features: np.ndarray) -> dict:
+    def predict(
+        self,
+        features: np.ndarray,
+        home_id: Optional[int] = None,
+        away_id: Optional[int] = None,
+    ) -> dict:
         """
-        Generate prediction with confidence tier.
+        Generate prediction with confidence tier and optional confidence scoring.
 
         Args:
             features: Feature vector of shape (23,)
+            home_id: Optional home team ID (required for confidence scoring)
+            away_id: Optional away team ID (required for confidence scoring)
 
         Returns:
             Dict with:
@@ -107,16 +119,33 @@ class Predictor:
                 - prob_away_win: float
                 - confidence_tier: str
                 - is_calibrated: bool
+                - confidence_score: int (0-100) [if confidence_scorer provided]
+                - confidence_qualifier: str [if confidence_scorer provided]
+                - confidence_factors: dict [if confidence_scorer provided]
         """
         prob_home = self.predict_proba(features)
         prob_away = 1.0 - prob_home
 
-        return {
+        result = {
             "prob_home_win": round(prob_home, 4),
             "prob_away_win": round(prob_away, 4),
             "confidence_tier": confidence_tier(prob_home),
             "is_calibrated": self._calibrator is not None,
         }
+
+        # Add confidence scoring if scorer is available and team IDs provided
+        if self.confidence_scorer and home_id is not None and away_id is not None:
+            confidence_data = self.confidence_scorer.calculate_confidence_score(
+                prob_home=prob_home,
+                features=features,
+                home_id=home_id,
+                away_id=away_id,
+            )
+            result["confidence_score"] = confidence_data["score"]
+            result["confidence_qualifier"] = confidence_data["qualifier"]
+            result["confidence_factors"] = confidence_data["factors"]
+
+        return result
 
     def predict_game(
         self,
@@ -147,8 +176,8 @@ class Predictor:
             ml_home=ml_home, ml_away=ml_away
         )
 
-        # Get prediction
-        result = self.predict(features)
+        # Get prediction (with team IDs for confidence scoring)
+        result = self.predict(features, home_id=home_id, away_id=away_id)
 
         # Add metadata
         result["home_team_id"] = home_id

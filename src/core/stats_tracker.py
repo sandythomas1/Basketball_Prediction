@@ -159,6 +159,59 @@ class StatsTracker:
 
         return rest_days, is_b2b
 
+    def get_form_volatility(self, team_id: int) -> dict[str, float]:
+        """
+        Calculate form stability metrics for a team.
+        
+        Analyzes variance in recent game margins to determine consistency.
+        Lower volatility indicates more predictable performance.
+
+        Args:
+            team_id: NBA team ID
+
+        Returns:
+            Dict with keys:
+                - margin_std: Standard deviation of point margins
+                - margin_range: Range (max - min) of margins
+                - consistency_score: Normalized score 0-1 (higher = more stable)
+        """
+        games = self._get_team_deque(team_id)
+
+        if not games or len(games) < 3:
+            # Not enough data - return neutral/high volatility indicators
+            return {
+                "margin_std": 12.0,  # Moderate volatility
+                "margin_range": 30.0,
+                "consistency_score": 0.5,
+            }
+
+        # Calculate margins for each game
+        margins = [g["pf"] - g["pa"] for g in games]
+
+        # Standard deviation
+        n = len(margins)
+        mean_margin = sum(margins) / n
+        variance = sum((m - mean_margin) ** 2 for m in margins) / n
+        margin_std = variance ** 0.5
+
+        # Range
+        margin_range = max(margins) - min(margins)
+
+        # Consistency score (0-1, higher = more consistent)
+        # Based on std dev: <5 = very consistent, >15 = very volatile
+        if margin_std <= 5.0:
+            consistency_score = 1.0
+        elif margin_std >= 15.0:
+            consistency_score = 0.0
+        else:
+            consistency_score = 1.0 - (margin_std - 5.0) / 10.0
+
+        return {
+            "margin_std": round(margin_std, 2),
+            "margin_range": round(margin_range, 2),
+            "consistency_score": round(consistency_score, 3),
+        }
+
     def to_dict(self) -> dict[int, list[dict]]:
         """
         Serialize tracker state to dictionary.

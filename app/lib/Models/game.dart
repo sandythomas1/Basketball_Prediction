@@ -16,6 +16,11 @@ class Game {
   final String? favoredTeam;
   final double? homeElo;
   final double? awayElo;
+  
+  // Game-specific confidence metrics
+  final int? confidenceScore;  // 0-100
+  final String? confidenceQualifier;  // "High Certainty", "Moderate", "Volatile"
+  final Map<String, dynamic>? confidenceFactors;  // Factor breakdown
 
   Game({
     required this.id,
@@ -32,6 +37,9 @@ class Game {
     this.favoredTeam,
     this.homeElo,
     this.awayElo,
+    this.confidenceScore,
+    this.confidenceQualifier,
+    this.confidenceFactors,
   });
 
   /// Get the favored team's win probability
@@ -84,6 +92,9 @@ class Game {
     String? favoredTeam,
     double? homeElo,
     double? awayElo,
+    int? confidenceScore,
+    String? confidenceQualifier,
+    Map<String, dynamic>? confidenceFactors,
   }) {
     return Game(
       id: id ?? this.id,
@@ -100,6 +111,9 @@ class Game {
       favoredTeam: favoredTeam ?? this.favoredTeam,
       homeElo: homeElo ?? this.homeElo,
       awayElo: awayElo ?? this.awayElo,
+      confidenceScore: confidenceScore ?? this.confidenceScore,
+      confidenceQualifier: confidenceQualifier ?? this.confidenceQualifier,
+      confidenceFactors: confidenceFactors ?? this.confidenceFactors,
     );
   }
 }
