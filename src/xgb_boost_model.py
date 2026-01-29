@@ -32,14 +32,15 @@ PREDS_OUT_PATH = Path(
 # Feature columns
 # ==========================
 FEATURE_COLS = [
-    "elo_home","elo_away","elo_diff","elo_prob",
-    "pf_roll_home","pf_roll_away","pf_roll_diff",
-    "pa_roll_home","pa_roll_away","pa_roll_diff",
-    "win_roll_home","win_roll_away","win_roll_diff",
-    "margin_roll_home","margin_roll_away","margin_roll_diff",
-    "games_in_window_home","games_in_window_away",
-    "home_rest_days","away_rest_days",
-    "home_b2b","away_b2b","rest_diff",
+    "elo_home", "elo_away", "elo_diff", "elo_prob",
+    "pf_roll_home", "pf_roll_away", "pf_roll_diff",
+    "pa_roll_home", "pa_roll_away", "pa_roll_diff",
+    "win_roll_home", "win_roll_away", "win_roll_diff",
+    "margin_roll_home", "margin_roll_away", "margin_roll_diff",
+    "games_in_window_home", "games_in_window_away",
+    "home_rest_days", "away_rest_days",
+    "home_b2b", "away_b2b", "rest_diff",
+    "market_prob_home", "market_prob_away"  # NEW FEATURES
 ]
 
 TARGET_COL = "home_win"
