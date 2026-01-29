@@ -38,9 +38,13 @@ def build_prediction_response(
     include_context: bool = True,
 ) -> GamePredictionResponse:
     """Build a prediction response for a game."""
-    # Get prediction
+    # Get odds for this matchup (from cached data)
+    ml_home, ml_away = service.get_odds_for_game(home_id, away_id)
+    
+    # Get prediction with odds
     result = service.predictor.predict_game(
-        home_id, away_id, game_date, service.feature_builder
+        home_id, away_id, game_date, service.feature_builder,
+        ml_home=ml_home, ml_away=ml_away
     )
     
     # Get features for context
@@ -181,9 +185,13 @@ async def predict_game(
     # Determine game date
     game_date = game_request.game_date or date.today().isoformat()
     
-    # Get prediction
+    # Get odds for this matchup
+    ml_home, ml_away = service.get_odds_for_game(home_id, away_id)
+    
+    # Get prediction with odds
     result = service.predictor.predict_game(
-        home_id, away_id, game_date, service.feature_builder
+        home_id, away_id, game_date, service.feature_builder,
+        ml_home=ml_home, ml_away=ml_away
     )
     
     # Get features for context

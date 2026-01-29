@@ -1,50 +1,131 @@
-# Environment files
+# =============================================================================
+# ENVIRONMENT & SECRETS (CRITICAL - NEVER COMMIT)
+# =============================================================================
 .env
 .env.*
 *.env
+.env.local
+.env.production
+.env.development
 
-# Database files
-*.sqlite
-
-# Firebase configuration files with API keys
+# =============================================================================
+# FIREBASE / GOOGLE CLOUD (contains API keys)
+# =============================================================================
+# Android
 app/android/app/google-services.json
-app/lib/firebase_options.dart
+google-services.json
+
+# iOS
 app/ios/Runner/GoogleService-Info.plist
 app/ios/firebase_app_id_file.json
+GoogleService-Info.plist
 
-# Local properties
+# Flutter generated Firebase config
+app/lib/firebase_options.dart
+firebase_options.dart
+
+# Local properties (contains SDK paths)
 app/android/local.properties
+local.properties
 
-# Service account keys (NEVER commit these!)
+# =============================================================================
+# SERVICE ACCOUNT KEYS (EXTREMELY SENSITIVE)
+# =============================================================================
 *-service-account*.json
 *serviceAccountKey*.json
 service-account*.json
 credentials*.json
+*-credentials.json
+firebase-adminsdk*.json
 
-# Secret/sensitive files
+# =============================================================================
+# CRYPTOGRAPHIC KEYS & CERTIFICATES
+# =============================================================================
 *.pem
 *.key
 *.p12
+*.jks
+*.keystore
 secrets/
 
-# IDE and OS
+# =============================================================================
+# DATABASE FILES
+# =============================================================================
+*.sqlite
+*.sqlite3
+*.db
+
+# =============================================================================
+# IDE & EDITOR
+# =============================================================================
 .idea/
 .vscode/
 *.swp
-.DS_Store
-Thumbs.db
+*.swo
+*~
 
-# Python
+# =============================================================================
+# OS GENERATED
+# =============================================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# =============================================================================
+# PYTHON
+# =============================================================================
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+.Python
 .venv/
 venv/
+ENV/
+env/
+.eggs/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
 
-# Node
+# =============================================================================
+# NODE.JS
+# =============================================================================
 node_modules/
 functions/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Build outputs
+# =============================================================================
+# BUILD OUTPUTS
+# =============================================================================
 build/
 dist/
 *.log
+*.tmp
+*.temp
+
+# =============================================================================
+# FLUTTER / DART SPECIFIC
+# =============================================================================
+# Dart generated files
+*.dart.js
+*.js_
+*.js.deps
+*.js.map
+.dart_tool/
+.packages
+pubspec.lock
+
+# Flutter build artifacts (keep only source)
+app/build/
+.flutter-plugins
+.flutter-plugins-dependencies

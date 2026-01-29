@@ -20,6 +20,7 @@ from core import (
     FeatureBuilder,
     Predictor,
     ESPNClient,
+    OddsClient,
 )
 
 
@@ -62,6 +63,12 @@ def get_state_manager() -> StateManager:
 def get_espn_client() -> ESPNClient:
     """Get singleton ESPNClient instance."""
     return ESPNClient(get_team_mapper())
+
+
+@lru_cache()
+def get_odds_client() -> OddsClient:
+    """Get singleton OddsClient instance."""
+    return OddsClient(team_mapper=get_team_mapper())
 
 
 def get_trackers() -> Tuple[EloTracker, StatsTracker]:
@@ -107,10 +114,12 @@ class PredictionService:
         self.team_mapper = get_team_mapper()
         self.state_manager = get_state_manager()
         self.espn_client = get_espn_client()
+        self.odds_client = get_odds_client()
         self.predictor = get_predictor()
         self._elo_tracker = None
         self._stats_tracker = None
         self._feature_builder = None
+        self._odds_dict = None
     
     def _ensure_trackers(self):
         """Ensure trackers are loaded."""
@@ -133,11 +142,26 @@ class PredictionService:
         self._ensure_trackers()
         return self._feature_builder
     
+    @property
+    def odds_dict(self) -> dict:
+        """Get cached odds dictionary (fetched once per day)."""
+        if self._odds_dict is None:
+            self._odds_dict = self.odds_client.get_odds_dict()
+        return self._odds_dict
+    
+    def get_odds_for_game(self, home_id: int, away_id: int) -> tuple:
+        """Get moneylines for a specific matchup."""
+        key = (home_id, away_id)
+        if key in self.odds_dict:
+            return self.odds_dict[key]
+        return None, None
+    
     def reload_state(self):
         """Reload state from disk."""
         self._elo_tracker = None
         self._stats_tracker = None
         self._feature_builder = None
+        self._odds_dict = None
         self._ensure_trackers()
 
 
