@@ -17,6 +17,7 @@ class Settings(BaseSettings):
         - ALLOWED_ORIGINS: Comma-separated list of allowed CORS origins
         - RATE_LIMIT_PER_MINUTE: API rate limit per minute per IP (default: 60)
         - DEBUG: Enable debug mode (default: False in production)
+        - ODDS_API_KEY: API key for The Odds API (free tier: 500 req/month)
     """
     
     # Environment mode
@@ -35,6 +36,9 @@ class Settings(BaseSettings):
     # API metadata
     api_title: str = "NBA Game Prediction API"
     api_version: str = "1.0.0"
+    
+    # External API keys
+    odds_api_key: str = ""  # The Odds API key for fetching betting lines
     
     class Config:
         env_file = ".env"
@@ -85,3 +89,4 @@ def get_settings() -> Settings:
 # RATE_LIMIT_PER_MINUTE=30
 # RATE_LIMIT_PER_SECOND=5
 # DEBUG=False
+# ODDS_API_KEY=your_key_from_the_odds_api_com

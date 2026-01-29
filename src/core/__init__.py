@@ -11,6 +11,7 @@ from .state_manager import StateManager
 from .espn_client import ESPNClient, GameResult
 from .game_processor import GameProcessor
 from .prediction_output import GamePrediction, PredictionOutput
+from .odds_client import OddsClient, GameOdds
 
 __all__ = [
     "TeamMapper",
@@ -24,5 +25,7 @@ __all__ = [
     "GameProcessor",
     "GamePrediction",
     "PredictionOutput",
+    "OddsClient",
+    "GameOdds",
 ]
 

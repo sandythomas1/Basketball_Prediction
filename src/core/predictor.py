@@ -124,6 +124,8 @@ class Predictor:
         away_id: int,
         game_date: Union[str, date, datetime],
         feature_builder: FeatureBuilder,
+        ml_home: Optional[float] = None,
+        ml_away: Optional[float] = None,
     ) -> dict:
         """
         End-to-end prediction for a game.
@@ -133,12 +135,17 @@ class Predictor:
             away_id: Away team NBA ID
             game_date: Date of the game
             feature_builder: FeatureBuilder instance with current state
+            ml_home: Home team moneyline odds (e.g., -150). Optional.
+            ml_away: Away team moneyline odds (e.g., +130). Optional.
 
         Returns:
             Dict with prediction results and metadata
         """
-        # Build features
-        features = feature_builder.build_features(home_id, away_id, game_date)
+        # Build features (with optional market odds)
+        features = feature_builder.build_features(
+            home_id, away_id, game_date,
+            ml_home=ml_home, ml_away=ml_away
+        )
 
         # Get prediction
         result = self.predict(features)
@@ -157,6 +164,7 @@ class Predictor:
         self,
         games: list[dict],
         feature_builder: FeatureBuilder,
+        odds_dict: Optional[dict[tuple[int, int], tuple[Optional[float], Optional[float]]]] = None,
     ) -> list[dict]:
         """
         Predict multiple games at once.
@@ -164,17 +172,28 @@ class Predictor:
         Args:
             games: List of dicts with keys: home_id, away_id, game_date
             feature_builder: FeatureBuilder instance
+            odds_dict: Optional dict mapping (home_id, away_id) to (ml_home, ml_away).
+                      If provided, odds are used as features when available.
 
         Returns:
             List of prediction results
         """
         results = []
         for game in games:
+            # Look up odds if available
+            ml_home, ml_away = None, None
+            if odds_dict:
+                key = (game["home_id"], game["away_id"])
+                if key in odds_dict:
+                    ml_home, ml_away = odds_dict[key]
+
             result = self.predict_game(
                 home_id=game["home_id"],
                 away_id=game["away_id"],
                 game_date=game["game_date"],
                 feature_builder=feature_builder,
+                ml_home=ml_home,
+                ml_away=ml_away,
             )
             results.append(result)
         return results

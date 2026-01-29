@@ -33,6 +33,7 @@ from core import (
     Predictor,
     GamePrediction,
     PredictionOutput,
+    OddsClient,
 )
 
 
@@ -79,6 +80,11 @@ def parse_args():
         type=str,
         default=None,
         help="Path to calibrator. Default: ./models/calibrator.pkl",
+    )
+    parser.add_argument(
+        "--no-odds",
+        action="store_true",
+        help="Skip fetching betting odds (use neutral 0.5 market probabilities)",
     )
     return parser.parse_args()
 
@@ -132,6 +138,13 @@ def main():
     # Create feature builder
     feature_builder = FeatureBuilder(elo_tracker, stats_tracker)
 
+    # Initialize odds client (unless disabled)
+    odds_client = None
+    odds_dict = {}
+    if not args.no_odds:
+        odds_client = OddsClient(team_mapper=team_mapper)
+        print(f"  ✓ {odds_client}")
+
     # Fetch games from ESPN
     print(f"\nFetching games for {target_date}...")
     try:
@@ -151,6 +164,15 @@ def main():
         print("\nNo upcoming games found for this date.")
         return
 
+    # Fetch betting odds (single API call for all games)
+    if odds_client and not args.no_odds:
+        print("\nFetching betting odds...")
+        odds_dict = odds_client.get_odds_dict()
+        if odds_dict:
+            print(f"  Found odds for {len(odds_dict)} matchups")
+        else:
+            print("  No odds available (using neutral market probabilities)")
+
     # Generate predictions
     print("\nGenerating predictions...")
     predictions = []
@@ -164,10 +186,20 @@ def main():
         home_id = game.home_team_id
         away_id = game.away_team_id
 
-        # Get prediction
-        result = predictor.predict_game(home_id, away_id, game.game_date, feature_builder)
+        # Look up odds for this matchup
+        ml_home, ml_away = None, None
+        if odds_dict:
+            key = (home_id, away_id)
+            if key in odds_dict:
+                ml_home, ml_away = odds_dict[key]
 
-        # Get feature details for context
+        # Get prediction (with odds if available)
+        result = predictor.predict_game(
+            home_id, away_id, game.game_date, feature_builder,
+            ml_home=ml_home, ml_away=ml_away
+        )
+
+        # Get feature details for context (with odds)
         features = feature_builder.build_features_dict(home_id, away_id, game.game_date)
 
         # Build prediction object
