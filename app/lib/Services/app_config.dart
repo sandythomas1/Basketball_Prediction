@@ -13,7 +13,7 @@ class AppConfig {
   static const bool isProduction = bool.fromEnvironment(
     'PRODUCTION',
      // change to true for production
-    defaultValue: false,
+    defaultValue: true,
   );
 
   // ============================================================================
