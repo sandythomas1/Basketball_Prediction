@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adaptive Text in Donut Chart - 5 Approaches</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --bg-card: #21262d;
+      --bg-card-hover: #30363d;
+      --accent-green: #3fb950;
+      --text-primary: #f0f6fc;
+      --text-secondary: #8b949e;
+      --text-muted: #6e7681;
+      --border-color: #30363d;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      background: linear-gradient(90deg, #f78166 0%, #d29922 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header p {
+      font-size: 16px;
+      color: var(--text-secondary);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .approaches-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      max-width: 1800px;
+      margin: 0 auto;
+    }
+
+    .approach-card {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 24px;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    .approach-card:hover {
+      border-color: var(--accent-green);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(63, 185, 80, 0.15);
+    }
+
+    .approach-card.recommended {
+      border-color: var(--accent-green);
+      box-shadow: 0 4px 16px rgba(63, 185, 80, 0.1);
+    }
+
+    .approach-header {
+      margin-bottom: 20px;
+    }
+
+    .approach-number {
+      display: inline-block;
+      background: rgba(63, 185, 80, 0.15);
+      color: var(--accent-green);
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+
+    .approach-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .recommended-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, rgba(63, 185, 80, 0.2), rgba(63, 185, 80, 0.1));
+      color: var(--accent-green);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border: 1px solid rgba(63, 185, 80, 0.3);
+    }
+
+    .approach-description {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .pros-cons {
+      margin-bottom: 24px;
+      font-size: 13px;
+    }
+
+    .pros-cons-title {
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .pros-cons ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .pros-cons li {
+      padding-left: 20px;
+      position: relative;
+      margin-bottom: 4px;
+      color: var(--text-secondary);
+    }
+
+    .pros li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--accent-green);
+      font-weight: 700;
+    }
+
+    .cons li::before {
+      content: "✗";
+      position: absolute;
+      left: 0;
+      color: #ff7b72;
+      font-weight: 700;
+    }
+
+    .examples {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .example {
+      background: var(--bg-secondary);
+      border-radius: 16px;
+      padding: 20px;
+    }
+
+    .example-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .chart-container {
+      width: 180px;
+      height: 180px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .chart-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      width: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chart-percent {
+      font-family: 'Space Mono', monospace;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--accent-green);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .chart-label {
+      color: var(--text-secondary);
+      font-weight: 700;
+      line-height: 1.2;
+      text-align: center;
+    }
+
+    /* Approach 1: Dynamic Scaling */
+    .chart-label.dynamic-short {
+      font-size: 11px;
+    }
+
+    .chart-label.dynamic-medium {
+      font-size: 9px;
+    }
+
+    .chart-label.dynamic-long {
+      font-size: 7px;
+    }
+
+    /* Approach 2: Truncation */
+    .chart-label.truncate {
+      font-size: 10px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 110px;
+    }
+
+    /* Approach 3: Multi-line */
+    .chart-label.multiline {
+      font-size: 10px;
+      white-space: normal;
+      word-wrap: break-word;
+      max-width: 110px;
+    }
+
+    .chart-label.multiline .team-name {
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .chart-label.multiline .win-text {
+      display: block;
+      color: var(--text-muted);
+      font-size: 9px;
+    }
+
+    /* Approach 4: External Label */
+    .external-container {
+      text-align: center;
+    }
+
+    .external-team-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent-green);
+      margin-bottom: 12px;
+    }
+
+    .chart-label.external-only {
+      font-size: 9px;
+      color: var(--text-muted);
+    }
+
+    .external-team-below {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent-green);
+      margin-top: 12px;
+    }
+
+    /* Approach 5: Abbreviations */
+    .chart-label.abbrev {
+      font-size: 11px;
+    }
+
+    /* Team length indicator */
+    .length-indicator {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+
+    .length-short {
+      background: rgba(63, 185, 80, 0.15);
+      color: var(--accent-green);
+    }
+
+    .length-medium {
+      background: rgba(210, 153, 34, 0.15);
+      color: #d29922;
+    }
+
+    .length-long {
+      background: rgba(248, 81, 73, 0.15);
+      color: #ff7b72;
+    }
+
+    .comparison-section {
+      margin-top: 40px;
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 32px;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .comparison-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .comparison-table th {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .comparison-table td {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .rating {
+      display: inline-flex;
+      gap: 2px;
+    }
+
+    .star {
+      color: #d29922;
+    }
+
+    .star.empty {
+      color: var(--border-color);
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Adaptive Text in Donut Chart</h1>
+    <p>5 Different Approaches for Handling Variable-Length Team Names</p>
+  </div>
+
+  <div class="approaches-container">
+    
+    <!-- Approach 1: Dynamic Text Scaling -->
+    <div class="approach-card recommended">
+      <div class="approach-header">
+        <span class="approach-number">Approach 1</span>
+        <h2 class="approach-title">
+          Dynamic Text Scaling
+          <span class="recommended-badge">Recommended</span>
+        </h2>
+        <p class="approach-description">
+          Automatically adjust font size based on text length to ensure it always fits within the donut's inner circle.
+        </p>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <div class="pros-cons-title">Pros</div>
+          <ul>
+            <li>Always fits perfectly</li>
+            <li>Single-line layout is clean</li>
+            <li>No truncation or information loss</li>
+          </ul>
+        </div>
+        <div class="cons" style="margin-top: 12px;">
+          <div class="pros-cons-title">Cons</div>
+          <ul>
+            <li>Font size varies between games</li>
+            <li>Requires calculation logic</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="examples">
+        <div class="example">
+          <div class="example-label">
+            Short Name
+            <span class="length-indicator length-short">≤8 chars</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="chart1a"></canvas>
+            <div class="chart-center">
+              <div class="chart-percent">68.2%</div>
+              <div class="chart-label dynamic-short">Heat Win</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="example-label">
+            Medium Name
+            <span class="length-indicator length-medium">9-12 chars</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="chart1b"></canvas>
+            <div class="chart-center">
+              <div class="chart-percent">65.3%</div>
+              <div class="chart-label dynamic-medium">Warriors Win</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="example-label">
+            Long Name
+            <span class="length-indicator length-long">&gt;12 chars</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="chart1c"></canvas>
+            <div class="chart-center">
+              <div class="chart-percent">72.1%</div>
+              <div class="chart-label dynamic-long">Trail Blazers Win</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Approach 2: Truncation with Ellipsis -->
+    <div class="approach-card">
+      <div class="approach-header">
+        <span class="approach-number">Approach 2</span>
+        <h2 class="approach-title">Truncation with Ellipsis</h2>
+        <p class="approach-description">
+          Use a fixed font size and truncate text with "..." when it exceeds the available width.
+        </p>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <div class="pros-cons-title">Pros</div>
+          <ul>
+            <li>Consistent font sizing</li>
+            <li>Simple to implement</li>
+            <li>Prevents overflow</li>
+          </ul>
+        </div>
+        <div class="cons" style="margin-top: 12px;">
+          <div class="pros-cons-title">Cons</div>
+          <ul>
+            <li>Information is hidden</li>
+            <li>Looks incomplete</li>
+            <li>Poor user experience</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="examples">
+        <div class="example">
+          <div class="example-label">Short Name</div>
+          <div class="chart-container">
+            <canvas id="chart2a"></canvas>
+            <div class="chart-center">
+              <div class="chart-percent">68.2%</div>
+              <div class="chart-label truncate">Heat Win</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="example-label">Medium Name</div>
+          <div class="chart-container">
+            <canvas id="chart2b"></canvas>
+            <div class="chart-center">
+              <div class="chart-percent">65.3%</div>
+              <div class="chart-label truncate">Warriors Win</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="example-label">Long Name (Truncated)</div>
+          <div class="chart-container">
+            <canvas id="chart2c"></canvas>
+            <div class="chart-center">
+              <div class="chart-percent">72.1%</div>
+              <div class="chart-label truncate">Trail Blazers Win</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Approach 3: Multi-line Text -->
+    <div class="approach-card">
+      <div class="approach-header">
+        <span class="approach-number">Approach 3</span>
+        <h2 class="approach-title">Multi-line Text</h2>
+        <p class="approach-description">
+          Break the label into multiple lines: team name on one line, "Win" on another.
+        </p>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <div class="pros-cons-title">Pros</div>
+          <ul>
+            <li>All information visible</li>
+            <li>Consistent font size</li>
+            <li>Always readable</li>
+          </ul>
+        </div>
+        <div class="cons" style="margin-top: 12px;">
+          <div class="pros-cons-title">Cons</div>
+          <ul>
+            <li>Uses more vertical space</li>
+            <li>Can feel cluttered</li>
+            <li>May still wrap awkwardly</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="examples">
+        <div class="example">
+          <div class="example-label">Short Name</div>
+          <div class="chart-container">
+            <canvas id="chart3a"></canvas>
+            <div class="chart-center">
+              <div class="chart-percent">68.2%</div>
+              <div class="chart-label multiline">
+                <span class="team-name">Heat</span>
+                <span class="win-text">Win</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="example-label">Medium Name</div>
+          <div class="chart-container">
+            <canvas id="chart3b"></canvas>
+            <div class="chart-center">
+              <div class="chart-percent">65.3%</div>
+              <div class="chart-label multiline">
+                <span class="team-name">Warriors</span>
+                <span class="win-text">Win</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="example-label">Long Name</div>
+          <div class="chart-container">
+            <canvas id="chart3c"></canvas>
+            <div class="chart-center">
+              <div class="chart-percent">72.1%</div>
+              <div class="chart-label multiline">
+                <span class="team-name">Trail Blazers</span>
+                <span class="win-text">Win</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Approach 4: External Label -->
+    <div class="approach-card recommended">
+      <div class="approach-header">
+        <span class="approach-number">Approach 4</span>
+        <h2 class="approach-title">
+          External Label
+          <span class="recommended-badge">Alternative</span>
+        </h2>
+        <p class="approach-description">
+          Move team name outside the donut, keep only percentage and "Win Probability" inside the center.
+        </p>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <div class="pros-cons-title">Pros</div>
+          <ul>
+            <li>No space constraints</li>
+            <li>Cleaner design</li>
+            <li>More professional look</li>
+          </ul>
+        </div>
+        <div class="cons" style="margin-top: 12px;">
+          <div class="pros-cons-title">Cons</div>
+          <ul>
+            <li>Less immediate connection</li>
+            <li>Requires more screen space</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="examples">
+        <div class="example">
+          <div class="example-label">Short Name</div>
+          <div class="external-container">
+            <div class="external-team-name">Miami Heat</div>
+            <div class="chart-container">
+              <canvas id="chart4a"></canvas>
+              <div class="chart-center">
+                <div class="chart-percent">68.2%</div>
+                <div class="chart-label external-only">Win Probability</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="example-label">Medium Name</div>
+          <div class="external-container">
+            <div class="external-team-name">Golden State Warriors</div>
+            <div class="chart-container">
+              <canvas id="chart4b"></canvas>
+              <div class="chart-center">
+                <div class="chart-percent">65.3%</div>
+                <div class="chart-label external-only">Win Probability</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="example-label">Long Name</div>
+          <div class="external-container">
+            <div class="external-team-name">Portland Trail Blazers</div>
+            <div class="chart-container">
+              <canvas id="chart4c"></canvas>
+              <div class="chart-center">
+                <div class="chart-percent">72.1%</div>
+                <div class="chart-label external-only">Win Probability</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Approach 5: Abbreviations Only -->
+    <div class="approach-card">
+      <div class="approach-header">
+        <span class="approach-number">Approach 5</span>
+        <h2 class="approach-title">Abbreviations Only</h2>
+        <p class="approach-description">
+          Use 3-letter NBA team codes instead of full names (e.g., "GSW Win", "LAL Win").
+        </p>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <div class="pros-cons-title">Pros</div>
+          <ul>
+            <li>Always fits perfectly</li>
+            <li>Consistent sizing</li>
+            <li>Compact and clean</li>
+          </ul>
+        </div>
+        <div class="cons" style="margin-top: 12px;">
+          <div class="pros-cons-title">Cons</div>
+          <ul>
+            <li>Less user-friendly</li>
+            <li>Requires NBA knowledge</li>
+            <li>Not intuitive for new users</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="examples">
+        <div class="example">
+          <div class="example-label">Short Name → MIA</div>
+          <div class="chart-container">
+            <canvas id="chart5a"></canvas>
+            <div class="chart-center">
+              <div class="chart-percent">68.2%</div>
+              <div class="chart-label abbrev">MIA Win</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="example-label">Medium Name → GSW</div>
+          <div class="chart-container">
+            <canvas id="chart5b"></canvas>
+            <div class="chart-center">
+              <div class="chart-percent">65.3%</div>
+              <div class="chart-label abbrev">GSW Win</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="example-label">Long Name → POR</div>
+          <div class="chart-container">
+            <canvas id="chart5c"></canvas>
+            <div class="chart-center">
+              <div class="chart-percent">72.1%</div>
+              <div class="chart-label abbrev">POR Win</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparison Table -->
+  <div class="comparison-section">
+    <h2 class="comparison-title">Approach Comparison</h2>
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>Approach</th>
+          <th>User Experience</th>
+          <th>Implementation</th>
+          <th>Consistency</th>
+          <th>Overall</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1. Dynamic Scaling</strong></td>
+          <td>
+            <span class="rating">
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star empty">★</span>
+            </span>
+          </td>
+          <td>
+            <span class="rating">
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star empty">★</span>
+              <span class="star empty">★</span>
+            </span>
+          </td>
+          <td>
+            <span class="rating">
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star empty">★</span>
+              <span class="star empty">★</span>
+            </span>
+          </td>
+          <td>
+            <span class="rating">
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star empty">★</span>
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>2. Truncation</strong></td>
+          <td>
+            <span class="rating">
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star empty">★</span>
+              <span class="star empty">★</span>
+              <span class="star empty">★</span>
+            </span>
+          </td>
+          <td>
+            <span class="rating">
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+            </span>
+          </td>
+          <td>
+            <span class="rating">
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+            </span>
+          </td>
+          <td>
+            <span class="rating">
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star empty">★</span>
+              <span class="star empty">★</span>
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>3. Multi-line</strong></td>
+          <td>
+            <span class="rating">
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star empty">★</span>
+              <span class="star empty">★</span>
+            </span>
+          </td>
+          <td>
+            <span class="rating">
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star empty">★</span>
+            </span>
+          </td>
+          <td>
+            <span class="rating">
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star empty">★</span>
+            </span>
+          </td>
+          <td>
+            <span class="rating">
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star empty">★</span>
+              <span class="star empty">★</span>
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>4. External Label</strong></td>
+          <td>
+            <span class="rating">
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+            </span>
+          </td>
+          <td>
+            <span class="rating">
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star empty">★</span>
+            </span>
+          </td>
+          <td>
+            <span class="rating">
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+            </span>
+          </td>
+          <td>
+            <span class="rating">
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>5. Abbreviations</strong></td>
+          <td>
+            <span class="rating">
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star empty">★</span>
+              <span class="star empty">★</span>
+            </span>
+          </td>
+          <td>
+            <span class="rating">
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+            </span>
+          </td>
+          <td>
+            <span class="rating">
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+            </span>
+          </td>
+          <td>
+            <span class="rating">
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star empty">★</span>
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    // Chart configuration
+    const chartConfig = {
+      type: 'doughnut',
+      options: {
+        cutout: '70%',
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            enabled: false
+          }
+        },
+        responsive: true,
+        maintainAspectRatio: true
+      }
+    };
+
+    // Create all charts
+    const charts = [
+      // Approach 1
+      { id: 'chart1a', value: 68.2 },
+      { id: 'chart1b', value: 65.3 },
+      { id: 'chart1c', value: 72.1 },
+      // Approach 2
+      { id: 'chart2a', value: 68.2 },
+      { id: 'chart2b', value: 65.3 },
+      { id: 'chart2c', value: 72.1 },
+      // Approach 3
+      { id: 'chart3a', value: 68.2 },
+      { id: 'chart3b', value: 65.3 },
+      { id: 'chart3c', value: 72.1 },
+      // Approach 4
+      { id: 'chart4a', value: 68.2 },
+      { id: 'chart4b', value: 65.3 },
+      { id: 'chart4c', value: 72.1 },
+      // Approach 5
+      { id: 'chart5a', value: 68.2 },
+      { id: 'chart5b', value: 65.3 },
+      { id: 'chart5c', value: 72.1 }
+    ];
+
+    charts.forEach(chart => {
+      const ctx = document.getElementById(chart.id);
+      if (ctx) {
+        new Chart(ctx.getContext('2d'), {
+          ...chartConfig,
+          data: {
+            datasets: [{
+              data: [chart.value, 100 - chart.value],
+              backgroundColor: [
+                '#3fb950',
+                '#30363d'
+              ],
+              borderColor: [
+                '#3fb950',
+                '#21262d'
+              ],
+              borderWidth: 2
+            }]
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

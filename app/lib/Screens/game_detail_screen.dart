@@ -277,7 +277,7 @@ class _PredictionCard extends StatelessWidget {
             ),
           ],
           const SizedBox(height: 24),
-          // Pie Chart
+          // Pie Chart with Abbreviations
           Center(
             child: SizedBox(
               height: 180,
@@ -313,16 +313,15 @@ class _PredictionCard extends StatelessWidget {
                       Text(
                         '${favoredProb.toStringAsFixed(1)}%',
                         style: GoogleFonts.spaceMono(
-                          fontSize: 14,
+                          fontSize: 15,
                           fontWeight: FontWeight.w700,
                           color: AppColors.accentGreen,
                         ),
                       ),
                       Text(
-                        // bold the favored team in the prediction label
-                        '${_getShortName(favoredTeam)} Win',
+                        '${getEspnAbbreviation(favoredTeam).toUpperCase()} Win',
                         style: GoogleFonts.dmSans(
-                          fontSize: 10,
+                          fontSize: 11,
                           color: context.textSecondary,
                           fontWeight: FontWeight.w700,
                         ),
@@ -365,11 +364,6 @@ class _PredictionCard extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  String _getShortName(String teamName) {
-    final words = teamName.split(' ');
-    return words.last;
   }
 }
 
@@ -508,11 +502,7 @@ class _EloTeam extends StatelessWidget {
   }
 
   String _getAbbreviation(String teamName) {
-    final words = teamName.split(' ');
-    if (words.length >= 2) {
-      return words.last.substring(0, 3).toUpperCase();
-    }
-    return teamName.substring(0, 3).toUpperCase();
+    return getEspnAbbreviation(teamName).toUpperCase();
   }
 }
 
