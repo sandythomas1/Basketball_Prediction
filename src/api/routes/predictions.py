@@ -62,6 +62,9 @@ def build_prediction_response(
     
     context = None
     if include_context:
+        # NEW: Fetch injury data
+        injury_summary = service.injury_client.get_matchup_injury_summary(home_id, away_id)
+        
         context = GameContext(
             home_elo=round(features["elo_home"], 1),
             away_elo=round(features["elo_away"], 1),
@@ -71,6 +74,10 @@ def build_prediction_response(
             away_rest_days=int(features["away_rest_days"]),
             home_b2b=bool(features["home_b2b"]),
             away_b2b=bool(features["away_b2b"]),
+            # NEW: Injury data
+            home_injuries=injury_summary.get("home_injuries"),
+            away_injuries=injury_summary.get("away_injuries"),
+            injury_advantage=injury_summary.get("advantage"),
         )
     
     return GamePredictionResponse(
@@ -200,6 +207,9 @@ async def predict_game(
     # Get features for context
     features = service.feature_builder.build_features_dict(home_id, away_id, game_date)
     
+    # NEW: Fetch injury data
+    injury_summary = service.injury_client.get_matchup_injury_summary(home_id, away_id)
+    
     context = GameContext(
         home_elo=round(features["elo_home"], 1),
         away_elo=round(features["elo_away"], 1),
@@ -209,6 +219,10 @@ async def predict_game(
         away_rest_days=int(features["away_rest_days"]),
         home_b2b=bool(features["home_b2b"]),
         away_b2b=bool(features["away_b2b"]),
+        # NEW: Injury data
+        home_injuries=injury_summary.get("home_injuries"),
+        away_injuries=injury_summary.get("away_injuries"),
+        injury_advantage=injury_summary.get("advantage"),
     )
     
     return SinglePredictionResponse(

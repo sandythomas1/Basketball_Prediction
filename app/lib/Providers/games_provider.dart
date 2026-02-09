@@ -151,6 +151,9 @@ class GamesNotifier extends AsyncNotifier<GamesState> {
       confidenceScore: previous.confidenceScore,
       confidenceQualifier: previous.confidenceQualifier,
       confidenceFactors: previous.confidenceFactors,
+      homeInjuries: previous.homeInjuries,
+      awayInjuries: previous.awayInjuries,
+      injuryAdvantage: previous.injuryAdvantage,
     );
   }
 
@@ -215,6 +218,9 @@ class GamesNotifier extends AsyncNotifier<GamesState> {
     int? confidenceScore;
     String? confidenceQualifier;
     Map<String, dynamic>? confidenceFactors;
+    List<String>? homeInjuries;
+    List<String>? awayInjuries;
+    String? injuryAdvantage;
 
     if (prediction != null) {
       final predInfo = prediction['prediction'] as Map<String, dynamic>?;
@@ -241,6 +247,19 @@ class GamesNotifier extends AsyncNotifier<GamesState> {
       if (context != null) {
         homeElo = (context['home_elo'] as num?)?.toDouble();
         awayElo = (context['away_elo'] as num?)?.toDouble();
+        
+        // NEW: Extract injury data
+        final homeInjuriesList = context['home_injuries'] as List<dynamic>?;
+        final awayInjuriesList = context['away_injuries'] as List<dynamic>?;
+        
+        if (homeInjuriesList != null) {
+          homeInjuries = homeInjuriesList.map((e) => e.toString()).toList();
+        }
+        if (awayInjuriesList != null) {
+          awayInjuries = awayInjuriesList.map((e) => e.toString()).toList();
+        }
+        
+        injuryAdvantage = context['injury_advantage'] as String?;
       }
     }
 
@@ -262,6 +281,9 @@ class GamesNotifier extends AsyncNotifier<GamesState> {
       confidenceScore: confidenceScore,
       confidenceQualifier: confidenceQualifier,
       confidenceFactors: confidenceFactors,
+      homeInjuries: homeInjuries,
+      awayInjuries: awayInjuries,
+      injuryAdvantage: injuryAdvantage,
     );
   }
 

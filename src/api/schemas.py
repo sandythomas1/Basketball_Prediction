@@ -62,6 +62,11 @@ class GameContext(BaseModel):
     away_rest_days: int = Field(..., description="Days since away team's last game")
     home_b2b: bool = Field(..., description="Is home team on back-to-back?")
     away_b2b: bool = Field(..., description="Is away team on back-to-back?")
+    
+    # NEW: Injury information
+    home_injuries: Optional[List[str]] = Field(None, description="List of injured players on home team")
+    away_injuries: Optional[List[str]] = Field(None, description="List of injured players on away team")
+    injury_advantage: Optional[str] = Field(None, description="Which team has health advantage: 'home', 'away', or 'even'")
 
 
 class GamePredictionResponse(BaseModel):

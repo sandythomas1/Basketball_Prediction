@@ -315,10 +315,35 @@ ELO RATINGS:
 - Away Elo: ${game.awayElo?.toInt() ?? 1500}
 - Elo Difference: ${((game.homeElo ?? 1500) - (game.awayElo ?? 1500)).toInt()} (positive favors home)
 
+INJURY REPORT:
+- Home Team Injuries: ${_formatInjuries(game.homeInjuries)}
+- Away Team Injuries: ${_formatInjuries(game.awayInjuries)}
+- Health Advantage: ${_formatAdvantage(game.injuryAdvantage)}
+
 CURRENT SCORE (if applicable):
 - Home: ${game.homeScore.isNotEmpty ? game.homeScore : 'N/A'}
 - Away: ${game.awayScore.isNotEmpty ? game.awayScore : 'N/A'}
 ''';
+  }
+  
+  /// Format injury list for display
+  String _formatInjuries(List<String>? injuries) {
+    if (injuries == null || injuries.isEmpty) {
+      return 'None reported';
+    }
+    return injuries.join(', ');
+  }
+  
+  /// Format injury advantage
+  String _formatAdvantage(String? advantage) {
+    switch (advantage) {
+      case 'home':
+        return 'Home team (away has more injuries)';
+      case 'away':
+        return 'Away team (home has more injuries)';
+      default:
+        return 'Even (both teams relatively healthy)';
+    }
   }
   
   /// Generate initial analysis based on game data
@@ -327,11 +352,18 @@ CURRENT SCORE (if applicable):
     final prob = (game.favoredProb * 100).toStringAsFixed(1);
     final tier = game.confidenceTier ?? 'Moderate';
     
+    // Check if there are injuries to mention
+    final hasInjuries = game.hasInjuries;
+    final injuryNote = hasInjuries 
+        ? '\n\nNote: There are injury concerns in this matchup that may impact the outcome.' 
+        : '';
+    
     return '''
-I've analyzed this ${game.homeTeam} vs ${game.awayTeam} matchup. The model gives ${favored} a ${prob}% win probability, classified as a "$tier" prediction.
+I've analyzed this ${game.homeTeam} vs ${game.awayTeam} matchup. The model gives ${favored} a ${prob}% win probability, classified as a "$tier" prediction.$injuryNote
 
 Feel free to ask me about:
 • Why the model favors one team
+• How injuries might affect this game
 • Historical context and trends
 • Key factors affecting the outcome
 • How the Elo ratings factor in
@@ -345,7 +377,7 @@ What would you like to know more about?
 You are an expert NBA analyst assistant for a basketball prediction app. Your role is to provide insightful, data-driven analysis of NBA games based on the prediction model's outputs.
 
 GUIDELINES:
-1. Always reference the specific game data provided (teams, probabilities, Elo ratings)
+1. Always reference the specific game data provided (teams, probabilities, Elo ratings, injuries)
 2. Explain predictions in an accessible way - avoid overly technical jargon
 3. Be conversational but professional, like a knowledgeable sports analyst
 4. When discussing probabilities, help users understand what they mean practically
@@ -353,18 +385,27 @@ GUIDELINES:
 6. Stay focused on the game analysis - don't discuss unrelated topics
 7. Be concise - users want quick insights, not essays
 8. Use the confidence tier (Strong Favorite, Moderate, Toss-Up, etc.) to frame discussions
+9. IMPORTANT: Always consider injury data in your analysis - this is critical context the model doesn't account for yet
 
 ABOUT THE PREDICTION MODEL:
 - Uses Elo ratings calibrated for NBA teams
-- Considers home court advantage
+- Considers home court advantage, rest days, and recent performance
 - Confidence tiers range from "Strong Favorite" to "Toss-Up" to "Strong Underdog"
 - Higher Elo indicates stronger recent performance
+- NOTE: The model does NOT yet account for injuries - you must factor this in your explanations
+
+INJURY CONTEXT:
+- You will receive current injury reports for both teams
+- Injuries are NOT factored into the model's prediction yet
+- When key players are out or questionable, adjust your analysis accordingly
+- Example: "The model gives Lakers 65%, but LeBron is questionable - if he sits, this becomes much closer"
 
 You can discuss:
 - Why a team is favored
 - What the Elo difference means
-- Historical context (in general terms)
+- How injuries might change the prediction
 - What would need to happen for the underdog to win
-- How confident users should be in the prediction
+- How confident users should be given the injury situation
+- Historical context (in general terms)
 ''';
 }

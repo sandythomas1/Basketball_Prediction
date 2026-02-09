@@ -23,6 +23,7 @@ from core import (
     ESPNClient,
     OddsClient,
 )
+from core.injury_client import InjuryClient
 
 
 # =============================================================================
@@ -72,6 +73,12 @@ def get_odds_client() -> OddsClient:
     return OddsClient(team_mapper=get_team_mapper())
 
 
+@lru_cache()
+def get_injury_client() -> InjuryClient:
+    """Get singleton InjuryClient instance."""
+    return InjuryClient(team_mapper=get_team_mapper())
+
+
 def get_trackers() -> Tuple[EloTracker, StatsTracker]:
     """
     Load Elo and Stats trackers from state.
@@ -116,6 +123,7 @@ class PredictionService:
         self.state_manager = get_state_manager()
         self.espn_client = get_espn_client()
         self.odds_client = get_odds_client()
+        self.injury_client = get_injury_client()  # NEW: Injury data
         self._base_predictor = get_predictor()  # Base predictor without confidence scorer
         self._predictor_with_confidence = None
         self._elo_tracker = None

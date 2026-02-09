@@ -21,6 +21,11 @@ class Game {
   final int? confidenceScore;  // 0-100
   final String? confidenceQualifier;  // "High Certainty", "Moderate", "Volatile"
   final Map<String, dynamic>? confidenceFactors;  // Factor breakdown
+  
+  // NEW: Injury information
+  final List<String>? homeInjuries;  // ["LeBron James (Q)", "Anthony Davis (O)"]
+  final List<String>? awayInjuries;
+  final String? injuryAdvantage;  // "home", "away", or "even"
 
   Game({
     required this.id,
@@ -40,6 +45,9 @@ class Game {
     this.confidenceScore,
     this.confidenceQualifier,
     this.confidenceFactors,
+    this.homeInjuries,
+    this.awayInjuries,
+    this.injuryAdvantage,
   });
 
   /// Get the favored team's win probability
@@ -75,6 +83,12 @@ class Game {
   bool get isScheduled {
     return status.toLowerCase() == 'scheduled';
   }
+  
+  /// Check if either team has significant injuries
+  bool get hasInjuries {
+    return (homeInjuries != null && homeInjuries!.isNotEmpty) ||
+           (awayInjuries != null && awayInjuries!.isNotEmpty);
+  }
 
   /// Copy with new values
   Game copyWith({
@@ -95,6 +109,9 @@ class Game {
     int? confidenceScore,
     String? confidenceQualifier,
     Map<String, dynamic>? confidenceFactors,
+    List<String>? homeInjuries,
+    List<String>? awayInjuries,
+    String? injuryAdvantage,
   }) {
     return Game(
       id: id ?? this.id,
@@ -114,6 +131,9 @@ class Game {
       confidenceScore: confidenceScore ?? this.confidenceScore,
       confidenceQualifier: confidenceQualifier ?? this.confidenceQualifier,
       confidenceFactors: confidenceFactors ?? this.confidenceFactors,
+      homeInjuries: homeInjuries ?? this.homeInjuries,
+      awayInjuries: awayInjuries ?? this.awayInjuries,
+      injuryAdvantage: injuryAdvantage ?? this.injuryAdvantage,
     );
   }
 }
