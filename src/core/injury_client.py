@@ -1,5 +1,5 @@
 """
-InjuryClient: Fetches injury reports from ESPN API.
+InjuryClient: Fetches injury reports from ESPN API with player importance.
 """
 
 from dataclasses import dataclass
@@ -285,18 +285,124 @@ class InjuryClient:
 
 
 # =============================================================================
-# Simple Injury Impact Calculator
+# Import Configuration and Player Importance
+# =============================================================================
+
+try:
+    from .config import (
+        INJURY_ADJUSTMENTS_ENABLED,
+        INJURY_ADJUSTMENT_MULTIPLIER,
+        INJURY_MAX_ADJUSTMENT,
+        INJURY_MIN_ADJUSTMENT,
+        LOG_INJURY_ADJUSTMENTS,
+        DEBUG_INJURY_CALCULATIONS,
+    )
+    from .player_importance import get_player_importance_multiplier, is_all_star
+except ImportError:
+    # Fallback for direct execution
+    INJURY_ADJUSTMENTS_ENABLED = True
+    INJURY_ADJUSTMENT_MULTIPLIER = 20
+    INJURY_MAX_ADJUSTMENT = -100
+    INJURY_MIN_ADJUSTMENT = -5
+    LOG_INJURY_ADJUSTMENTS = True
+    DEBUG_INJURY_CALCULATIONS = False
+    
+    def get_player_importance_multiplier(name: str) -> float:
+        return 1.5  # Default to starter tier
+    
+    def is_all_star(name: str) -> bool:
+        return False
+
+
+# =============================================================================
+# Enhanced Injury Impact Calculator with Player Importance
 # =============================================================================
 
 def calculate_injury_adjustment(
     injury_report: TeamInjuryReport,
+    use_player_importance: bool = True,
+    debug: bool = False
+) -> float:
+    """
+    Calculate Elo adjustment based on injury report with player importance.
+    
+    Uses sophisticated calculation:
+    - Player importance multiplier (All-Star: 2.5x, Starter: 1.5x, Bench: 1.0x)
+    - Injury status weight (Out: 1.0, Doubtful: 0.75, Questionable: 0.5)
+    - Configurable base multiplier (default: 20 Elo per severity point)
+    
+    Example:
+        LeBron James (Out) = 1.0 × 2.5 × 20 = -50 Elo
+        Role player (Questionable) = 0.5 × 1.0 × 20 = -10 Elo
+    
+    Args:
+        injury_report: Team's injury report
+        use_player_importance: Whether to apply player importance multipliers
+        debug: Print debug information
+    
+    Returns:
+        Elo adjustment (negative number = team is weaker)
+    """
+    if not injury_report or not injury_report.injuries:
+        return 0.0
+    
+    if not INJURY_ADJUSTMENTS_ENABLED:
+        return 0.0
+    
+    total_impact = 0.0
+    
+    if debug or DEBUG_INJURY_CALCULATIONS:
+        print(f"\n🔍 Calculating injury adjustment for {injury_report.team_name}:")
+    
+    for injury in injury_report.injuries:
+        # Get base severity (0.0 to 1.0)
+        severity = injury.severity_score
+        
+        # Apply player importance multiplier
+        if use_player_importance:
+            importance = get_player_importance_multiplier(injury.player_name)
+        else:
+            importance = 1.0
+        
+        # Calculate weighted severity
+        weighted_severity = severity * importance
+        
+        # Convert to Elo adjustment
+        player_impact = weighted_severity * INJURY_ADJUSTMENT_MULTIPLIER
+        total_impact += player_impact
+        
+        if debug or DEBUG_INJURY_CALCULATIONS:
+            all_star_marker = "⭐" if is_all_star(injury.player_name) else "  "
+            print(f"  {all_star_marker} {injury.player_name} ({injury.status}):")
+            print(f"     Severity: {severity:.2f} × Importance: {importance:.1f}x "
+                  f"× {INJURY_ADJUSTMENT_MULTIPLIER} = {player_impact:.1f} Elo")
+    
+    # Apply total adjustment (negative)
+    adjustment = -total_impact
+    
+    # Apply bounds
+    if adjustment < INJURY_MAX_ADJUSTMENT:
+        adjustment = INJURY_MAX_ADJUSTMENT
+        if debug or DEBUG_INJURY_CALCULATIONS:
+            print(f"  ⚠️  Capped at maximum: {INJURY_MAX_ADJUSTMENT} Elo")
+    elif adjustment > INJURY_MIN_ADJUSTMENT:
+        # If impact is too small, don't apply it
+        adjustment = 0.0
+        if debug or DEBUG_INJURY_CALCULATIONS:
+            print(f"  ⚠️  Impact too small, ignoring")
+    
+    if debug or DEBUG_INJURY_CALCULATIONS:
+        print(f"  ➡️  Total Adjustment: {adjustment:.1f} Elo")
+    
+    return adjustment
+
+
+def calculate_injury_adjustment_simple(
+    injury_report: TeamInjuryReport,
     aggressive: bool = False
 ) -> float:
     """
-    Calculate Elo adjustment based on injury report.
-    
-    This is a simple heuristic. In production, you'd want player-level
-    importance weights (e.g., All-Stars = -50 Elo, role players = -15 Elo).
+    Legacy simple adjustment calculation (for backwards compatibility).
     
     Args:
         injury_report: Team's injury report

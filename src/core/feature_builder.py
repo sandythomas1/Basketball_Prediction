@@ -10,6 +10,24 @@ import numpy as np
 from .elo_tracker import EloTracker
 from .stats_tracker import StatsTracker
 
+# Import injury-related components (optional dependencies)
+try:
+    from .injury_client import InjuryClient, calculate_injury_adjustment
+    from .injury_cache import InjuryCache, get_global_cache
+    from .config import (
+        INJURY_ADJUSTMENTS_ENABLED,
+        LOG_INJURY_ADJUSTMENTS,
+        INJURY_FALLBACK_ON_ERROR,
+        INJURY_USE_STALE_CACHE,
+    )
+    INJURY_SUPPORT_AVAILABLE = True
+except ImportError:
+    INJURY_SUPPORT_AVAILABLE = False
+    INJURY_ADJUSTMENTS_ENABLED = False
+    LOG_INJURY_ADJUSTMENTS = False
+    INJURY_FALLBACK_ON_ERROR = True
+    INJURY_USE_STALE_CACHE = True
+
 
 # Feature columns in exact order expected by the model (from xgb_boost_model.py)
 FEATURE_COLS = [
@@ -29,28 +47,45 @@ class FeatureBuilder:
     """
     Builds feature vectors for NBA game predictions.
     
-    Combines Elo ratings and rolling statistics to produce
-    the 23-feature vector expected by the XGBoost model.
+    Combines Elo ratings, rolling statistics, and optional injury adjustments
+    to produce the 25-feature vector expected by the XGBoost model.
     """
 
-    def __init__(self, elo_tracker: EloTracker, stats_tracker: StatsTracker):
+    def __init__(
+        self, 
+        elo_tracker: EloTracker, 
+        stats_tracker: StatsTracker,
+        injury_client: Optional['InjuryClient'] = None,
+        injury_cache: Optional['InjuryCache'] = None,
+    ):
         """
         Initialize FeatureBuilder with trackers.
 
         Args:
             elo_tracker: EloTracker instance with current ratings
             stats_tracker: StatsTracker instance with game history
+            injury_client: Optional InjuryClient for injury adjustments
+            injury_cache: Optional InjuryCache for caching adjustments
         """
         self.elo_tracker = elo_tracker
         self.stats_tracker = stats_tracker
+        self.injury_client = injury_client
+        self.injury_cache = injury_cache or (get_global_cache() if INJURY_SUPPORT_AVAILABLE else None)
+        
+        # Track whether injury adjustments are enabled
+        self._injury_adjustments_enabled = (
+            INJURY_SUPPORT_AVAILABLE and 
+            INJURY_ADJUSTMENTS_ENABLED and 
+            self.injury_client is not None
+        )
 
     def build_features(
         self,
         home_id: int,
         away_id: int,
         game_date: Union[str, date, datetime],
-        ml_home: Optional[float] = None, # New argument
-        ml_away: Optional[float] = None  # New argument
+        ml_home: Optional[float] = None,
+        ml_away: Optional[float] = None
 ) -> np.ndarray:
         """
         Build feature vector for a matchup.
@@ -59,13 +94,28 @@ class FeatureBuilder:
             home_id: Home team NBA ID
             away_id: Away team NBA ID
             game_date: Date of the game
+            ml_home: Home team moneyline odds (optional)
+            ml_away: Away team moneyline odds (optional)
 
         Returns:
-            numpy array of shape (23,) with features in FEATURE_COLS order
+            numpy array of shape (25,) with features in FEATURE_COLS order
         """
-        # Elo features
+        # Get base Elo ratings
         elo_home = self.elo_tracker.get_elo(home_id)
         elo_away = self.elo_tracker.get_elo(away_id)
+        
+        # Apply injury adjustments if enabled
+        if self._injury_adjustments_enabled:
+            home_adj = self._get_injury_adjustment(home_id)
+            away_adj = self._get_injury_adjustment(away_id)
+            
+            elo_home += home_adj
+            elo_away += away_adj
+            
+            if LOG_INJURY_ADJUSTMENTS and (home_adj != 0 or away_adj != 0):
+                print(f"⚕️  Injury adjustments: Home {home_adj:+.1f}, Away {away_adj:+.1f} Elo")
+        
+        # Calculate derived Elo features
         elo_diff = elo_home - elo_away
         elo_prob = self.elo_tracker.get_matchup_prob(home_id, away_id)
 
@@ -137,6 +187,69 @@ class FeatureBuilder:
         ], dtype=np.float64)
 
         return features
+    
+    def _get_injury_adjustment(self, team_id: int) -> float:
+        """
+        Get injury adjustment for a team with caching.
+        
+        Args:
+            team_id: NBA team ID
+        
+        Returns:
+            Elo adjustment (negative = team weakened by injuries)
+        """
+        if not self._injury_adjustments_enabled:
+            return 0.0
+        
+        # Try cache first
+        if self.injury_cache:
+            cached = self.injury_cache.get(team_id, allow_stale=False)
+            if cached:
+                return cached.adjustment
+        
+        # Fetch fresh injury data
+        try:
+            injury_report = self.injury_client.get_team_injuries(team_id)
+            if injury_report:
+                adjustment = calculate_injury_adjustment(injury_report)
+                
+                # Cache the result
+                if self.injury_cache:
+                    self.injury_cache.set(
+                        team_id=team_id,
+                        team_name=injury_report.team_name,
+                        adjustment=adjustment,
+                        severity=injury_report.total_severity,
+                        injuries_count=len(injury_report.injuries),
+                        injuries_summary=[
+                            f"{inj.player_name} ({inj.status})"
+                            for inj in injury_report.injuries
+                        ]
+                    )
+                
+                return adjustment
+            else:
+                # No injuries for this team
+                return 0.0
+        
+        except Exception as e:
+            # Handle fetch failure
+            if INJURY_FALLBACK_ON_ERROR:
+                # Try stale cache
+                if self.injury_cache and INJURY_USE_STALE_CACHE:
+                    cached = self.injury_cache.get(team_id, allow_stale=True)
+                    if cached:
+                        if LOG_INJURY_ADJUSTMENTS:
+                            print(f"⚠️  Using stale injury cache for team {team_id}")
+                        return cached.adjustment
+                
+                # Fall back to no adjustment
+                if LOG_INJURY_ADJUSTMENTS:
+                    print(f"⚠️  Injury fetch failed for team {team_id}, using unadjusted Elo")
+                return 0.0
+            else:
+                # Re-raise the exception
+                raise
 
     def build_features_dict(
         self,

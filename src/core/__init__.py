@@ -13,6 +13,15 @@ from .espn_client import ESPNClient, GameResult
 from .game_processor import GameProcessor
 from .prediction_output import GamePrediction, PredictionOutput
 from .odds_client import OddsClient, GameOdds
+from .injury_client import InjuryClient, PlayerInjury, TeamInjuryReport, calculate_injury_adjustment
+from .injury_cache import InjuryCache, get_global_cache
+from .player_importance import PlayerTier, get_player_tier, get_player_importance_multiplier
+
+# Configuration module (optional import)
+try:
+    from . import config
+except ImportError:
+    config = None
 
 __all__ = [
     "TeamMapper",
@@ -30,5 +39,14 @@ __all__ = [
     "PredictionOutput",
     "OddsClient",
     "GameOdds",
+    "InjuryClient",
+    "PlayerInjury",
+    "TeamInjuryReport",
+    "calculate_injury_adjustment",
+    "InjuryCache",
+    "get_global_cache",
+    "PlayerTier",
+    "get_player_tier",
+    "get_player_importance_multiplier",
+    "config",
 ]
-

@@ -136,7 +136,13 @@ class PredictionService:
         """Ensure trackers are loaded."""
         if self._elo_tracker is None or self._stats_tracker is None:
             self._elo_tracker, self._stats_tracker = get_trackers()
-            self._feature_builder = FeatureBuilder(self._elo_tracker, self._stats_tracker)
+            
+            # Create feature builder with injury support
+            self._feature_builder = FeatureBuilder(
+                self._elo_tracker, 
+                self._stats_tracker,
+                injury_client=self.injury_client,  # Pass injury client for adjustments
+            )
             self._confidence_scorer = ConfidenceScorer(self._stats_tracker)
             
             # Create predictor with confidence scorer
@@ -160,6 +166,12 @@ class PredictionService:
     def elo_tracker(self) -> EloTracker:
         self._ensure_trackers()
         return self._elo_tracker
+    
+    @property
+    def feature_builder(self) -> 'FeatureBuilder':
+        """Get feature builder with injury adjustments."""
+        self._ensure_trackers()
+        return self._feature_builder
     
     @property
     def stats_tracker(self) -> StatsTracker:

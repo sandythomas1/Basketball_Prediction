@@ -34,6 +34,7 @@ from core import (
     GamePrediction,
     PredictionOutput,
     OddsClient,
+    InjuryClient,
 )
 
 
@@ -86,6 +87,11 @@ def parse_args():
         action="store_true",
         help="Skip fetching betting odds (use neutral 0.5 market probabilities)",
     )
+    parser.add_argument(
+        "--no-injury-adjustments",
+        action="store_true",
+        help="Disable injury-based Elo adjustments",
+    )
     return parser.parse_args()
 
 
@@ -135,8 +141,18 @@ def main():
     )
     print(f"  ✓ {predictor}")
 
-    # Create feature builder
-    feature_builder = FeatureBuilder(elo_tracker, stats_tracker)
+    # Initialize injury client (unless disabled)
+    injury_client = None
+    if not args.no_injury_adjustments:
+        injury_client = InjuryClient(team_mapper)
+        print(f"  ✓ {injury_client} (Elo adjustments enabled)")
+    
+    # Create feature builder with injury support
+    feature_builder = FeatureBuilder(
+        elo_tracker, 
+        stats_tracker,
+        injury_client=injury_client,
+    )
 
     # Initialize odds client (unless disabled)
     odds_client = None
