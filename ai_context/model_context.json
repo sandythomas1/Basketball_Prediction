@@ -1,0 +1,109 @@
+{
+  "generated_at": "2026-02-11T00:00:00",
+  "model_name": "NBA Game Prediction Model v2",
+  "model_type": "XGBoost with Probability Calibration",
+  "description": "Machine learning model for predicting NBA game outcomes based on historical data, current team strength, and situational factors",
+  
+  "features_used": {
+    "elo_ratings": {
+      "description": "Team strength ratings based on historical performance (similar to chess Elo)",
+      "features": ["elo_home", "elo_away", "elo_diff"],
+      "typical_range": "1200-1650 (higher is better)"
+    },
+    "rolling_stats": {
+      "description": "Recent performance metrics (last 10 games)",
+      "features": [
+        "win_roll_home - home team's recent win percentage",
+        "win_roll_away - away team's recent win percentage",
+        "margin_roll_home - home team's recent point differential",
+        "margin_roll_away - away team's recent point differential"
+      ]
+    },
+    "rest_factors": {
+      "description": "Days of rest and back-to-back game indicators",
+      "features": [
+        "home_rest_days - days since last game for home team",
+        "away_rest_days - days since last game for away team",
+        "home_b2b - home team playing back-to-back",
+        "away_b2b - away team playing back-to-back"
+      ],
+      "impact": "Teams on back-to-backs typically see 2-5% decrease in win probability"
+    },
+    "betting_markets": {
+      "description": "Implied probabilities from betting markets (when available)",
+      "features": ["market_prob_home", "market_prob_away"],
+      "note": "Market odds often reflect late-breaking news like injuries"
+    },
+    "injury_adjustments": {
+      "description": "Elo adjustments based on player injuries",
+      "how_it_works": "Current injury reports are fetched from ESPN API. Each injury is assigned a severity score (Out=1.0, Doubtful=0.75, Questionable=0.5). Player importance multipliers are applied (All-Star=2.5x, Starter=1.5x, Bench=1.0x). The total is converted to an Elo adjustment.",
+      "example": "LeBron James (Out) = 1.0 × 2.5 × 20 = -50 Elo points for his team",
+      "note": "Injuries adjust Elo ratings before prediction, not as separate features"
+    }
+  },
+  
+  "output": {
+    "home_win_probability": "Probability that home team wins (0.0 to 1.0)",
+    "away_win_probability": "Probability that away team wins (0.0 to 1.0)",
+    "confidence_tier": "Categorization of prediction confidence"
+  },
+  
+  "confidence_tiers": {
+    "Heavy Favorite": "Win probability > 75% - Very confident prediction",
+    "Moderate Favorite": "Win probability 65-75% - Confident favorite",
+    "Lean Favorite": "Win probability 60-65% - Slight favorite",
+    "Toss-Up": "Win probability 50-60% - Very uncertain outcome",
+    "Lean Underdog": "Win probability 40-50% - Slight underdog (flip perspective)",
+    "Moderate Underdog": "Win probability 35-40% - Clear underdog",
+    "Heavy Underdog": "Win probability < 35% - Major underdog"
+  },
+  
+  "important_notes": {
+    "injury_lag": "The model's core features don't include real-time injuries as training data. However, Elo ratings are adjusted based on current injury reports before making predictions, so injury impact IS reflected in the probabilities.",
+    
+    "market_incorporation": "Betting market probabilities are included as features when available. Markets often react quickly to injury news, providing another signal.",
+    
+    "elo_system": "Elo ratings update after each game based on results and margin of victory. A team that wins by 20 points gains more Elo than a team winning by 2.",
+    
+    "calibration": "Probabilities are calibrated to be well-calibrated (i.e., when model says 70%, the team should win ~70% of the time over many games).",
+    
+    "uncertainty": "Toss-up games (near 50/50) are inherently unpredictable. Many factors not in the model (player mood, referee calls, random variance) can swing these games."
+  },
+  
+  "interpretation_guide": {
+    "high_confidence_games": "Games with clear favorites (>70% win probability) tend to be more predictable. These often involve large Elo differences or teams on different performance trajectories.",
+    
+    "toss_ups": "Games near 50/50 are inherently uncertain. The model sees both teams as roughly equal in strength. Small factors can swing the result.",
+    
+    "injury_impact": {
+      "all_star_out": "Major All-Star player out = typically 5-15% shift in win probability",
+      "starter_out": "Regular starter out = typically 2-5% shift",
+      "bench_player_out": "Minimal impact, usually <2%",
+      "multiple_injuries": "Multiple starters out can compound to 15-20%+ impact"
+    },
+    
+    "home_court_advantage": "Home court advantage (~2-3% on average) is built into the model through historical training data and Elo system.",
+    
+    "back_to_backs": "Teams on second night of back-to-back typically see 2-5% decrease in win probability due to fatigue.",
+    
+    "recent_form": "Teams on hot streaks (high recent win %) get a boost in prediction even if their Elo hasn't caught up yet.",
+    
+    "model_limitations": {
+      "no_lineups": "Model doesn't know specific starting lineups until game time",
+      "no_player_stats": "Model works at team level, not individual player level",
+      "no_matchups": "Doesn't account for specific team matchup advantages (e.g., Team A struggles against Team B historically)",
+      "lag_on_trades": "Major trades take 5-10 games for Elo to fully reflect impact",
+      "situational_context": "Doesn't know about playoff implications, rest decisions, or tanking strategies"
+    }
+  },
+  
+  "common_user_questions": {
+    "why_different_from_vegas": "Vegas odds incorporate information from professional bettors and sharp money. They may have access to lineup news or insider information before it's public. Also, odds are set to balance betting action, not just predict outcomes.",
+    
+    "model_vs_market": "When model disagrees strongly with betting markets, it usually means: (1) late injury news the model hasn't incorporated yet, (2) sharp bettors know something, or (3) model found a genuine edge based on underlying team strength.",
+    
+    "how_to_use_predictions": "Use predictions as one input among many. High-confidence picks (>70%) tend to be more reliable. Toss-ups are genuinely uncertain - don't overthink them. Always check injury reports before game time.",
+    
+    "why_did_prediction_fail": "Even 90% favorites lose 10% of the time. Basketball has high variance. Any single game can swing on a hot shooting night, ref calls, or random luck. Evaluate model performance over 50+ games, not individual picks."
+  }
+}
