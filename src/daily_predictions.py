@@ -107,8 +107,8 @@ def main():
     # Setup paths
     project_root = Path(__file__).parent.parent
     state_dir = Path(args.state_dir) if args.state_dir else project_root / "state"
-    model_path = Path(args.model_path) if args.model_path else project_root / "models" / "xgb_v2_modern.json"
-    calibrator_path = Path(args.calibrator_path) if args.calibrator_path else project_root / "models" / "calibrator.pkl"
+    model_path = Path(args.model_path) if args.model_path else project_root / "models" / "xgb_v3_with_injuries.json"
+    calibrator_path = Path(args.calibrator_path) if args.calibrator_path else project_root / "models" / "calibrator_v3.pkl"
 
     print(f"{'=' * 70}")
     print(f"NBA Game Predictions - {target_date}")
@@ -188,6 +188,17 @@ def main():
             print(f"  Found odds for {len(odds_dict)} matchups")
         else:
             print("  No odds available (using neutral market probabilities)")
+
+    # Pre-warm injury cache with a single ESPN call covering all 30 teams.
+    # Without this, _get_injury_features() would hit ESPN once per team lookup
+    # (up to 2x per game). This brings it down to exactly 1 HTTP request total.
+    if injury_client:
+        print("\nFetching injury reports...")
+        n_teams = feature_builder.prefetch_all_injuries()
+        if n_teams:
+            print(f"  Cached injury data for {n_teams} teams (valid 4h)")
+        else:
+            print("  No injury data available (predictions unaffected)")
 
     # Generate predictions
     print("\nGenerating predictions...")

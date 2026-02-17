@@ -9,7 +9,7 @@ from xgboost import XGBClassifier
 # Paths
 # ==========================
 FEATURES_PATH = Path(
-    "/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/data/processed/features_3.csv"
+    "/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/data/processed/features_with_injuries.csv"
 )
 
 GAMES_PATH = Path(
@@ -17,11 +17,11 @@ GAMES_PATH = Path(
 )
 
 MODEL_OUT_PATH = Path(
-    "/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/models/xgb_v2_modern.json"
+    "/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/models/xgb_v3_with_injuries.json"
 )
 
 CALIBRATOR_OUT_PATH = Path(
-    "/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/models/calibrator.pkl"
+    "/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/models/calibrator_v3.pkl"
 )
 
 PREDS_OUT_PATH = Path(
@@ -32,15 +32,25 @@ PREDS_OUT_PATH = Path(
 # Feature columns
 # ==========================
 FEATURE_COLS = [
+    # Elo ratings
     "elo_home", "elo_away", "elo_diff", "elo_prob",
+    # Rolling scoring stats
     "pf_roll_home", "pf_roll_away", "pf_roll_diff",
     "pa_roll_home", "pa_roll_away", "pa_roll_diff",
+    # Rolling win/margin stats
     "win_roll_home", "win_roll_away", "win_roll_diff",
     "margin_roll_home", "margin_roll_away", "margin_roll_diff",
+    # Game-window context
     "games_in_window_home", "games_in_window_away",
+    # Rest / fatigue
     "home_rest_days", "away_rest_days",
     "home_b2b", "away_b2b", "rest_diff",
-    "market_prob_home", "market_prob_away"  # NEW FEATURES
+    # Betting market probabilities
+    "market_prob_home", "market_prob_away",
+    # Injury features (zero-imputed for training; live ESPN data at inference)
+    "home_players_out", "away_players_out",
+    "home_players_questionable", "away_players_questionable",
+    "home_injury_severity", "away_injury_severity",
 ]
 
 TARGET_COL = "home_win"
