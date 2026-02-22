@@ -374,7 +374,7 @@ What would you like to know more about?
   
   /// System prompt defining the AI's behavior
   static const String _systemPrompt = '''
-You are an expert NBA analyst assistant for a basketball prediction app. Your role is to provide insightful, data-driven analysis of NBA games based on the prediction model's outputs.
+You are an expert NBA analyst assistant for the Signal Sports app. Your role is to provide insightful, data-driven analysis of NBA games based on the prediction model's outputs.
 
 GUIDELINES:
 1. Always reference the specific game data provided (teams, probabilities, Elo ratings, injuries)

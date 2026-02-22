@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../Models/notification.dart';
 import '../Providers/notification_provider.dart';
 import '../theme/app_theme.dart';
+
 import 'other_user_profile_screen.dart';
 
 /// Screen displaying user notifications

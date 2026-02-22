@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../Providers/auth_provider.dart';
 import '../Providers/user_provider.dart';
 import '../theme/app_theme.dart';
+
 import 'followers_list_screen.dart';
 
 /// Enhanced profile screen with user info display, photo upload, and logout
@@ -113,6 +114,42 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       SnackBar(
         content: Text(message),
         backgroundColor: AppColors.errorRed,
+      ),
+    );
+  }
+
+  void _showSuccessSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppColors.accentGreen,
+      ),
+    );
+  }
+
+  Future<void> _showChangeUsernameSheet(String currentUsername, String firstName, String lastName) async {
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) => _ChangeUsernameSheet(
+        currentUsername: currentUsername,
+        onSave: (newUsername) async {
+          final userService = ref.read(userServiceProvider);
+          final result = await userService.updateProfile(
+            firstName: firstName,
+            lastName: lastName,
+            newUsername: newUsername,
+          );
+          if (mounted) {
+            if (result.success) {
+              _showSuccessSnackBar('Username updated to @$newUsername');
+              ref.invalidate(userProfileProvider);
+            } else {
+              _showErrorSnackBar(result.errorMessage ?? 'Failed to update username');
+            }
+          }
+        },
       ),
     );
   }
@@ -409,13 +446,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
             const SizedBox(height: 16),
             
-            // Username
+            // Username (with edit button)
             _buildInfoRow(
               context,
               icon: Icons.alternate_email,
               label: 'Username',
               value: '@${profile.username}',
               valueColor: AppColors.accentBlue,
+              onEdit: () => _showChangeUsernameSheet(
+                profile.username,
+                profile.firstName,
+                profile.lastName,
+              ),
             ),
             const SizedBox(height: 16),
           ],
@@ -450,6 +492,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     required String label,
     required String value,
     Color? valueColor,
+    VoidCallback? onEdit,
   }) {
     return Row(
       children: [
@@ -489,6 +532,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ],
           ),
         ),
+        if (onEdit != null)
+          GestureDetector(
+            onTap: onEdit,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: context.bgSecondary,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: context.borderColor),
+              ),
+              child: Icon(
+                Icons.edit_outlined,
+                size: 16,
+                color: AppColors.accentBlue,
+              ),
+            ),
+          ),
       ],
     );
   }
@@ -715,6 +775,299 @@ class _ImageSourceSheet extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+/// Bottom sheet for changing username with real-time availability checking
+class _ChangeUsernameSheet extends ConsumerStatefulWidget {
+  final String currentUsername;
+  final Future<void> Function(String newUsername) onSave;
+
+  const _ChangeUsernameSheet({
+    required this.currentUsername,
+    required this.onSave,
+  });
+
+  @override
+  ConsumerState<_ChangeUsernameSheet> createState() => _ChangeUsernameSheetState();
+}
+
+class _ChangeUsernameSheetState extends ConsumerState<_ChangeUsernameSheet> {
+  late final TextEditingController _controller;
+  bool _isChecking = false;
+  bool _isSaving = false;
+  bool? _isAvailable; // null = not checked, true = available, false = taken
+  String? _validationError;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.currentUsername);
+    _controller.addListener(_onUsernameChanged);
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(_onUsernameChanged);
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _onUsernameChanged() {
+    final value = _controller.text;
+
+    // Reset state
+    setState(() {
+      _isAvailable = null;
+      _validationError = null;
+    });
+
+    // If same as current, no need to check
+    if (value.toLowerCase().trim() == widget.currentUsername.toLowerCase()) {
+      return;
+    }
+
+    // Validate format first
+    final userService = ref.read(userServiceProvider);
+    final error = userService.validateUsername(value);
+    if (error != null) {
+      setState(() => _validationError = error);
+      return;
+    }
+
+    // Debounced availability check
+    Future.delayed(const Duration(milliseconds: 500), () async {
+      if (!mounted || _controller.text != value) return;
+      setState(() => _isChecking = true);
+      final available = await userService.isUsernameAvailable(value.toLowerCase().trim());
+      if (!mounted || _controller.text != value) return;
+      setState(() {
+        _isChecking = false;
+        _isAvailable = available;
+      });
+    });
+  }
+
+  bool get _canSave {
+    final value = _controller.text;
+    if (_isSaving || _isChecking) return false;
+    if (value.toLowerCase().trim() == widget.currentUsername.toLowerCase()) return false;
+    if (_validationError != null) return false;
+    return _isAvailable == true;
+  }
+
+  Future<void> _save() async {
+    setState(() => _isSaving = true);
+    try {
+      await widget.onSave(_controller.text.toLowerCase().trim());
+      if (mounted) Navigator.pop(context);
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final value = _controller.text;
+    final isUnchanged = value.toLowerCase().trim() == widget.currentUsername.toLowerCase();
+
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: Container(
+        margin: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: context.bgCard,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Handle
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: context.borderColor,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Title
+            Text(
+              'Change Username',
+              style: GoogleFonts.dmSans(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: context.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Choose a unique username. Others can search for you by it.',
+              style: GoogleFonts.dmSans(
+                fontSize: 13,
+                color: context.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Input field
+            TextFormField(
+              controller: _controller,
+              autofocus: true,
+              style: GoogleFonts.dmSans(fontSize: 16, color: context.textPrimary),
+              decoration: InputDecoration(
+                prefixText: '@',
+                prefixStyle: GoogleFonts.dmSans(
+                  fontSize: 16,
+                  color: context.textSecondary,
+                ),
+                hintText: 'username',
+                hintStyle: GoogleFonts.dmSans(color: context.textMuted),
+                suffixIcon: _buildSuffixIcon(),
+              ),
+            ),
+
+            // Status message
+            const SizedBox(height: 8),
+            _buildStatusMessage(isUnchanged),
+
+            const SizedBox(height: 24),
+
+            // Buttons row
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: _isSaving ? null : () => Navigator.pop(context),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      side: BorderSide(color: context.borderColor),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      'Cancel',
+                      style: GoogleFonts.dmSans(
+                        fontWeight: FontWeight.w600,
+                        color: context.textSecondary,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: _canSave
+                          ? const LinearGradient(
+                              colors: [AppColors.accentOrange, AppColors.accentYellow],
+                            )
+                          : null,
+                      color: _canSave ? null : context.bgSecondary,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: ElevatedButton(
+                      onPressed: _canSave ? _save : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        disabledBackgroundColor: Colors.transparent,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: _isSaving
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : Text(
+                              'Save',
+                              style: GoogleFonts.dmSans(
+                                fontWeight: FontWeight.w600,
+                                color: _canSave ? Colors.white : context.textMuted,
+                              ),
+                            ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget? _buildSuffixIcon() {
+    if (_controller.text.isEmpty) return null;
+    if (_isChecking) {
+      return const Padding(
+        padding: EdgeInsets.all(12),
+        child: SizedBox(
+          width: 20,
+          height: 20,
+          child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.accentOrange),
+        ),
+      );
+    }
+    if (_isAvailable == true) {
+      return const Icon(Icons.check_circle, color: AppColors.accentGreen);
+    }
+    if (_isAvailable == false) {
+      return const Icon(Icons.cancel, color: AppColors.errorRed);
+    }
+    if (_validationError != null) {
+      return const Icon(Icons.error_outline, color: AppColors.errorRed);
+    }
+    return null;
+  }
+
+  Widget _buildStatusMessage(bool isUnchanged) {
+    if (isUnchanged) {
+      return Text(
+        'This is your current username',
+        style: GoogleFonts.dmSans(fontSize: 13, color: context.textMuted),
+      );
+    }
+    if (_validationError != null) {
+      return Text(
+        _validationError!,
+        style: GoogleFonts.dmSans(fontSize: 13, color: AppColors.errorRed),
+      );
+    }
+    if (_isChecking) {
+      return Text(
+        'Checking availability...',
+        style: GoogleFonts.dmSans(fontSize: 13, color: context.textMuted),
+      );
+    }
+    if (_isAvailable == true) {
+      return Text(
+        'Username is available!',
+        style: GoogleFonts.dmSans(fontSize: 13, color: AppColors.accentGreen),
+      );
+    }
+    if (_isAvailable == false) {
+      return Text(
+        'Username is already taken',
+        style: GoogleFonts.dmSans(fontSize: 13, color: AppColors.errorRed),
+      );
+    }
+    return const SizedBox.shrink();
   }
 }
 

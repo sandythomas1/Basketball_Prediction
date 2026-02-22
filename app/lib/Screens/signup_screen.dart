@@ -6,6 +6,7 @@ import '../Providers/auth_provider.dart';
 import '../Providers/user_provider.dart';
 import '../Services/validators.dart';
 import '../theme/app_theme.dart';
+import '../Widgets/signal_logo.dart';
 
 /// Sign up screen with email/password registration and profile creation
 class SignupScreen extends ConsumerStatefulWidget {
@@ -250,7 +251,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Join thousands of NBA prediction enthusiasts',
+                  'Join Signal Sports today',
                   style: GoogleFonts.dmSans(
                     fontSize: 14,
                     color: context.textSecondary,
@@ -551,35 +552,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   }
 
   Widget _buildSmallLogo(BuildContext context) {
-    return Align(
+    return const Align(
       alignment: Alignment.centerLeft,
-      child: Container(
-        width: 56,
-        height: 56,
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [
-              AppColors.accentOrange,
-              AppColors.accentYellow,
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.accentOrange.withOpacity(0.3),
-              blurRadius: 16,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: const Icon(
-          Icons.sports_basketball,
-          size: 32,
-          color: Colors.white,
-        ),
-      ),
+      child: SignalLogo(size: 56),
     );
   }
 

@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../Models/user_profile.dart';
 import '../Providers/user_provider.dart';
 import '../theme/app_theme.dart';
+
 import 'other_user_profile_screen.dart';
 
 /// Screen displaying the list of followers for a user

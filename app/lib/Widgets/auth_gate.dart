@@ -5,6 +5,7 @@ import '../Providers/auth_provider.dart';
 import '../Screens/login_screen.dart';
 import '../Screens/main_navigation.dart';
 import '../theme/app_theme.dart';
+import 'signal_logo.dart';
 
 /// Auth gate widget that controls access to the app based on authentication state.
 /// Shows LoginScreen when unauthenticated, MainNavigation when authenticated.
@@ -46,41 +47,15 @@ class _LoadingScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Logo
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [
-                    AppColors.accentOrange,
-                    AppColors.accentYellow,
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.accentOrange.withOpacity(0.3),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: const Icon(
-                Icons.sports_basketball,
-                size: 48,
-                color: Colors.white,
-              ),
-            ),
+            // Signal Sports Logo
+            const SignalLogo(size: 80),
             const SizedBox(height: 32),
             ShaderMask(
               shaderCallback: (bounds) => const LinearGradient(
                 colors: [AppColors.accentOrange, AppColors.accentYellow],
               ).createShader(bounds),
               child: Text(
-                'NBA Predictions',
+                'Signal Sports',
                 style: GoogleFonts.dmSans(
                   fontSize: 24,
                   fontWeight: FontWeight.w700,

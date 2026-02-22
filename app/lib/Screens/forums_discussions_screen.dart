@@ -9,6 +9,7 @@ import '../Providers/user_provider.dart';
 import '../Services/validators.dart';
 import '../theme/app_theme.dart';
 
+
 class ForumsDiscussionScreen extends ConsumerStatefulWidget {
   final String? gameId;
   const ForumsDiscussionScreen({super.key, this.gameId});

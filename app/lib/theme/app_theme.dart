@@ -24,8 +24,8 @@ class AppColors {
   static const Color lightTextMuted = Color(0xFF8b949e);
 
   // Accent colors (same for both themes)
-  static const Color accentOrange = Color(0xFFf78166);
-  static const Color accentYellow = Color(0xFFd29922);
+  static const Color accentOrange = Color(0xFF00D4CC);
+  static const Color accentYellow = Color(0xFF2563EB);
   static const Color accentBlue = Color(0xFF58a6ff);
   static const Color accentGreen = Color(0xFF3fb950);
   static const Color accentPurple = Color(0xFFbc8cff);

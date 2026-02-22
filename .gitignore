@@ -15,6 +15,11 @@
 app/android/app/google-services.json
 google-services.json
 
+# =============================================================================
+# DEVELOPMENT MOCKUPS (not needed in version control)
+# =============================================================================
+app/mockup/
+
 # iOS
 app/ios/Runner/GoogleService-Info.plist
 app/ios/firebase_app_id_file.json

@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'secure_storage_service.dart';
 
@@ -28,7 +29,19 @@ class AuthResult {
 /// Service class for Firebase Authentication
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  // The serverClientId is the OAuth 2.0 Web Client ID from Firebase Console.
+  // It is a *public* identifier (not a secret) — visible in google-services.json
+  // and in any decompiled APK. Security is enforced server-side via the registered
+  // SHA-1 fingerprint, not by keeping this value private.
+  static const String _googleWebClientId = String.fromEnvironment(
+    'GOOGLE_WEB_CLIENT_ID',
+    defaultValue: '791769083784-25fia4a3ff7le5137846tn8c3ct5japi.apps.googleusercontent.com',
+  );
+
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: ['email', 'profile'],
+    serverClientId: _googleWebClientId,
+  );
   final SecureStorageService _secureStorage = SecureStorageService.instance;
 
   /// Stream of auth state changes
@@ -71,6 +84,13 @@ class AuthService {
   /// Sign in with Google
   Future<AuthResult> signInWithGoogle() async {
     try {
+      // Disconnect any previous session so the user can pick an account
+      try {
+        await _googleSignIn.disconnect();
+      } catch (_) {
+        // Ignore – no previous session
+      }
+
       // Trigger the Google Sign In flow
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
@@ -95,7 +115,8 @@ class AuthService {
     } on FirebaseAuthException catch (e) {
       return AuthResult.failure(_getErrorMessage(e.code));
     } catch (e) {
-      return AuthResult.failure('Failed to sign in with Google. Please try again.');
+      debugPrint('Google Sign-In error: $e');
+      return AuthResult.failure('Google sign-in failed: ${e.toString()}');
     }
   }
 

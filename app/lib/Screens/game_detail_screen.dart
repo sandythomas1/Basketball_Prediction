@@ -6,6 +6,7 @@ import '../Models/game.dart';
 import '../Widgets/team_logo.dart';
 import '../Widgets/ai_chat_widget.dart';
 import '../theme/app_theme.dart';
+
 import 'forums_discussions_screen.dart';
 
 /// Detailed game screen with prediction visualization

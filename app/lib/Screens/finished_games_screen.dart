@@ -6,6 +6,7 @@ import '../Providers/games_provider.dart';
 import '../Widgets/team_logo.dart';
 import '../theme/app_theme.dart';
 
+
 /// Screen showing finished games with final scores
 class FinishedGamesScreen extends ConsumerWidget {
   const FinishedGamesScreen({super.key});
@@ -123,7 +124,7 @@ class FinishedGamesScreen extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.sports_basketball_outlined,
+              Icons.sports_outlined,
               size: 48,
               color: context.textMuted,
             ),

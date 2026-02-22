@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../Models/user_profile.dart';
 import '../Providers/user_provider.dart';
 import '../theme/app_theme.dart';
+
 import 'followers_list_screen.dart';
 
 /// Screen to view another user's profile

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../Providers/auth_provider.dart';
+import '../Providers/user_provider.dart';
 import '../Services/validators.dart';
 import '../theme/app_theme.dart';
+import '../Widgets/signal_logo.dart';
 import 'signup_screen.dart';
 import 'forgot_password_screen.dart';
 
@@ -61,16 +63,73 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     });
 
     final authService = ref.read(authServiceProvider);
+    final userService = ref.read(userServiceProvider);
     final result = await authService.signInWithGoogle();
 
     if (!mounted) return;
 
-    setState(() {
-      _isLoading = false;
-      if (!result.success) {
-        _errorMessage = result.errorMessage;
+    if (result.success && result.user != null) {
+      // Check if profile exists; create one for first-time Google users
+      final existingProfile = await userService.getProfile(result.user!.uid);
+
+      if (existingProfile == null) {
+        final displayName = result.user!.displayName ?? '';
+        final nameParts = displayName.split(' ');
+        final firstName = nameParts.isNotEmpty ? nameParts.first : '';
+        final lastName =
+            nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+
+        // Generate a unique username from email
+        final emailPrefix =
+            result.user!.email?.split('@').first ?? 'user';
+        var username = emailPrefix
+            .replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '')
+            .toLowerCase();
+        if (username.length < 3) username = '${username}user';
+        if (username.length > 20) username = username.substring(0, 20);
+
+        // Ensure username uniqueness
+        var isAvailable = await userService.isUsernameAvailable(username);
+        var attempts = 0;
+        while (!isAvailable && attempts < 10) {
+          username =
+              '${username.substring(0, (username.length > 15 ? 15 : username.length))}${DateTime.now().millisecondsSinceEpoch % 10000}';
+          isAvailable = await userService.isUsernameAvailable(username);
+          attempts++;
+        }
+
+        final profileResult = await userService.createProfile(
+          uid: result.user!.uid,
+          email: result.user!.email ?? '',
+          firstName: firstName,
+          lastName: lastName,
+          username: username,
+        );
+
+        if (!mounted) return;
+
+        if (!profileResult.success) {
+          await authService.signOut();
+          setState(() {
+            _isLoading = false;
+            _errorMessage = profileResult.errorMessage;
+          });
+          return;
+        }
       }
-    });
+
+      // Auth successful — AuthGate will handle navigation
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } else {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = result.errorMessage;
+      });
+    }
   }
 
   void _navigateToSignUp() {
@@ -242,41 +301,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget _buildBranding(BuildContext context) {
     return Column(
       children: [
-        // Logo - keeping original design as requested
-        Container(
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [
-                AppColors.accentOrange,
-                AppColors.accentYellow,
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.accentOrange.withOpacity(0.3),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: const Icon(
-            Icons.sports_basketball,
-            size: 48,
-            color: Colors.white,
-          ),
-        ),
+        // Signal Sports Logo
+        const SignalLogo(size: 80),
         const SizedBox(height: 20),
         ShaderMask(
           shaderCallback: (bounds) => const LinearGradient(
             colors: [AppColors.accentOrange, AppColors.accentYellow],
           ).createShader(bounds),
           child: Text(
-            'NBA Predictions',
+            'Signal Sports',
             style: GoogleFonts.dmSans(
               fontSize: 28,
               fontWeight: FontWeight.w700,

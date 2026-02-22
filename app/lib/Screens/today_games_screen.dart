@@ -13,6 +13,7 @@ import 'profile_screen.dart';
 import 'notifications_screen.dart';
 import '../Screens/forums_discussions_screen.dart';
 import '../Screens/user_search_screen.dart';
+import '../Providers/theme_provider.dart';
 
 /// Screen showing all of today's games with prediction access
 class TodayGamesScreen extends ConsumerWidget {
@@ -34,7 +35,7 @@ class TodayGamesScreen extends ConsumerWidget {
           ).createShader(bounds),
           child: Text(
             // center the text
-            'NBA Predictions',
+            'Signal Sports',
             style: GoogleFonts.dmSans(
               fontSize: 20,
               fontWeight: FontWeight.w600,
@@ -136,7 +137,7 @@ class TodayGamesScreen extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.sports_basketball,
+              Icons.sports_outlined,
               size: 48,
               color: context.textMuted,
             ),
@@ -541,7 +542,7 @@ class _AppDrawer extends ConsumerWidget {
                 ),
                 const Divider(height: 1),
                 _DrawerItem(
-                  icon: Icons.sports_basketball_outlined,
+                  icon: Icons.forum_outlined,
                   label: 'Global Forums',
                   onTap: () {
                     Navigator.pop(context);
@@ -557,6 +558,8 @@ class _AppDrawer extends ConsumerWidget {
                   showAsDrawerSection: true,
                   onUserSelected: () => Navigator.pop(context),
                 ),
+                const Divider(height: 1),
+                _ThemeToggleItem(),
               ],
             ),
           ),
@@ -566,7 +569,7 @@ class _AppDrawer extends ConsumerWidget {
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Text(
-                'NBA Predictions v1.0.0',
+                'Signal Sports v1.0.0',
                 style: GoogleFonts.spaceMono(
                   fontSize: 11,
                   color: context.textMuted,
@@ -766,6 +769,68 @@ class _DrawerItem extends StatelessWidget {
         size: 20,
       ),
       onTap: onTap,
+    );
+  }
+}
+
+/// Theme mode toggle drawer item
+class _ThemeToggleItem extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeModeProvider);
+
+    IconData icon;
+    String label;
+    switch (themeMode) {
+      case ThemeMode.light:
+        icon = Icons.light_mode;
+        label = 'Light Mode';
+        break;
+      case ThemeMode.dark:
+        icon = Icons.dark_mode;
+        label = 'Dark Mode';
+        break;
+      case ThemeMode.system:
+        icon = Icons.brightness_auto;
+        label = 'System Theme';
+        break;
+    }
+
+    return ListTile(
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: context.bgCard,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Icon(
+          icon,
+          color: context.textSecondary,
+          size: 22,
+        ),
+      ),
+      title: Text(
+        label,
+        style: GoogleFonts.dmSans(
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
+          color: context.textPrimary,
+        ),
+      ),
+      trailing: Icon(
+        Icons.chevron_right,
+        color: context.textMuted,
+        size: 20,
+      ),
+      onTap: () {
+        // Cycle: system → light → dark → system
+        final next = switch (themeMode) {
+          ThemeMode.system => ThemeMode.light,
+          ThemeMode.light => ThemeMode.dark,
+          ThemeMode.dark => ThemeMode.system,
+        };
+        ref.read(themeModeProvider.notifier).state = next;
+      },
     );
   }
 }
