@@ -1,21 +1,24 @@
+import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../Models/game.dart';
+import '../Services/agent_chat_service.dart';
 import '../Services/ai_chat_service.dart';
 
-/// Chat message model
+// ── Chat message model ────────────────────────────────────────────────────────
+
 class ChatMessage {
   final String text;
   final bool isUser;
   final DateTime timestamp;
   final bool isLoading;
-  
+
   ChatMessage({
     required this.text,
     required this.isUser,
     DateTime? timestamp,
     this.isLoading = false,
   }) : timestamp = timestamp ?? DateTime.now();
-  
+
   ChatMessage copyWith({
     String? text,
     bool? isUser,
@@ -31,28 +34,42 @@ class ChatMessage {
   }
 }
 
-/// State for the AI chat
+// ── State model ───────────────────────────────────────────────────────────────
+
 class AIChatState {
   final List<ChatMessage> messages;
   final bool isInitialized;
   final bool isLoading;
   final String? error;
   final Game? currentGame;
-  
+
+  // ── Usage / rate-limit ────────────────────────────────────────────────────
+  final int chatsUsedToday;
+  final int chatsRemaining;
+  final bool isRateLimited;
+
+  static const int dailyLimit = AgentChatService.dailyLimit;
+
   const AIChatState({
     this.messages = const [],
     this.isInitialized = false,
     this.isLoading = false,
     this.error,
     this.currentGame,
+    this.chatsUsedToday = 0,
+    this.chatsRemaining = dailyLimit,
+    this.isRateLimited = false,
   });
-  
+
   AIChatState copyWith({
     List<ChatMessage>? messages,
     bool? isInitialized,
     bool? isLoading,
     String? error,
     Game? currentGame,
+    int? chatsUsedToday,
+    int? chatsRemaining,
+    bool? isRateLimited,
   }) {
     return AIChatState(
       messages: messages ?? this.messages,
@@ -60,167 +77,223 @@ class AIChatState {
       isLoading: isLoading ?? this.isLoading,
       error: error,
       currentGame: currentGame ?? this.currentGame,
+      chatsUsedToday: chatsUsedToday ?? this.chatsUsedToday,
+      chatsRemaining: chatsRemaining ?? this.chatsRemaining,
+      isRateLimited: isRateLimited ?? this.isRateLimited,
     );
   }
 }
 
-/// Notifier for managing AI chat state
+// ── Notifier ──────────────────────────────────────────────────────────────────
+
 class AIChatNotifier extends StateNotifier<AIChatState> {
   final AIChatService _service;
-  
+  final AgentChatService _agentService = AgentChatService();
+
   AIChatNotifier(this._service) : super(const AIChatState());
-  
-  /// Initialize chat for a specific game
+
+  // ── Initialization ──────────────────────────────────────────────────────
+
+  /// Initialize chat for a specific game and fetch today's usage from Firebase.
   Future<void> initializeForGame(Game game) async {
     // Skip if already initialized for this game
-    if (state.currentGame?.id == game.id && state.isInitialized) {
-      return;
-    }
-    
+    if (state.currentGame?.id == game.id && state.isInitialized) return;
+
     state = state.copyWith(
       isLoading: true,
       error: null,
       currentGame: game,
       messages: [],
     );
-    
+
+    // Load today's usage in parallel with chat init
+    await Future.wait([
+      _fetchAndApplyUsage(),
+      _service.startGameChat(game),
+    ]);
+
+    // Add initial AI message
+    final initialMessage = ChatMessage(
+      text: _getInitialMessage(game),
+      isUser: false,
+    );
+
+    state = state.copyWith(
+      isInitialized: true,
+      isLoading: false,
+      messages: [initialMessage],
+    );
+  }
+
+  /// Fetch today's chat count from Firebase Realtime Database and update state.
+  Future<void> _fetchAndApplyUsage() async {
     try {
-      await _service.startGameChat(game);
-      
-      // Add initial AI message
-      final initialMessage = ChatMessage(
-        text: _getInitialMessage(game),
-        isUser: false,
-      );
-      
+      final used = await _agentService.fetchTodayUsage();
+      final remaining = max(0, AIChatState.dailyLimit - used);
       state = state.copyWith(
-        isInitialized: true,
-        isLoading: false,
-        messages: [initialMessage],
+        chatsUsedToday: used,
+        chatsRemaining: remaining,
+        isRateLimited: used >= AIChatState.dailyLimit,
       );
-    } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        error: 'Failed to initialize AI: ${e.toString()}',
-      );
+    } catch (_) {
+      // Non-fatal — usage display will just show defaults
     }
   }
-  
-  /// Send a message and get streaming response
+
+  // ── Messaging ───────────────────────────────────────────────────────────
+
+  /// Send a message and get a streaming response.
   Future<void> sendMessage(String text) async {
-    // Allow sending if initialized, even if previous message is still loading
     if (!state.isInitialized) {
       state = state.copyWith(error: 'Chat not initialized. Please try again.');
       return;
     }
-    
-    // Prevent double-sending while loading
+
     if (state.isLoading) return;
-    
-    // Add user message
-    final userMessage = ChatMessage(text: text, isUser: true);
-    
-    // Add placeholder for AI response
-    final aiPlaceholder = ChatMessage(
-      text: '...',
-      isUser: false,
-      isLoading: true,
-    );
-    
+
+    // Optimistic check — block at the UI layer before even calling the API
+    if (state.isRateLimited) {
+      _appendSystemMessage(
+        "You've used all ${AIChatState.dailyLimit} free AI chats for today. "
+        "Come back tomorrow or upgrade to Pro for unlimited access. 🔓",
+      );
+      return;
+    }
+
+    // Add user message + AI placeholder
+    final userMsg = ChatMessage(text: text, isUser: true);
+    final aiPlaceholder = ChatMessage(text: '', isUser: false, isLoading: true);
+
     state = state.copyWith(
-      messages: [...state.messages, userMessage, aiPlaceholder],
+      messages: [...state.messages, userMsg, aiPlaceholder],
       isLoading: true,
-      error: null, // Clear any previous error
+      error: null,
     );
-    
+
     try {
       String fullResponse = '';
-      
+
       await for (final chunk in _service.sendMessageStream(text)) {
         fullResponse += chunk;
-        
-        // Update the AI message with streamed content
-        final updatedMessages = [...state.messages];
-        updatedMessages[updatedMessages.length - 1] = ChatMessage(
+
+        final updated = [...state.messages];
+        updated[updated.length - 1] = ChatMessage(
           text: fullResponse,
           isUser: false,
           isLoading: true,
         );
-        state = state.copyWith(messages: updatedMessages);
+        state = state.copyWith(messages: updated);
       }
-      
-      // Handle empty response
+
       if (fullResponse.trim().isEmpty) {
-        fullResponse = 'I apologize, but I could not generate a response. Please try asking your question differently.';
+        fullResponse =
+            'I apologize, but I could not generate a response. Please try asking differently.';
       }
-      
-      // Mark as complete
-      final updatedMessages = [...state.messages];
-      updatedMessages[updatedMessages.length - 1] = ChatMessage(
-        text: fullResponse,
-        isUser: false,
-        isLoading: false,
-      );
+
+      // Mark message complete
+      final updated = [...state.messages];
+      updated[updated.length - 1] =
+          ChatMessage(text: fullResponse, isUser: false, isLoading: false);
+
+      // Decrement remaining optimistically (server is the source of truth;
+      // the backend already incremented before we got the response)
+      final newUsed = state.chatsUsedToday + 1;
+      final newRemaining = max(0, AIChatState.dailyLimit - newUsed);
+
       state = state.copyWith(
-        messages: updatedMessages,
+        messages: updated,
         isLoading: false,
+        chatsUsedToday: newUsed,
+        chatsRemaining: newRemaining,
+        isRateLimited: newRemaining == 0,
       );
+    } on AgentChatException catch (e) {
+      if (e.isRateLimited) {
+        // Server confirmed the limit — update state and show friendly message
+        final used = e.chatsUsedToday ?? AIChatState.dailyLimit;
+        final updated = [...state.messages];
+        updated[updated.length - 1] = ChatMessage(
+          text: "You've used all ${AIChatState.dailyLimit} free AI chats for today. "
+              "Come back tomorrow or upgrade to Pro for unlimited access. 🔓",
+          isUser: false,
+          isLoading: false,
+        );
+        state = state.copyWith(
+          messages: updated,
+          isLoading: false,
+          chatsUsedToday: used,
+          chatsRemaining: 0,
+          isRateLimited: true,
+        );
+      } else {
+        _replaceLastMessageWithError(e.message);
+      }
     } catch (e) {
-      // Update the placeholder with error message instead of removing it
-      final updatedMessages = [...state.messages];
-      updatedMessages[updatedMessages.length - 1] = ChatMessage(
-        text: 'Sorry, I encountered an error. Please try again.\n\nError: ${e.toString().replaceAll('Exception:', '').trim()}',
-        isUser: false,
-        isLoading: false,
-      );
-      state = state.copyWith(
-        messages: updatedMessages,
-        isLoading: false,
-        error: null, // Don't set error state, message shows the error
+      _replaceLastMessageWithError(
+        'Sorry, I encountered an error. Please try again.\n\n'
+        '${e.toString().replaceAll('Exception:', '').trim()}',
       );
     }
   }
-  
-  /// Clear error state
-  void clearError() {
-    state = state.copyWith(error: null);
+
+  // ── Helpers ─────────────────────────────────────────────────────────────
+
+  void _replaceLastMessageWithError(String errorText) {
+    final updated = [...state.messages];
+    if (updated.isNotEmpty) {
+      updated[updated.length - 1] =
+          ChatMessage(text: errorText, isUser: false, isLoading: false);
+    }
+    state = state.copyWith(messages: updated, isLoading: false, error: null);
   }
-  
-  /// Reset chat for a new game
+
+  void _appendSystemMessage(String text) {
+    state = state.copyWith(
+      messages: [
+        ...state.messages,
+        ChatMessage(text: text, isUser: false, isLoading: false),
+      ],
+    );
+  }
+
+  void clearError() => state = state.copyWith(error: null);
+
   void reset() {
     _service.clearChat();
     state = const AIChatState();
   }
-  
+
   String _getInitialMessage(Game game) {
     final favored = game.favoredTeam ?? game.homeTeam;
     final prob = (game.favoredProb * 100).toStringAsFixed(0);
     final tier = game.confidenceTier ?? 'Moderate';
-    
+
     return '''👋 Hey! I've analyzed this **${game.homeTeam}** vs **${game.awayTeam}** matchup.
 
 📊 **Quick Take:** The model gives **$favored** a **$prob%** win probability — that's a "$tier" prediction.
 
 Ask me anything about this game! For example:
-• "Why is ${favored} favored?"
+• "Why is $favored favored?"
 • "What do the Elo ratings tell us?"
 • "How confident should I be?"''';
   }
 }
 
-/// Provider for the AI chat service
+// ── Providers ─────────────────────────────────────────────────────────────────
+
 final aiChatServiceProvider = Provider<AIChatService>((ref) {
   return AIChatService();
 });
 
-/// Provider for AI chat state
-final aiChatProvider = StateNotifierProvider<AIChatNotifier, AIChatState>((ref) {
+final aiChatProvider =
+    StateNotifierProvider<AIChatNotifier, AIChatState>((ref) {
   final service = ref.watch(aiChatServiceProvider);
   return AIChatNotifier(service);
 });
 
-/// Provider for quick game analysis (one-shot, no chat)
-final gameAnalysisProvider = FutureProvider.family<String, Game>((ref, game) async {
+/// One-shot quick analysis (no chat, no usage tracking)
+final gameAnalysisProvider =
+    FutureProvider.family<String, Game>((ref, game) async {
   final service = ref.watch(aiChatServiceProvider);
   return service.generateQuickAnalysis(game);
 });

@@ -1,0 +1,1196 @@
+{
+  "generated_at": "2026-02-22T00:02:02.476140",
+  "last_updated": "2026-02-22 00:02:02 ET",
+  "league": "NBA",
+  "total_teams": 29,
+  "teams": [
+    {
+      "team_id": 1610612737,
+      "team_name": "Atlanta Hawks",
+      "injury_count": 1,
+      "players_out": 1,
+      "players_questionable": 0,
+      "severity_score": 1.0,
+      "has_significant_injuries": true,
+      "elo_adjustment": -30.0,
+      "injuries": [
+        {
+          "player_name": "Jonathan Kuminga",
+          "player_id": "519280",
+          "status": "Out",
+          "injury_type": "Knee",
+          "details": "Kuminga remains in recovery mode after sustaining a left knee bone bruise in late January with the Warriors. As a result, it appears the forward will miss at least Atlanta's next four games before being re-evaluated. Until Kuminga is ready to make his Hawks debut, more playing time will remain available for Corey Kispert and Zaccharie Risacher.",
+          "severity_score": 1.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612738,
+      "team_name": "Boston Celtics",
+      "injury_count": 1,
+      "players_out": 1,
+      "players_questionable": 0,
+      "severity_score": 1.0,
+      "has_significant_injuries": true,
+      "elo_adjustment": -50.0,
+      "injuries": [
+        {
+          "player_name": "Jayson Tatum",
+          "player_id": "519112",
+          "status": "Out",
+          "injury_type": "Achilles",
+          "details": "Though Tatum achieved a major milestone in his recovery process Tuesday by taking part in 5-on-5 scrimmaging for the first time since tearing his right Achilles tendon May 12, both he and the Celtics aren't yet willing to offer up a timeline for him to resume playing in games. Instead, Tatum will continue working to regain conditioning over the next few weeks while gradually the intensity of his on-court workload, and the Celtics will see how he responds before mapping out a potential return date. Tatum still looks to be a worthwhile player to stash in deeper formats or in shallower leagues with multiple injured-list slots, but fantasy managers should keep in mind that if and when he returns, the 27-year-old forward will likely be operating with a strict minutes limit for at least his first handful of games.",
+          "severity_score": 1.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612751,
+      "team_name": "Brooklyn Nets",
+      "injury_count": 1,
+      "players_out": 1,
+      "players_questionable": 0,
+      "severity_score": 1.0,
+      "has_significant_injuries": true,
+      "elo_adjustment": -30.0,
+      "injuries": [
+        {
+          "player_name": "Ziaire Williams",
+          "player_id": "519814",
+          "status": "Out",
+          "injury_type": "Personal",
+          "details": "Williams will be sidelined for a second consecutive game while attending to a personal matter, and his next chance to play is Tuesday against the Mavericks. Terance Mann, Jalen Wilson and Ochai Agbaji are slated to see more minutes off the bench in Williams' absence.",
+          "severity_score": 1.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612766,
+      "team_name": "Charlotte Hornets",
+      "injury_count": 4,
+      "players_out": 2,
+      "players_questionable": 0,
+      "severity_score": 2.0,
+      "has_significant_injuries": true,
+      "elo_adjustment": -60.0,
+      "injuries": [
+        {
+          "player_name": "Liam McNeeley",
+          "player_id": "519816",
+          "status": "Out",
+          "injury_type": "Ankle",
+          "details": "McNeeley has been dealing with a left ankle sprain since early February and will not be available for Sunday's contest. He appeared to fall out of the Hornets' rotation prior to his ankle issue, so his return -- which could take place Tuesday against the Bulls -- wouldn't make much of an impact.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Coby White",
+          "player_id": "519810",
+          "status": "Out",
+          "injury_type": "Calf",
+          "details": "White has yet to make his Hornets debut due to a left calf strain and is without a clear timetable for a return. He should be considered highly questionable for Tuesday's game against the Bulls.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Moussa Diabate",
+          "player_id": "518793",
+          "status": "Suspension",
+          "injury_type": "Suspension",
+          "details": "Miles Bridges was also suspended four games, with both players eligible to return Feb. 24 against the Bulls. In Diabate's absence, Ryan Kalkbrenner will likely be asked to step into the starting role, and he'll offer a lot of upside in fantasy for the short term.",
+          "severity_score": 0.0
+        },
+        {
+          "player_name": "Miles Bridges",
+          "player_id": "-39170",
+          "status": "Suspension",
+          "injury_type": "Suspension",
+          "details": "Isaiah Stewart received the biggest suspension with seven games, and Bridges was right behind him with four. Fantasy managers knew something like this was coming, and now Bridges is ineligible to play until Feb. 24 against the Bulls. In the meantime, players such as Grant Williams and Sion James could see more minutes for the Hornets.",
+          "severity_score": 0.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612741,
+      "team_name": "Chicago Bulls",
+      "injury_count": 4,
+      "players_out": 3,
+      "players_questionable": 0,
+      "severity_score": 3.25,
+      "has_significant_injuries": true,
+      "elo_adjustment": -97.5,
+      "injuries": [
+        {
+          "player_name": "Anfernee Simons",
+          "player_id": "519855",
+          "status": "Day-To-Day",
+          "injury_type": "Wrist",
+          "details": "Simons came off the bench for the first time since joining Chicago, and he won't be able to finish the game as a result of the injury. This left wrist problem also puts his status for Sunday's game against the Magic in jeopardy. Simons finished Saturday's contest with four points (2-6 FG, 0-1 3Pt) and two rebounds across 13 minutes.",
+          "severity_score": 0.25
+        },
+        {
+          "player_name": "Zach Collins",
+          "player_id": "519734",
+          "status": "Out",
+          "injury_type": "Toe",
+          "details": "Collins has not played since sustaining the injury against the Bucks on Dec. 27. He was recently reevaluated by medical staff, who determined that season-ending surgery was the best course of action for the veteran big man. Collins was limited to just 10 regular-season games due to injury and averaged 9.7 points, 5.6 rebounds, 1.5 assists and 0.9 threes over 18.4 minutes per game. He will enter the offseason as an unrestricted free agent.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Jaden Ivey",
+          "player_id": "519732",
+          "status": "Out",
+          "injury_type": "Knee",
+          "details": "Ivey has been dealing with pain in his left knee, and the injury is severe enough for the fourth-year guard to be sidelined for an extended period of time. He was acquired by the Bulls from the Pistons in early February and averaged 11.5 points, 4.8 rebounds, 3.0 assists, 2.0 threes and 2.0 steals over 28.8 minute per game in four outings (three starts) with Chicago. Ivey's absence means Collin Sexton, Tre Jones and Rob Dillingham should all take on expanded roles off the bench behind backcourt starters Josh Giddey and Anfernee Simons.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Noa Essengue",
+          "player_id": "506876",
+          "status": "Out",
+          "injury_type": "Shoulder",
+          "details": "The No. 12 overall pick in the 2025 NBA Draft, Essengue's rookie season comes to an end with just two brief appearances to his name. The Bulls had a plan to bring him along slowly, to be clear, and he showed a lot of promise in four G League appearances with averages of 23.0 points, 8.5 rebounds, 2.3 assists, 1.0 steals and 1.3 three-pointers.",
+          "severity_score": 1.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612739,
+      "team_name": "Cleveland Cavaliers",
+      "injury_count": 1,
+      "players_out": 1,
+      "players_questionable": 0,
+      "severity_score": 1.0,
+      "has_significant_injuries": true,
+      "elo_adjustment": -30.0,
+      "injuries": [
+        {
+          "player_name": "Max Strus",
+          "player_id": "519276",
+          "status": "Out",
+          "injury_type": "Foot",
+          "details": "Strus is ramping up his activity amidst his recovery from offseason foot surgery, but it doesn't seem like he'll be ready for game action imminently. For the time being, the 29-year-old swingman can be deemed week-to-week. Until Strus is cleared to play, Jaylon Tyson remains worth holding in the majority of fantasy leagues.",
+          "severity_score": 1.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612742,
+      "team_name": "Dallas Mavericks",
+      "injury_count": 6,
+      "players_out": 3,
+      "players_questionable": 0,
+      "severity_score": 3.75,
+      "has_significant_injuries": true,
+      "elo_adjustment": -100,
+      "injuries": [
+        {
+          "player_name": "Caleb Martin",
+          "player_id": "519797",
+          "status": "Day-To-Day",
+          "injury_type": "Ankle",
+          "details": "Martin missed Dallas' final outing before the All-Star break due to a left ankle sprain but returned to action in Friday's loss to Minnesota. He appears likely to play in a second consecutive contest and may see a bump in minutes due to Cooper Flagg (foot) being sidelined. Over five February appearances (three starts), Martin has averaged 7.6 points and 3.4 rebounds in 22.2 minutes per tilt.",
+          "severity_score": 0.25
+        },
+        {
+          "player_name": "Daniel Gafford",
+          "player_id": "519796",
+          "status": "Day-To-Day",
+          "injury_type": "Ankle",
+          "details": "Gafford has been managing a right ankle injury since mid-January and is in jeopardy of missing Sunday's game. Marvin Bagley would be the top candidate to start at center and Dwight Powell would have an elevated role off the bench if Gafford is unable to play. Gafford has averaged 8.6 points, 6.4 rebounds, 1.2 assists and 1.5 blocks over 23.5 minutes per game over his last 10 outings.",
+          "severity_score": 0.25
+        },
+        {
+          "player_name": "Max Christie",
+          "player_id": "519795",
+          "status": "Day-To-Day",
+          "injury_type": "Ankle",
+          "details": "Christie was held out of Friday's loss to Minnesota after spraining his left ankle in Thursday's practice, though the questionable tag suggests he's day-to-day. If the sharpshooter remains sidelined for a second straight game, Klay Thompson, Tyus Jones and AJ Johnson would be candidates for increased playing time.",
+          "severity_score": 0.25
+        },
+        {
+          "player_name": "Cooper Flagg",
+          "player_id": "519794",
+          "status": "Out",
+          "injury_type": "Foot",
+          "details": "Flagg's absence will extend to three games as he continues to rehab from a left foot sprain, and his next chance to play is Tuesday against the Nets. Khris Middleton, Klay Thompson and Naji Marshall will continue to operate in expanded roles for as long as Flagg is out of action.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Kyrie Irving",
+          "player_id": "519265",
+          "status": "Out",
+          "injury_type": "Knee",
+          "details": "The Mavericks are 19-35 and pivoting towards a rebuild, so this news is not a big surprise. By waiting until the 2026-27 season to return from his torn ACL, Irving will be able to take his time with his rehab to ensure that he returns at full strength. Irving is under contract for one more season with a $42.42 million player option for 2027-28.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Dereck Lively II",
+          "player_id": "509456",
+          "status": "Out",
+          "injury_type": "Foot",
+          "details": "Lively sought out multiple opinions on his right foot, but it was ultimately determined that season-ending surgery was the best course of action for the third-year center, and he's expected to make a full recovery ahead of the 2026-27 season. Daniel Gafford and Dwight Powell will continue to serve as the main big men for Dallas behind Anthony Davis in Lively's absence.",
+          "severity_score": 1.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612743,
+      "team_name": "Denver Nuggets",
+      "injury_count": 5,
+      "players_out": 4,
+      "players_questionable": 0,
+      "severity_score": 4.25,
+      "has_significant_injuries": true,
+      "elo_adjustment": -100,
+      "injuries": [
+        {
+          "player_name": "Jamal Murray",
+          "player_id": "-39465",
+          "status": "Day-To-Day",
+          "injury_type": "Hamstring",
+          "details": "Murray was questionable for Friday's game against the Trail Blazers, but he finished with 25 points (6-12 FG, 6-12 3Pt, 7-7 FT), six rebounds, six assists and one steal over 25 minutes. The questionable tag for this contest suggests a decision on Murray will be made closer to Sunday's 3:30 p.m. ET tipoff. Murray is averaging 24.5 points, 5.3 rebounds and 8.6 assists per game since the beginning of February.",
+          "severity_score": 0.25
+        },
+        {
+          "player_name": "Jalen Pickett",
+          "player_id": "519838",
+          "status": "Out",
+          "injury_type": "Knee",
+          "details": "Pickett has been dealing with some lingering right knee soreness and will be held out of Sunday's contest. His next opportunity to play will come Wednesday against Boston.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Peyton Watson",
+          "player_id": "517817",
+          "status": "Out",
+          "injury_type": "Hamstring",
+          "details": "This is a devasting blow for the Nuggets, and the franchise has had some awful luck with injuries this season. Watson has had a breakout season in Denver, averaging 14.9 points, 4.9 rebounds, 2.0 assists, 1.2 blocks and 1.0 steals while hitting 41.7 percent from beyond the arc. With Watson sidelined, there will be more opportunities for guys like Julian Strawther, Spencer Jones, Tim Hardaway and maybe even Zeke Nnaji.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Aaron Gordon",
+          "player_id": "516359",
+          "status": "Out",
+          "injury_type": "Hamstring",
+          "details": "This is a brutal blow for Denver and for Gordon's fantasy managers. If he's re-evaluated at the front end of this timetable, a return against the Thunder on Feb. 27 would be the best-case scenario. In Gordon's absence, Peyton Watson will likely take on a larger role, and Spencer Jones and Bruce Brown could see more run as well.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Tamar Bates",
+          "player_id": "509671",
+          "status": "Out",
+          "injury_type": "Foot",
+          "details": "Bates underwent surgery Monday to repair a fractured left foot, and he's expected to miss about three months. Through 13 G League appearances, the two-way player has averaged 19.5 points, 4.2 rebounds, 2.2 assists and 1.6 steals in 33.2 minutes per game.",
+          "severity_score": 1.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612765,
+      "team_name": "Detroit Pistons",
+      "injury_count": 2,
+      "players_out": 1,
+      "players_questionable": 0,
+      "severity_score": 1.0,
+      "has_significant_injuries": true,
+      "elo_adjustment": -30.0,
+      "injuries": [
+        {
+          "player_name": "Isaac Jones",
+          "player_id": "-39435",
+          "status": "Out",
+          "injury_type": "Coach's Decision",
+          "details": "Jones was previously waived by Detroit on Feb. 4 as part of a roster crunch at the trade deadline, but the franchise moved quickly to scoop him back up. Jones will likely play a key role in the G League for the remainder of the season.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Isaiah Stewart",
+          "player_id": "518790",
+          "status": "Suspension",
+          "injury_type": "Suspension",
+          "details": "The Pistons were anticipating a lengthy suspension and got one for their backup center after he aggressively charged the aforementioned players. Jalen Duren will be suspended for a pair of games, making Paul Reed a decent pickup in fantasy hoops for the short term. Stewart will be eligible to return March 3 against the Cavaliers.",
+          "severity_score": 0.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612744,
+      "team_name": "Golden State Warriors",
+      "injury_count": 5,
+      "players_out": 4,
+      "players_questionable": 0,
+      "severity_score": 4.25,
+      "has_significant_injuries": true,
+      "elo_adjustment": -100,
+      "injuries": [
+        {
+          "player_name": "Kristaps Porzingis",
+          "player_id": "519801",
+          "status": "Day-To-Day",
+          "injury_type": "Achilles",
+          "details": "Porzingis is likely to suit up for a second consecutive contest after making his Warriors debut in Thursday's loss to Boston, during which he supplied 12 points (5-9 FG, 2-5 3Pt), one rebound, one assist and one block over 17 minutes off the bench. If he's cleared to play, the big man is expected to see a bump in minutes with the second unit, according to Sam Gordon of the San Francisco Chronicle.",
+          "severity_score": 0.25
+        },
+        {
+          "player_name": "Stephen Curry",
+          "player_id": "519415",
+          "status": "Out",
+          "injury_type": "Knee",
+          "details": "Cyrry has been sidelined by a lingering right knee injury since Jan. 30, which prevented him from playing in the Warriors' final five games before the All-Star break. The superstar guard hasn't progressed enough in his recovery as hoped, and he'll have his knee looked at again by medical staff in early March to determine a clearer timeline for a return. With Curry sidelined, the Warriors will continue to lean more heavily on Pat Spencer, Brandin Podziemski and Gary Payton.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Seth Curry",
+          "player_id": "519294",
+          "status": "Out",
+          "injury_type": "Back",
+          "details": "Curry is progressing in his recovery from left sciatic nerve irritation, but he'll need to do a bit more ramping up before returning to the court. That said, the veteran guard's continued absence doesn't appear to affect the Golden State backcourt rotation in a meaningful way.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "L.J. Cryer",
+          "player_id": "518714",
+          "status": "Out",
+          "injury_type": "Hamstring",
+          "details": "Cryer has missed significant time while tending to a left hamstring injury, as Wednesday will mark his eighth straight absence. He'll need to wait until after the All-Star break to return to action.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Jimmy Butler III",
+          "player_id": "518507",
+          "status": "Out",
+          "injury_type": "Knee",
+          "details": "Butler suffered a season-ending ACL injury Jan. 19 against Miami, and he's since gone under the knife so that he can begin the recovery process. It's promising news that the procedure went as expected, though it's still too early to try to predict a timeline for Butler's return. The Warriors stated that an update on his progress will be disclosed early in the 2026-27 campaign.",
+          "severity_score": 1.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612745,
+      "team_name": "Houston Rockets",
+      "injury_count": 3,
+      "players_out": 2,
+      "players_questionable": 0,
+      "severity_score": 2.25,
+      "has_significant_injuries": true,
+      "elo_adjustment": -67.5,
+      "injuries": [
+        {
+          "player_name": "Jae'Sean Tate",
+          "player_id": "519857",
+          "status": "Day-To-Day",
+          "injury_type": "Knee",
+          "details": "Tate was taken to the locker room in the second quarter after being tangled up with Karl-Anthony Towns, and in the end, the veteran forward won't be able to make his way back to the court after being diagnosed with a right knee sprain. Tate will aim to return when the Rockets take on the Jazz on Monday, though it will depend on how his knee responds in the next 24 to 36 hours.",
+          "severity_score": 0.25
+        },
+        {
+          "player_name": "Steven Adams",
+          "player_id": "516152",
+          "status": "Out",
+          "injury_type": "Ankle",
+          "details": "Adams was already viewed as out indefinitely with a Grade 3 sprain, but now he won't be able to return during the 2025-26 campaign. The veteran big man is under contract with Houston through the 2027-28 season. With Adams' year now over, Clint Capela and Dorian Finney-Smith are set to split the backup center duties behind Alperen Sengun.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Fred VanVleet",
+          "player_id": "497641",
+          "status": "Out",
+          "injury_type": "Knee",
+          "details": "VanVleet struggled with efficiency during his second season in Houston, but the Rockets' win-loss record with him on the court (41-19) spoke volumes about his overall impact on the team. With VanVleet sidelined, the runway is clear for Reed Sheppard, who barely had a role as a rookie. Amen Thompson could also handle a ton of ball-handling responsibilities, while Aaron Holiday is the only other true point guard on the roster currently.",
+          "severity_score": 1.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612754,
+      "team_name": "Indiana Pacers",
+      "injury_count": 10,
+      "players_out": 6,
+      "players_questionable": 0,
+      "severity_score": 7.0,
+      "has_significant_injuries": true,
+      "elo_adjustment": -100,
+      "injuries": [
+        {
+          "player_name": "Aaron Nesmith",
+          "player_id": "519812",
+          "status": "Out",
+          "injury_type": "Ankle",
+          "details": "Nesmith will miss a second consecutive game while tending to a right ankle sprain, and his next chance to play is Tuesday against the 76ers. Ben Sheppard and Kobe Brown should operate in elevated roles in Nesmith's absence.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Andrew Nembhard",
+          "player_id": "519811",
+          "status": "Day-To-Day",
+          "injury_type": "Back",
+          "details": "Nembhard was held out of the second leg of the Pacers' back-to-back set Friday against the Wizards while managing a lower-back injury, but the fourth-year pro has the chance to return for Sunday's contest against Dallas. He has averaged 13.6 points, 6.4 assists, 2.2 rebounds, 2.0 threes and 0.8 steals over 30.6 minutes per game over his last five outings.",
+          "severity_score": 0.25
+        },
+        {
+          "player_name": "Micah Potter",
+          "player_id": "519808",
+          "status": "Day-To-Day",
+          "injury_type": "Ankle",
+          "details": "Potter has been working through an ankle injury since before the All-Star break but has played in each of the Pacers' last six games (one start), during which he averaged 12.8 points, 6.3 rebounds, 1.7 assists and 2.2 threes over 25.2 minutes per game. He's recently taken on an expanded role due to the absence of Pascal Siakam (hamstring), so Kobe Brown and Quenton Jackson would be in line for more minutes if Potter is unable to play Sunday.",
+          "severity_score": 0.25
+        },
+        {
+          "player_name": "T.J. McConnell",
+          "player_id": "519806",
+          "status": "Day-To-Day",
+          "injury_type": "Hamstring",
+          "details": "McConnell was cleared to return Friday from a two-game absence due to a right hamstring injury, and he ended up making his first start of the season in a 131-118 loss to the Wizards, when he logged nine points, two assists, two rebounds and one steal over 15 minutes. Kam Jones (back) and Andrew Nembhard (toe) are both listed as questionable as well, so Quenton Jackson, Ben Sheppard and Taelon Peter would be slated for larger roles depending on the Pacers' backcourt availability for Sunday's contest.",
+          "severity_score": 0.25
+        },
+        {
+          "player_name": "Pascal Siakam",
+          "player_id": "519805",
+          "status": "Out",
+          "injury_type": "Hamstring",
+          "details": "Siakam has missed three of the Pacers' last two games, the first of which was due to a left hamstring injury and the latter two due to a personal matter. He's still working through his hamstring issue, and Jarace Walker would likely stay in Indiana's starting lineup if Siakam is unable to play against Dallas on Sunday.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Kam Jones",
+          "player_id": "519804",
+          "status": "Day-To-Day",
+          "injury_type": "Back",
+          "details": "The rookie second-rounder may have tweaked his back during the Pacers' 131-118 loss to the Wizards on Friday, when he logged four points (2-9 FG, 0-3 3Pt, 0-2 FT), 11 assists, five rebounds and two steals over 39 minutes. Jones has started in two of the Pacers' last three games, and if Andrew Nembhard (toe) is unable to play, then T.J. McConnell (hamstring) and Quenton Jackson would be in line for bigger roles.",
+          "severity_score": 0.25
+        },
+        {
+          "player_name": "Obi Toppin",
+          "player_id": "519262",
+          "status": "Out",
+          "injury_type": "Foot",
+          "details": "Toppin hasn't played since Oct. 26 due to a right foot stress reaction that required surgery. The 27-year-old forward should be considered week-to-week until the Pacers offer an update on his progress. With Toppin on the shelf, Jarace Walker and Micah Potter will likely continue to see increased burn in the frontcourt.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Ivica Zubac",
+          "player_id": "519261",
+          "status": "Out",
+          "injury_type": "Ankle",
+          "details": "Zubac was traded from Los Angeles to Indiana on Feb. 5 but has yet to make his Pacers debut due to a left ankle sprain. It appears likely that the 15-40 Pacers will give the big man ample time to ramp up, as they aren't expected to make a postseason push. In the meantime, Jay Huff and Micah Potter should continue to see significant minutes. Zubac should be considered week-to-week until Indiana offers an update on his progress.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Johnny Furphy",
+          "player_id": "518463",
+          "status": "Out",
+          "injury_type": "Knee",
+          "details": "Furphy started in 21 of 35 regular-season appearances for the Pacers, posting averages of 5.1 points, 4.4 rebounds, 1.2 assists and 0.7 three-pointers in 18.4 minutes per contest. While no timetable has been announced, Furphy's absence could extend through the beginning of the 2026-27 season. With this news, the Pacers will likely lean more on Ben Sheppard, Kam Jones and Quenton Jackson moving forward.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Tyrese Haliburton",
+          "player_id": "515911",
+          "status": "Out",
+          "injury_type": "Achilles",
+          "details": "Back in July, the Pacers ruled Haliburton out for the 2025-26 season shortly after the star point guard underwent surgery to address the Achilles tendon he tore in Indiana's loss to Oklahoma City in Game 7 of the NBA Finals. While the Pacers' stance with Haliburton doesn't appear to have changed amid a non-contending season, the 25-year-old is seemingly coming along even faster than anticipated during his rehab process. If Haliburton is able to advance to 5-on-5 work by the spring, he'll likely be in line for a relatively normal offseason and should be free of restrictions for the start of training camp next fall.",
+          "severity_score": 1.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612746,
+      "team_name": "LA Clippers",
+      "injury_count": 4,
+      "players_out": 3,
+      "players_questionable": 0,
+      "severity_score": 3.25,
+      "has_significant_injuries": true,
+      "elo_adjustment": -100,
+      "injuries": [
+        {
+          "player_name": "Kawhi Leonard",
+          "player_id": "519847",
+          "status": "Day-To-Day",
+          "injury_type": "Ankle",
+          "details": "Leonard exited Friday's game against the Lakers due to left ankle soreness, and the same issue has him questionable for this contest. The Clippers will be cautious with him, but a final call on the star forward's status will be made closer to Sunday's 9 p.m. ET tipoff. Leonard is averaging 28.4 points, 7.1 rebounds, 4.3 assists and 1.7 steals per game since the beginning of February.",
+          "severity_score": 0.25
+        },
+        {
+          "player_name": "John Collins",
+          "player_id": "519846",
+          "status": "Out",
+          "injury_type": "Head",
+          "details": "Collins sustained the head and neck injuries during Friday's loss to the Lakers and won't suit up Sunday. His next opportunity to play will come Thursday against Minnesota. In the meantime, Bennedict Mathurin and Nicolas Batum are candidates for increased roles, while Kobe Sanders could rejoin the rotation.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Darius Garland",
+          "player_id": "519267",
+          "status": "Out",
+          "injury_type": "Toe",
+          "details": "Murray adds that Garland likely won't see the floor until March at the earliest. It's clear that the Clippers are going to be cautious with their new point guard, but Murray said the team definitely expects him to return this season.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Bradley Beal",
+          "player_id": "503447",
+          "status": "Out",
+          "injury_type": "Hip",
+          "details": "This is a devastating blow for Beal and the Clippers. The official diagnosis is a fractured left hip, and an exact timetable has yet to be announced. Beal signed a two-year, $11 million deal with the Clippers prior to the season, and the second year of his deal includes a player option which he may be likely to pick up with this news. With Beal out for the season, the Clippers could lean pretty heavily on Kris Dunn. Guys like Bogdan Bogdanovic and Chris Paul could reemerge too, but they've been afterthoughts in the rotation for the most part.",
+          "severity_score": 1.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612763,
+      "team_name": "Memphis Grizzlies",
+      "injury_count": 7,
+      "players_out": 7,
+      "players_questionable": 0,
+      "severity_score": 7.0,
+      "has_significant_injuries": true,
+      "elo_adjustment": -100,
+      "injuries": [
+        {
+          "player_name": "Kyle Anderson",
+          "player_id": "519836",
+          "status": "Out",
+          "injury_type": "Knee",
+          "details": "Anderson will miss the second leg of this back-to-back set due to right knee soreness, and his next opportunity to play will come Monday against the Kings. With the veteran forward sidelined, Olivier-Maxence Prosper, Taylor Hendricks and GG Jackson are candidates to see increased playing time.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Cedric Coward",
+          "player_id": "519769",
+          "status": "Out",
+          "injury_type": "Knee",
+          "details": "Coward will miss a third consecutive game as he continues to recover from a hyperextended right knee. The rookie's absence further thins a Memphis backcourt that is already missing Ja Morant (elbow) and Kentavious Caldwell-Pope (finger). With Coward out again, Ty Jerome, Scotty Pippen and Cam Spencer should pick up most of the backcourt usage Saturday. Coward's next opportunity to play will arrive Monday against the Kings.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Santi Aldama",
+          "player_id": "519761",
+          "status": "Out",
+          "injury_type": "Knee",
+          "details": "Aldama has missed 11 of the Grizzlies' last 13 games due to a right knee injury and his next chance to play is Monday against the Kings, though there doesn't appear to be a clear timeline for the fifth-year pro's return. Kyle Anderson (knee) and Walter Clayton (calf) should continue to see more minutes for as long as Aldama is sidelined.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Kentavious Caldwell-Pope",
+          "player_id": "519407",
+          "status": "Out",
+          "injury_type": "Finger",
+          "details": "Caldwell-Pope is expected to make a full recovery ahead of next season and holds a $21.6 million player option for 2026-27. He'll finish this season with averages of 8.4 points, 2.7 assists and 2.5 rebounds in 21.3 minutes per contest across 51 regular-season games (14 starts). Cam Spencer, Walter Clayton (calf) and Jahmai Mashack are candidates to see an uptick in minutes due to Caldwell-Pope being sidelined for the rest of the campaign.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Ja Morant",
+          "player_id": "519329",
+          "status": "Out",
+          "injury_type": "Elbow",
+          "details": "Morant has been sidelined since Jan 21 due to a UCL sprain, and his recovery hasn't gone according to plan. Despite being almost a full month into the rehab process, Morant's elbow continues to be a source of pain. While Morant is absent, look for Ty Jerome and Scotty Pippen to handle most of the point guard minutes. If Morant is cleared after 14 days, he could be back for a March 7 game against the Clippers.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Zach Edey",
+          "player_id": "513560",
+          "status": "Out",
+          "injury_type": "Ankle",
+          "details": "After Edey initially sustained the injury Dec. 11, the Grizzlies relayed that the second-year center would be shut down for at least four weeks before being re-evaluated. Despite having spent the past month rehabbing the injury, Edey seemingly hasn't taken any major steps forward in his recovery and will now need another six weeks to let his ankle heal up. As a result of this latest update, Edey appears unlikely to be ready to return to game action until at least early March, making it tough to justify rostering him in most redraft formats. With Brandon Clarke (calf) also facing a long-term absence, Jock Landale should continue to hold down the fort as the Grizzlies' starting center.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Brandon Clarke",
+          "player_id": "513559",
+          "status": "Out",
+          "injury_type": "Calf",
+          "details": "Based on this timetable, a return right after the All-Star break could potentially be on the table for Clarke. The forward has appeared in just two games this season, as he was dealing with a knee issue prior to his latest calf injury.",
+          "severity_score": 1.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612748,
+      "team_name": "Miami Heat",
+      "injury_count": 3,
+      "players_out": 3,
+      "players_questionable": 0,
+      "severity_score": 3.0,
+      "has_significant_injuries": true,
+      "elo_adjustment": -90.0,
+      "injuries": [
+        {
+          "player_name": "Davion Mitchell",
+          "player_id": "519832",
+          "status": "Out",
+          "injury_type": "Illness",
+          "details": "Mitchell played through a head illness in Friday's win over the Hawks, but he won't be able to suit up in the second leg of this back-to-back set. His absence could lead to a spot start for rookie first-rounder Kasparas Jakucionis, while Dru Smith could see more minutes off the bench as well. Mitchell will aim to return to the hardwood when the Heat take on the Bucks on Tuesday. Feb. 24.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Nikola Jovic",
+          "player_id": "519823",
+          "status": "Out",
+          "injury_type": "Back",
+          "details": "Jovic is dealing with lower-back tightness and will miss just his second outing since Dec. 26. With the 22-year-old big man unavailable, Kel'el Ware and Simone Fontecchio are candidates see a slight bump in playing time.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Terry Rozier",
+          "player_id": "500317",
+          "status": "Out",
+          "injury_type": "Not Injury Related",
+          "details": "Rozier was arrested Thursday morning as part of an FBI sports betting gambling probe, and the NBA is acting quickly while this investigation gets underway. As of now, there is no known timetable for a potential return for Rozier, as this could be a lengthy process.",
+          "severity_score": 1.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612749,
+      "team_name": "Milwaukee Bucks",
+      "injury_count": 3,
+      "players_out": 3,
+      "players_questionable": 0,
+      "severity_score": 3.0,
+      "has_significant_injuries": true,
+      "elo_adjustment": -100,
+      "injuries": [
+        {
+          "player_name": "Myles Turner",
+          "player_id": "519792",
+          "status": "Out",
+          "injury_type": "Calf",
+          "details": "Turner has missed the last two games due to right calf soreness that initially flared up during warmups on Feb. 12. While he was unable to suit up for Friday's win over the Pelicans, the move to questionable suggests he is nearing a return to action. With Giannis Antetokounmpo (calf) still without a firm timetable, Turner's potential return would provide a massive boost to a Milwaukee frontcourt currently leaning on Jericho Sims and Ousmane Dieng.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Giannis Antetokounmpo",
+          "player_id": "519791",
+          "status": "Out",
+          "injury_type": "Calf",
+          "details": "Antetokounmpo's absence will extend to 11 games as the two-time MVP continues to rehab from a right calf strain that has kept him out of action since late January. His next chance to play is Tuesday against the Heat, and while he recently said that he feels \"100 percent\" healthy, there doesn't appear to be a clear timeline for his return.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Taurean Prince",
+          "player_id": "511228",
+          "status": "Out",
+          "injury_type": "Neck",
+          "details": "Milwaukee labeled Prince as out indefinitely after he underwent surgery Nov. 13 to address a herniated disc in his neck. Approximately six weeks later, the Bucks haven't yet offered a more official timeline for Prince's return, but the team's decision to apply for a DPE implies that he's effectively being viewed as out for the season. Ultimately, an NBA-designated physician would need to concur with the Bucks' assessment that Prince is unlikely to return before June 15 in order for Milwaukee to be granted a DPE, which would enable to the team to sign a player to a one-year deal worth about $1.7 million -- half of Prince's salary -- or less. Before being shut down after undergoing surgery, Prince had appeared in the Bucks' first eight games of the season and averaged 6.1 points, 1.6 rebounds, 1.5 three-pointers, 1.0 assists and 0.8 steals in 21.0 minutes per contest.",
+          "severity_score": 1.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612750,
+      "team_name": "Minnesota Timberwolves",
+      "injury_count": 1,
+      "players_out": 0,
+      "players_questionable": 0,
+      "severity_score": 0.0,
+      "has_significant_injuries": false,
+      "elo_adjustment": 0.0,
+      "injuries": [
+        {
+          "player_name": "Rudy Gobert",
+          "player_id": "-39420",
+          "status": "Suspension",
+          "injury_type": "Suspension",
+          "details": "Gobert finished with another strong double-double, while also adding at least three blocks for the first time in his past 13 games. While the production was certainly more than adequate, managers will need to brace for a one-game absence after Gobert was assessed a flagrant foul, putting him over the season limit. The Timberwolves play the 76ers on Sunday, meaning Naz Reid could be elevated into the starting lineup, while Joan Beringer could also step into a larger role as the primary backup.",
+          "severity_score": 0.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612740,
+      "team_name": "New Orleans Pelicans",
+      "injury_count": 4,
+      "players_out": 4,
+      "players_questionable": 0,
+      "severity_score": 4.0,
+      "has_significant_injuries": true,
+      "elo_adjustment": -100,
+      "injuries": [
+        {
+          "player_name": "Dejounte Murray",
+          "player_id": "519807",
+          "status": "Out",
+          "injury_type": "Achilles",
+          "details": "Murray appears to be nearing a return to game action after tearing his Achilles in January 2025, though he won't play Saturday. His next opportunity to make his season debut will come Tuesday against the Warriors.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Micah Peavy",
+          "player_id": "519762",
+          "status": "Out",
+          "injury_type": "Toe",
+          "details": "Peavy will miss his third straight game due to a right great toe sprain, and his next opportunity to suit up will come Tuesday against Golden State. The rookie second-rounder's absence shouldn't cause any significant waves in the rotation, though Jordan Hawkins could see a slight uptick in minutes.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Trey Murphy III",
+          "player_id": "519760",
+          "status": "Out",
+          "injury_type": "Shoulder",
+          "details": "Murphy will miss a second straight game after being sidelined Friday against Milwaukee, as he continues to deal with a right shoulder issue suffered Feb. 11 versus Miami. With Murphy unavailable, Bryce McGowens and Jeremiah Fears are candidates for increased backcourt minutes. Murphy's next opportunity to return will come Tuesday against the Warriors.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Yves Missi",
+          "player_id": "519759",
+          "status": "Out",
+          "injury_type": "Calf",
+          "details": "Missi will miss his third consecutive contest due to a left calf strain, and his next chance to play will come Tuesday against the Warriors. Karlo Matkovic will likely see a bump in playing time due to Missi being sidelined.",
+          "severity_score": 1.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612752,
+      "team_name": "New York Knicks",
+      "injury_count": 1,
+      "players_out": 1,
+      "players_questionable": 0,
+      "severity_score": 1.0,
+      "has_significant_injuries": true,
+      "elo_adjustment": -30.0,
+      "injuries": [
+        {
+          "player_name": "Miles McBride",
+          "player_id": "517592",
+          "status": "Out",
+          "injury_type": "Pelvis",
+          "details": "After missing New York's last five games due to what the team called left ankle injury management, it has been revealed that McBride is dealing with a sports hernia. The 25-year-old guard is without a clear timetable for a return, but he shouldn't be expected to return until early April at the very earliest. With McBride sidelined, Tyler Kolek, Jose Alvarado (recently traded) and Jordan Clarkson are candidates for increased playing time.",
+          "severity_score": 1.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612760,
+      "team_name": "Oklahoma City Thunder",
+      "injury_count": 5,
+      "players_out": 5,
+      "players_questionable": 0,
+      "severity_score": 5.0,
+      "has_significant_injuries": true,
+      "elo_adjustment": -100,
+      "injuries": [
+        {
+          "player_name": "Alex Caruso",
+          "player_id": "519821",
+          "status": "Out",
+          "injury_type": "Ankle",
+          "details": "The left ankle sprain is a new concern for Caruso, whose next opportunity to play will come Tuesday against Toronto. With the veteran swingman sidelined, Aaron Wiggins, Kenrich Williams and Isaiah Joe are candidates for increased playing time.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Ajay Mitchell",
+          "player_id": "519387",
+          "status": "Out",
+          "injury_type": "Ankle",
+          "details": "The All-Star break didn't offer Mitchell enough time to heal. Isaiah Joe and Aaron Wiggins should continue to handle an expanded role in the interim.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Shai Gilgeous-Alexander",
+          "player_id": "519386",
+          "status": "Out",
+          "injury_type": "Abdomen",
+          "details": "Gilgeous-Alexander hasn't played since Feb. 3 due to an abdominal strain and will remain out until next Friday's game against the Nuggets at the very earliest. With the superstar point guard and Ajay Mitchell (abdomen) both unavailable, Isaiah Joe, Jared McCain and Nikola Topic are candidates for increased playing time.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Jalen Williams",
+          "player_id": "519384",
+          "status": "Out",
+          "injury_type": "Hamstring",
+          "details": "Williams' right hamstring injury has given him plenty of issues so far this season, and the issue will cost him at least another two weeks. He aggravated the injury Feb. 11 against Phoenix and hasn't take the court since. The Thunder will continue to rely heavily on Alex Caruso, Aaron Wiggins and Cason Wallace, especially with Shai Gilgeous-Alexander (abdomen) and Ajay Mitchell (abdomen) also out at least another week.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Thomas Sorber",
+          "player_id": "497569",
+          "status": "Out",
+          "injury_type": "Knee",
+          "details": "Sorber was selected No. 15 overall in the 2025 NBA Draft out of Georgetown by the reigning NBA champions. The rookie center was already dealing with a foot injury that cut his season with the Hoyas short and kept him out of the Summer League. Now he'll likely have to wait until the 2026-27 campaign to make his debut on the professional level.",
+          "severity_score": 1.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612753,
+      "team_name": "Orlando Magic",
+      "injury_count": 2,
+      "players_out": 1,
+      "players_questionable": 0,
+      "severity_score": 1.25,
+      "has_significant_injuries": true,
+      "elo_adjustment": -57.5,
+      "injuries": [
+        {
+          "player_name": "Jalen Suggs",
+          "player_id": "519854",
+          "status": "Day-To-Day",
+          "injury_type": "Back",
+          "details": "Suggs didn't play in the first leg of the back-to-back set Saturday, but the questionable tag leaves the door open for a potential return to action Sunday. Suggs last played in Thursday's win over the Kings, where he recorded nine points, three rebounds, three assists and one block over 20 minutes.",
+          "severity_score": 0.25
+        },
+        {
+          "player_name": "Franz Wagner",
+          "player_id": "519268",
+          "status": "Out",
+          "injury_type": "Ankle",
+          "details": "This is a brutal setback for Orlando and for Wagner's fantasy managers. The Magic will re-evaluate Wagner in three weeks, putting his earliest possible return date at March 11. The Magic will proceed with caution, however. In his his absence, players such as Anthony Black, Noah Penda and Tristan da Silva could take on larger roles.",
+          "severity_score": 1.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612755,
+      "team_name": "Philadelphia 76ers",
+      "injury_count": 2,
+      "players_out": 1,
+      "players_questionable": 0,
+      "severity_score": 1.0,
+      "has_significant_injuries": true,
+      "elo_adjustment": -50.0,
+      "injuries": [
+        {
+          "player_name": "Joel Embiid",
+          "player_id": "519598",
+          "status": "Out",
+          "injury_type": "Lower Leg",
+          "details": "Embiid is set to miss his fourth consecutive game, and for now, he should be considered highly questionable for Sunday's game in Minnesota. Adem Bona and Andre Drummond will continue to split the five-man minutes in Embiid's absence.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Paul George",
+          "player_id": "516651",
+          "status": "Suspension",
+          "injury_type": "Suspension",
+          "details": "The suspension will start with Saturday's game against the Pelicans and will keep George off the floor until late March. In his absence, Dominick Barlow figures to be the top candidate to enter the 76ers' starting lineup, and Kelly Oubre should also take on an expanded role for Philadelphia.",
+          "severity_score": 0.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612756,
+      "team_name": "Phoenix Suns",
+      "injury_count": 5,
+      "players_out": 4,
+      "players_questionable": 0,
+      "severity_score": 4.25,
+      "has_significant_injuries": true,
+      "elo_adjustment": -100,
+      "injuries": [
+        {
+          "player_name": "Dillon Brooks",
+          "player_id": "519852",
+          "status": "Out",
+          "injury_type": "Hand",
+          "details": "Brooks logged just seven minutes before leaving Saturday's contest, but there's no question this was the worst possible outcome for the veteran forward. This means Brooks will probably be sidelined for the majority of the Suns' playoff push, and he's a key contributor on both ends of the court. Fantasy managers will have to navigate through the absence of Brooks as well, as he's an impact player across all formats. With Brooks out, look for Grayson Allen and Ryan Dunn to gain a bigger role, and Allen looks like the biggest candidate to move to the starting lineup in Brooks' place.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Jordan Goodwin",
+          "player_id": "519850",
+          "status": "Day-To-Day",
+          "injury_type": "Calf",
+          "details": "Goodwin ran down the tunnel late in the fourth quarter and did not return, finishing with 17 points (6-10 FG, 3-4 3Pt, 2-2 FT), six rebounds, two steals and one assist across 25 minutes. He should be considered highly questionable for Sunday's game against Portland until Phoenix offers an update on his status. If the 27-year-old guard joins Devin Booker (hip) on the sidelines, Ryan Dunn, Isaiah Livers and Jamaree Bouyea would be candidates for increased playing time.",
+          "severity_score": 0.25
+        },
+        {
+          "player_name": "Haywood Highsmith",
+          "player_id": "519789",
+          "status": "Out",
+          "injury_type": "Knee",
+          "details": "Highsmith has yet to make his season debut after undergoing right knee surgery in August to repair a torn meniscus. He was traded from Miami to Brooklyn shortly thereafter but was ultimately waived by the Nets on Feb. 5. While he signed a multi-year deal with the Suns on Feb. 14 and has reportedly been taking part in 5-on-5 drills, the team won't rush him back. It appears he'll return to action by early-to-mid-March at the very earliest.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Devin Booker",
+          "player_id": "519786",
+          "status": "Out",
+          "injury_type": "Hip",
+          "details": "Booker sustained the injury during the Suns' loss to the Spurs on Thursday, and he'll be out of action until at least early March. Jordan Goodwin, Collin Gillespie and Jalen Green will all take on larger roles for the Suns for as long as Booker is sidelined.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Cole Anthony",
+          "player_id": "519629",
+          "status": "Out",
+          "injury_type": "Not Injury Related",
+          "details": "Anthony was traded from Milwaukee to Phoenix on Feb. 5 but has yet to join his new club. His next opportunity to play will come Sunday against Portland.",
+          "severity_score": 1.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612757,
+      "team_name": "Portland Trail Blazers",
+      "injury_count": 3,
+      "players_out": 2,
+      "players_questionable": 0,
+      "severity_score": 2.25,
+      "has_significant_injuries": true,
+      "elo_adjustment": -87.5,
+      "injuries": [
+        {
+          "player_name": "Shaedon Sharpe",
+          "player_id": "519834",
+          "status": "Out",
+          "injury_type": "Calf",
+          "details": "Sharpe hasn't played since Feb. 6, when he logged 14 minutes in a win over the Grizzlies, and the team will hold him out for a sixth consecutive contest Sunday. His next chance to suit up will come against the Timberwolves on Tuesday, but given the cautious approach the Trail Blazers are employing, it wouldn't be surprising if he stays out longer for even more time. With Sharpe out, Vit Krejci and Caleb Love should continue to see more minutes in the backcourt.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Deni Avdija",
+          "player_id": "519833",
+          "status": "Day-To-Day",
+          "injury_type": "Back",
+          "details": "Avdija has been dealing with a lingering back injury since mid-January and could be held out of Sunday's contest. If he's ultimately ruled out, Sidy Cissoko and Kris Murray would be candidates for increased playing time. Avdija has appeared in just three outings this month, during which he has averaged 17.3 points, 8.0 assists and 7.7 rebounds in 28.0 minutes per tilt.",
+          "severity_score": 0.25
+        },
+        {
+          "player_name": "Damian Lillard",
+          "player_id": "519226",
+          "status": "Out",
+          "injury_type": "Achilles",
+          "details": "After losing to Tyler Herro (ribs) in 2025, Lillard won his third 3-Point Contest in four years. The star point guard posted 27 points in the first round and 29 in the second, beating Booker by two and Knueppel by 12 in the final round. Lillard is still recovering from a torn left Achilles tendon he sustained with the Bucks in the opening round of the playoffs last season, and he'll hope to return to action for Portland by the start of the 2026-27 campaign.",
+          "severity_score": 1.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612758,
+      "team_name": "Sacramento Kings",
+      "injury_count": 4,
+      "players_out": 4,
+      "players_questionable": 0,
+      "severity_score": 4.0,
+      "has_significant_injuries": true,
+      "elo_adjustment": -100,
+      "injuries": [
+        {
+          "player_name": "De'Andre Hunter",
+          "player_id": "519595",
+          "status": "Out",
+          "injury_type": "Eye",
+          "details": "Hunter only managed to suit up for two games for Sacramento before opting to undergo a season-ending procedure on his eye, but this shouldn't be something that impacts his status for next year's training camp. Hunter will end his 2025-26 campaign with averages of 13.7 points, 4.1 rebounds, 2.0 assists and 1.7 triples per game.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Dylan Cardwell",
+          "player_id": "519293",
+          "status": "Out",
+          "injury_type": "Ankle",
+          "details": "The timing is unfortunate for the rookie with Domantas Sabonis (knee) set to miss the remainder of the season. Based on this timetable, the earliest possible return for Cardwell is March 19. The rookie has been a bright spot for the team with 5.4 points, 7.7 rebounds and 1.2 assists in 21.2 minutes across 29 appearances.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Domantas Sabonis",
+          "player_id": "519292",
+          "status": "Out",
+          "injury_type": "Knee",
+          "details": "With the 12-44 Kings' season circling the drain, Sabonis elected to go under the knife after attempting play through the injury this season. The star big man averaged 15.8 points, 11.4 rebounds and 4.1 assists in 29.7 minutes per tilt across a career-low 19 games this year before going down. With Dylan Cardwell (ankle) now sidelined for the foreseeable future, rookie second-rounder Maxime Raynaud has a big opportunity to seize the lion's share of the center minutes going forward.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Zach LaVine",
+          "player_id": "519215",
+          "status": "Out",
+          "injury_type": "Finger",
+          "details": "After missing Sacramento's final three outings before the All-Star break due to right finger soreness, LaVine is scheduled to undergo season-ending surgery. The veteran swingman will finish the season with averages of 19.2 points, 2.8 rebounds and 2.3 assists across 31.4 minutes per contest in 39 regular-season games (37 starts). He holds a $48.97 million player option for the 2026-27 campaign. With LaVine sidelined, Nique Clifford should continue to see an expanded role, while Malik Monk (illness) and Devin Carter are also candidates for increased playing time.",
+          "severity_score": 1.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612759,
+      "team_name": "San Antonio Spurs",
+      "injury_count": 3,
+      "players_out": 3,
+      "players_questionable": 0,
+      "severity_score": 3.0,
+      "has_significant_injuries": true,
+      "elo_adjustment": -90.0,
+      "injuries": [
+        {
+          "player_name": "Lindy Waters III",
+          "player_id": "519780",
+          "status": "Out",
+          "injury_type": "Knee",
+          "details": "Waters will miss a seventh consecutive game while recovering from a left knee injury. His next chance to play is Monday against the Pistons, though his return wouldn't impact the Spurs' rotation all that much, seeing as he's averaging just 6.8 minutes per game off the bench this season.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Mason Plumlee",
+          "player_id": "519601",
+          "status": "Out",
+          "injury_type": "Not Injury Related",
+          "details": "Plumlee underwent right groin surgery in late December but is currently ramping up toward a return to game action. The veteran big man signed a 10-day contract with San Antonio on Tuesday, and his next opportunity to make his Spurs debut will come Monday against Detroit.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "David Jones Garcia",
+          "player_id": "517448",
+          "status": "Out",
+          "injury_type": "Ankle",
+          "details": "Jones Garcia only managed to make 11 appearances for the Spurs in his introductory season, finishing with averages of 2.9 points and 1.6 assists per game. The 24-year-old rookie was on a one-year, two-way deal with the Spurs, so he'll be a free agent this summer.",
+          "severity_score": 1.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612761,
+      "team_name": "Toronto Raptors",
+      "injury_count": 2,
+      "players_out": 2,
+      "players_questionable": 0,
+      "severity_score": 2.0,
+      "has_significant_injuries": true,
+      "elo_adjustment": -80.0,
+      "injuries": [
+        {
+          "player_name": "Scottie Barnes",
+          "player_id": "519809",
+          "status": "Out",
+          "injury_type": "Personal",
+          "details": "Barnes was excused from Saturday's practice and won't suit up Sunday. His next opportunity to play will come Tuesday against the Thunder. With the star forward sidelined, Jakob Poeltl and Sandro Mamukelashvili are candidates to enter the starting five, while Collin Murray-Boyles, Gradey Dick and Jamison Battle could see increased minutes as well.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Chucky Hepburn",
+          "player_id": "-35396",
+          "status": "Out",
+          "injury_type": "Knee",
+          "details": "Hepburn is nearly averaging a double-double across 11 appearances with 12.8 points, 9.2 assists and 1.9 rebounds. He's also been sound defensively with 2.4 steals per contest.",
+          "severity_score": 1.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612762,
+      "team_name": "Utah Jazz",
+      "injury_count": 5,
+      "players_out": 4,
+      "players_questionable": 0,
+      "severity_score": 4.25,
+      "has_significant_injuries": true,
+      "elo_adjustment": -100,
+      "injuries": [
+        {
+          "player_name": "Jusuf Nurkic",
+          "player_id": "-39413",
+          "status": "Day-To-Day",
+          "injury_type": "Nose",
+          "details": "Nurkic went unused during last Thursday's loss to Portland, and fantasy managers should expect his availability to remain sporadic throughout the course of the stretch run. Kyle Filipowski should handle the bulk of the center minutes Friday, with Kevin Love filling in the No. 2 center spot behind him.",
+          "severity_score": 0.25
+        },
+        {
+          "player_name": "Lauri Markkanen",
+          "player_id": "519592",
+          "status": "Out",
+          "injury_type": "Illness",
+          "details": "Markkanen saw his injury status downgrade from questionable to doubtful, and the veteran forward will end up sitting out of Friday's game while battling through an illness. His absence means Kyle Filipowski, John Konchar and Kevin Love are all be poised for larger roles against Memphis. Markkanen's next opportunity to play is Monday against the Rockets.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Keyonte George",
+          "player_id": "519376",
+          "status": "Out",
+          "injury_type": "Ankle",
+          "details": "George will miss a fourth consecutive contest due to a right ankle sprain and has played just 13 minutes in one appearance this month due to ankle injuries. The 22-year-old point guard's next opportunity to suit up will come against Houston on Monday. With George sidelined, Isaiah Collier will likely remain in the starting five.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Jaren Jackson Jr.",
+          "player_id": "-39249",
+          "status": "Out",
+          "injury_type": "Knee",
+          "details": "This is a tough news for Utah's newest addition. Jackson is likely to undergo further evaluation, but fantasy managers should be prepared for the worst.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Walker Kessler",
+          "player_id": "502311",
+          "status": "Out",
+          "injury_type": "Shoulder",
+          "details": "This is a devastating blow for the Jazz and for Kessler's fantasy managers given his high price in drafts.",
+          "severity_score": 1.0
+        }
+      ]
+    },
+    {
+      "team_id": 1610612764,
+      "team_name": "Washington Wizards",
+      "injury_count": 8,
+      "players_out": 5,
+      "players_questionable": 0,
+      "severity_score": 5.75,
+      "has_significant_injuries": true,
+      "elo_adjustment": -100,
+      "injuries": [
+        {
+          "player_name": "Justin Champagnie",
+          "player_id": "519851",
+          "status": "Day-To-Day",
+          "injury_type": "Knee",
+          "details": "Champagnie exited Friday's win over Indiana early due to right knee soreness but could return Sunday. If he's ultimately ruled out, Will Riley could see an uptick in playing time.",
+          "severity_score": 0.25
+        },
+        {
+          "player_name": "Tristan Vukcevic",
+          "player_id": "519802",
+          "status": "Day-To-Day",
+          "injury_type": "Hand",
+          "details": "Vukcevic suffered a right hand contusion during the Wizards' win over the Pacers on Friday, which puts him in jeopardy of missing Sunday's contest. He has started in each of the Wizards' last two games due to the absence of Alex Sarr (hamstring), so Anthony Gill would be the top candidate to enter the Wizards' starting liineup if Vukcevic is unable to play.",
+          "severity_score": 0.25
+        },
+        {
+          "player_name": "Kyshawn George",
+          "player_id": "519800",
+          "status": "Day-To-Day",
+          "injury_type": "Toe",
+          "details": "George was held out of the Wizards' 131-118 win over the Pacers on Friday while managing a left toe sprain, but the second-year pro could be available for Washington on Sunday. He has averaged 15.4 points, 5.1 rebounds, 4.3 assists, 1.7 threes, 1.1 steals and 0.9 blocks over 27.1 minutes per game over his last 15 outings.",
+          "severity_score": 0.25
+        },
+        {
+          "player_name": "Trae Young",
+          "player_id": "519356",
+          "status": "Out",
+          "injury_type": "Knee",
+          "details": "The star guard is ramping up his on-court activities during his recovery from a right knee MCL sprain and right quadriceps contusion, but his Wizards debut isn't imminent. Until Young is finally ready to suit up again,Bub Carrington and Tre Johnson should continue to see a boost in ball-handling responsibilities on the other side of the All-Star break.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Anthony Davis",
+          "player_id": "519355",
+          "status": "Out",
+          "injury_type": "Finger",
+          "details": "Davis is \"progressing as expected,\" but a return in the near future appears to be off the table. A previous report from Chris Haynes on Feb. 6 indicated that Davis will likely sit out the remainder of the season, and that is looking increasingly likely.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Alex Sarr",
+          "player_id": "518976",
+          "status": "Out",
+          "injury_type": "Hamstring",
+          "details": "Sarr sat out Wednesday's 138-113 loss to the Cavaliers with what the team had classified as right hamstring tightness, but follow-up tests confirmed that the second-year big man is dealing with a strain. As a result of the injury, Sarr will sit out the Castrol Rising Stars exhibition at All-Star weekend in Los Angeles, and he'll likely miss at least a handful of contests coming out of the All-Star break. Tristan Vukcevic (illness) joined Sarr on the sideline for Wednesday's loss, but Vukcevic will likely be ready to fill in for Sarr as the Wizards' starting center in the team's next game Feb. 19 versus the Pacers.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "D'Angelo Russell",
+          "player_id": "518340",
+          "status": "Out",
+          "injury_type": "Not Injury Related",
+          "details": "It sounds like Russell will not be a part of the team in D.C., and this situation could be headed towards a buy-out. Russell fell out of the rotation in Dallas and became a throw-in in the Anthony Davis deal, but there doesn't appear to be much of a market for the veteran point guard.",
+          "severity_score": 1.0
+        },
+        {
+          "player_name": "Cam Whitmore",
+          "player_id": "513854",
+          "status": "Out",
+          "injury_type": "Shoulder",
+          "details": "A \"venous condition\" is any disorder that affects the veins, but we'll likely have more clarity on precisely what Whitmore is dealing with at a later date. Whitmore will end his 2025-26 season with averages of 9.2 points and 2.8 rebounds per game on 46/29/74 shooting splits.",
+          "severity_score": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,277 @@
+{
+  "generated_at": "2026-02-22T00:02:02.501956",
+  "last_updated": "2026-02-22 00:02:02 ET",
+  "league": "NBA",
+  "teams": [
+    {
+      "team_id": 1610612737,
+      "team_name": "Atlanta Hawks",
+      "current_elo": 1477.1,
+      "recent_win_pct": 0.5,
+      "recent_margin": -2.5,
+      "recent_pts_for": 111.8,
+      "recent_pts_against": 114.3
+    },
+    {
+      "team_id": 1610612738,
+      "team_name": "Boston Celtics",
+      "current_elo": 1613.9,
+      "recent_win_pct": 0.6,
+      "recent_margin": 5.9,
+      "recent_pts_for": 115.9,
+      "recent_pts_against": 110.0
+    },
+    {
+      "team_id": 1610612751,
+      "team_name": "Brooklyn Nets",
+      "current_elo": 1343.4,
+      "recent_win_pct": 0.2,
+      "recent_margin": -9.9,
+      "recent_pts_for": 106.9,
+      "recent_pts_against": 116.8
+    },
+    {
+      "team_id": 1610612766,
+      "team_name": "Charlotte Hornets",
+      "current_elo": 1427.7,
+      "recent_win_pct": 0.6,
+      "recent_margin": 12.4,
+      "recent_pts_for": 117.3,
+      "recent_pts_against": 104.9
+    },
+    {
+      "team_id": 1610612741,
+      "team_name": "Chicago Bulls",
+      "current_elo": 1492.3,
+      "recent_win_pct": 0.5,
+      "recent_margin": -0.1,
+      "recent_pts_for": 112.6,
+      "recent_pts_against": 112.7
+    },
+    {
+      "team_id": 1610612739,
+      "team_name": "Cleveland Cavaliers",
+      "current_elo": 1576.7,
+      "recent_win_pct": 0.7,
+      "recent_margin": 2.5,
+      "recent_pts_for": 118.8,
+      "recent_pts_against": 116.3
+    },
+    {
+      "team_id": 1610612742,
+      "team_name": "Dallas Mavericks",
+      "current_elo": 1454.0,
+      "recent_win_pct": 0.6,
+      "recent_margin": 3.8,
+      "recent_pts_for": 116.9,
+      "recent_pts_against": 113.1
+    },
+    {
+      "team_id": 1610612743,
+      "team_name": "Denver Nuggets",
+      "current_elo": 1616.6,
+      "recent_win_pct": 0.8,
+      "recent_margin": -0.4,
+      "recent_pts_for": 109.1,
+      "recent_pts_against": 109.5
+    },
+    {
+      "team_id": 1610612765,
+      "team_name": "Detroit Pistons",
+      "current_elo": 1608.6,
+      "recent_win_pct": 0.7,
+      "recent_margin": 8.6,
+      "recent_pts_for": 109.6,
+      "recent_pts_against": 101.0
+    },
+    {
+      "team_id": 1610612744,
+      "team_name": "Golden State Warriors",
+      "current_elo": 1548.6,
+      "recent_win_pct": 0.7,
+      "recent_margin": 10.6,
+      "recent_pts_for": 122.4,
+      "recent_pts_against": 111.8
+    },
+    {
+      "team_id": 1610612745,
+      "team_name": "Houston Rockets",
+      "current_elo": 1583.1,
+      "recent_win_pct": 0.5,
+      "recent_margin": -1.6,
+      "recent_pts_for": 107.7,
+      "recent_pts_against": 109.3
+    },
+    {
+      "team_id": 1610612754,
+      "team_name": "Indiana Pacers",
+      "current_elo": 1406.7,
+      "recent_win_pct": 0.4,
+      "recent_margin": -5.6,
+      "recent_pts_for": 111.1,
+      "recent_pts_against": 116.7
+    },
+    {
+      "team_id": 1610612746,
+      "team_name": "Los Angeles Clippers",
+      "current_elo": 1548.2,
+      "recent_win_pct": 0.8,
+      "recent_margin": 2.7,
+      "recent_pts_for": 112.8,
+      "recent_pts_against": 110.1
+    },
+    {
+      "team_id": 1610612747,
+      "team_name": "Los Angeles Lakers",
+      "current_elo": 1528.9,
+      "recent_win_pct": 0.5,
+      "recent_margin": 0.1,
+      "recent_pts_for": 113.5,
+      "recent_pts_against": 113.4
+    },
+    {
+      "team_id": 1610612763,
+      "team_name": "Memphis Grizzlies",
+      "current_elo": 1439.9,
+      "recent_win_pct": 0.3,
+      "recent_margin": -2.2,
+      "recent_pts_for": 116.6,
+      "recent_pts_against": 118.8
+    },
+    {
+      "team_id": 1610612748,
+      "team_name": "Miami Heat",
+      "current_elo": 1480.1,
+      "recent_win_pct": 0.3,
+      "recent_margin": -8.0,
+      "recent_pts_for": 115.2,
+      "recent_pts_against": 123.2
+    },
+    {
+      "team_id": 1610612749,
+      "team_name": "Milwaukee Bucks",
+      "current_elo": 1461.6,
+      "recent_win_pct": 0.3,
+      "recent_margin": -7.8,
+      "recent_pts_for": 107.8,
+      "recent_pts_against": 115.6
+    },
+    {
+      "team_id": 1610612750,
+      "team_name": "Minnesota Timberwolves",
+      "current_elo": 1568.3,
+      "recent_win_pct": 0.5,
+      "recent_margin": 3.2,
+      "recent_pts_for": 120.0,
+      "recent_pts_against": 116.8
+    },
+    {
+      "team_id": 1610612740,
+      "team_name": "New Orleans Pelicans",
+      "current_elo": 1333.6,
+      "recent_win_pct": 0.3,
+      "recent_margin": -3.6,
+      "recent_pts_for": 114.7,
+      "recent_pts_against": 118.3
+    },
+    {
+      "team_id": 1610612752,
+      "team_name": "New York Knicks",
+      "current_elo": 1552.6,
+      "recent_win_pct": 0.4,
+      "recent_margin": -0.6,
+      "recent_pts_for": 108.5,
+      "recent_pts_against": 109.1
+    },
+    {
+      "team_id": 1610612760,
+      "team_name": "Oklahoma City Thunder",
+      "current_elo": 1711.7,
+      "recent_win_pct": 0.7,
+      "recent_margin": 7.8,
+      "recent_pts_for": 118.9,
+      "recent_pts_against": 111.1
+    },
+    {
+      "team_id": 1610612753,
+      "team_name": "Orlando Magic",
+      "current_elo": 1495.7,
+      "recent_win_pct": 0.4,
+      "recent_margin": -5.9,
+      "recent_pts_for": 111.3,
+      "recent_pts_against": 117.2
+    },
+    {
+      "team_id": 1610612755,
+      "team_name": "Philadelphia 76ers",
+      "current_elo": 1470.5,
+      "recent_win_pct": 0.5,
+      "recent_margin": 2.6,
+      "recent_pts_for": 117.5,
+      "recent_pts_against": 114.9
+    },
+    {
+      "team_id": 1610612756,
+      "team_name": "Phoenix Suns",
+      "current_elo": 1556.5,
+      "recent_win_pct": 0.6,
+      "recent_margin": 6.7,
+      "recent_pts_for": 112.8,
+      "recent_pts_against": 106.1
+    },
+    {
+      "team_id": 1610612757,
+      "team_name": "Portland Trail Blazers",
+      "current_elo": 1516.2,
+      "recent_win_pct": 0.7,
+      "recent_margin": 4.0,
+      "recent_pts_for": 115.3,
+      "recent_pts_against": 111.3
+    },
+    {
+      "team_id": 1610612758,
+      "team_name": "Sacramento Kings",
+      "current_elo": 1384.9,
+      "recent_win_pct": 0.3,
+      "recent_margin": -6.5,
+      "recent_pts_for": 109.7,
+      "recent_pts_against": 116.2
+    },
+    {
+      "team_id": 1610612759,
+      "team_name": "San Antonio Spurs",
+      "current_elo": 1610.3,
+      "recent_win_pct": 0.6,
+      "recent_margin": 4.4,
+      "recent_pts_for": 111.7,
+      "recent_pts_against": 107.3
+    },
+    {
+      "team_id": 1610612761,
+      "team_name": "Toronto Raptors",
+      "current_elo": 1532.5,
+      "recent_win_pct": 0.7,
+      "recent_margin": 4.7,
+      "recent_pts_for": 113.9,
+      "recent_pts_against": 109.2
+    },
+    {
+      "team_id": 1610612762,
+      "team_name": "Utah Jazz",
+      "current_elo": 1342.2,
+      "recent_win_pct": 0.1,
+      "recent_margin": -18.0,
+      "recent_pts_for": 115.6,
+      "recent_pts_against": 133.6
+    },
+    {
+      "team_id": 1610612764,
+      "team_name": "Washington Wizards",
+      "current_elo": 1317.4,
+      "recent_win_pct": 0.1,
+      "recent_margin": -10.4,
+      "recent_pts_for": 108.3,
+      "recent_pts_against": 118.7
+    }
+  ]
+}

@@ -1,0 +1,727 @@
+{
+  "generated_at": "2026-02-22T00:02:02.998604",
+  "last_updated": "2026-02-22 00:02:02 ET",
+  "days_covered": 7,
+  "teams": [
+    {
+      "team_name": "Atlanta Hawks",
+      "last_5_record": "1-1",
+      "games": [
+        {
+          "date": "2026-02-20",
+          "opponent": "Philadelphia 76ers",
+          "location": "away",
+          "team_score": 117,
+          "opp_score": 107,
+          "result": "W",
+          "label": "W 117-107 @ Philadelphia 76ers"
+        },
+        {
+          "date": "2026-02-21",
+          "opponent": "Miami Heat",
+          "location": "home",
+          "team_score": 97,
+          "opp_score": 128,
+          "result": "L",
+          "label": "L 97-128 vs Miami Heat"
+        }
+      ]
+    },
+    {
+      "team_name": "Boston Celtics",
+      "last_5_record": "1-0",
+      "games": [
+        {
+          "date": "2026-02-20",
+          "opponent": "Golden State Warriors",
+          "location": "away",
+          "team_score": 121,
+          "opp_score": 110,
+          "result": "W",
+          "label": "W 121-110 @ Golden State Warriors"
+        }
+      ]
+    },
+    {
+      "team_name": "Brooklyn Nets",
+      "last_5_record": "0-2",
+      "games": [
+        {
+          "date": "2026-02-20",
+          "opponent": "Cleveland Cavaliers",
+          "location": "away",
+          "team_score": 84,
+          "opp_score": 112,
+          "result": "L",
+          "label": "L 84-112 @ Cleveland Cavaliers"
+        },
+        {
+          "date": "2026-02-21",
+          "opponent": "Oklahoma City Thunder",
+          "location": "away",
+          "team_score": 86,
+          "opp_score": 105,
+          "result": "L",
+          "label": "L 86-105 @ Oklahoma City Thunder"
+        }
+      ]
+    },
+    {
+      "team_name": "Charlotte Hornets",
+      "last_5_record": "0-2",
+      "games": [
+        {
+          "date": "2026-02-20",
+          "opponent": "Houston Rockets",
+          "location": "home",
+          "team_score": 101,
+          "opp_score": 105,
+          "result": "L",
+          "label": "L 101-105 vs Houston Rockets"
+        },
+        {
+          "date": "2026-02-21",
+          "opponent": "Cleveland Cavaliers",
+          "location": "home",
+          "team_score": 113,
+          "opp_score": 118,
+          "result": "L",
+          "label": "L 113-118 vs Cleveland Cavaliers"
+        }
+      ]
+    },
+    {
+      "team_name": "Chicago Bulls",
+      "last_5_record": "0-2",
+      "games": [
+        {
+          "date": "2026-02-20",
+          "opponent": "Toronto Raptors",
+          "location": "home",
+          "team_score": 101,
+          "opp_score": 110,
+          "result": "L",
+          "label": "L 101-110 vs Toronto Raptors"
+        },
+        {
+          "date": "2026-02-22",
+          "opponent": "Detroit Pistons",
+          "location": "home",
+          "team_score": 110,
+          "opp_score": 126,
+          "result": "L",
+          "label": "L 110-126 vs Detroit Pistons"
+        }
+      ]
+    },
+    {
+      "team_name": "Cleveland Cavaliers",
+      "last_5_record": "2-0",
+      "games": [
+        {
+          "date": "2026-02-20",
+          "opponent": "Brooklyn Nets",
+          "location": "home",
+          "team_score": 112,
+          "opp_score": 84,
+          "result": "W",
+          "label": "W 112-84 vs Brooklyn Nets"
+        },
+        {
+          "date": "2026-02-21",
+          "opponent": "Charlotte Hornets",
+          "location": "away",
+          "team_score": 118,
+          "opp_score": 113,
+          "result": "W",
+          "label": "W 118-113 @ Charlotte Hornets"
+        }
+      ]
+    },
+    {
+      "team_name": "Dallas Mavericks",
+      "last_5_record": "0-1",
+      "games": [
+        {
+          "date": "2026-02-21",
+          "opponent": "Minnesota Timberwolves",
+          "location": "away",
+          "team_score": 111,
+          "opp_score": 122,
+          "result": "L",
+          "label": "L 111-122 @ Minnesota Timberwolves"
+        }
+      ]
+    },
+    {
+      "team_name": "Denver Nuggets",
+      "last_5_record": "1-1",
+      "games": [
+        {
+          "date": "2026-02-20",
+          "opponent": "LA Clippers",
+          "location": "away",
+          "team_score": 114,
+          "opp_score": 115,
+          "result": "L",
+          "label": "L 114-115 @ LA Clippers"
+        },
+        {
+          "date": "2026-02-21",
+          "opponent": "Portland Trail Blazers",
+          "location": "away",
+          "team_score": 157,
+          "opp_score": 103,
+          "result": "W",
+          "label": "W 157-103 @ Portland Trail Blazers"
+        }
+      ]
+    },
+    {
+      "team_name": "Detroit Pistons",
+      "last_5_record": "2-0",
+      "games": [
+        {
+          "date": "2026-02-20",
+          "opponent": "New York Knicks",
+          "location": "away",
+          "team_score": 126,
+          "opp_score": 111,
+          "result": "W",
+          "label": "W 126-111 @ New York Knicks"
+        },
+        {
+          "date": "2026-02-22",
+          "opponent": "Chicago Bulls",
+          "location": "away",
+          "team_score": 126,
+          "opp_score": 110,
+          "result": "W",
+          "label": "W 126-110 @ Chicago Bulls"
+        }
+      ]
+    },
+    {
+      "team_name": "Golden State Warriors",
+      "last_5_record": "0-1",
+      "games": [
+        {
+          "date": "2026-02-20",
+          "opponent": "Boston Celtics",
+          "location": "home",
+          "team_score": 110,
+          "opp_score": 121,
+          "result": "L",
+          "label": "L 110-121 vs Boston Celtics"
+        }
+      ]
+    },
+    {
+      "team_name": "Houston Rockets",
+      "last_5_record": "1-1",
+      "games": [
+        {
+          "date": "2026-02-20",
+          "opponent": "Charlotte Hornets",
+          "location": "away",
+          "team_score": 105,
+          "opp_score": 101,
+          "result": "W",
+          "label": "W 105-101 @ Charlotte Hornets"
+        },
+        {
+          "date": "2026-02-22",
+          "opponent": "New York Knicks",
+          "location": "away",
+          "team_score": 106,
+          "opp_score": 108,
+          "result": "L",
+          "label": "L 106-108 @ New York Knicks"
+        }
+      ]
+    },
+    {
+      "team_name": "Indiana Pacers",
+      "last_5_record": "0-2",
+      "games": [
+        {
+          "date": "2026-02-20",
+          "opponent": "Washington Wizards",
+          "location": "away",
+          "team_score": 105,
+          "opp_score": 112,
+          "result": "L",
+          "label": "L 105-112 @ Washington Wizards"
+        },
+        {
+          "date": "2026-02-21",
+          "opponent": "Washington Wizards",
+          "location": "away",
+          "team_score": 118,
+          "opp_score": 131,
+          "result": "L",
+          "label": "L 118-131 @ Washington Wizards"
+        }
+      ]
+    },
+    {
+      "team_name": "LA Clippers",
+      "last_5_record": "1-1",
+      "games": [
+        {
+          "date": "2026-02-20",
+          "opponent": "Denver Nuggets",
+          "location": "home",
+          "team_score": 115,
+          "opp_score": 114,
+          "result": "W",
+          "label": "W 115-114 vs Denver Nuggets"
+        },
+        {
+          "date": "2026-02-21",
+          "opponent": "Los Angeles Lakers",
+          "location": "away",
+          "team_score": 122,
+          "opp_score": 125,
+          "result": "L",
+          "label": "L 122-125 @ Los Angeles Lakers"
+        }
+      ]
+    },
+    {
+      "team_name": "Los Angeles Lakers",
+      "last_5_record": "1-0",
+      "games": [
+        {
+          "date": "2026-02-21",
+          "opponent": "LA Clippers",
+          "location": "home",
+          "team_score": 125,
+          "opp_score": 122,
+          "result": "W",
+          "label": "W 125-122 vs LA Clippers"
+        }
+      ]
+    },
+    {
+      "team_name": "Memphis Grizzlies",
+      "last_5_record": "1-1",
+      "games": [
+        {
+          "date": "2026-02-21",
+          "opponent": "Utah Jazz",
+          "location": "home",
+          "team_score": 123,
+          "opp_score": 114,
+          "result": "W",
+          "label": "W 123-114 vs Utah Jazz"
+        },
+        {
+          "date": "2026-02-22",
+          "opponent": "Miami Heat",
+          "location": "away",
+          "team_score": 120,
+          "opp_score": 136,
+          "result": "L",
+          "label": "L 120-136 @ Miami Heat"
+        }
+      ]
+    },
+    {
+      "team_name": "Miami Heat",
+      "last_5_record": "2-0",
+      "games": [
+        {
+          "date": "2026-02-21",
+          "opponent": "Atlanta Hawks",
+          "location": "away",
+          "team_score": 128,
+          "opp_score": 97,
+          "result": "W",
+          "label": "W 128-97 @ Atlanta Hawks"
+        },
+        {
+          "date": "2026-02-22",
+          "opponent": "Memphis Grizzlies",
+          "location": "home",
+          "team_score": 136,
+          "opp_score": 120,
+          "result": "W",
+          "label": "W 136-120 vs Memphis Grizzlies"
+        }
+      ]
+    },
+    {
+      "team_name": "Milwaukee Bucks",
+      "last_5_record": "1-0",
+      "games": [
+        {
+          "date": "2026-02-21",
+          "opponent": "New Orleans Pelicans",
+          "location": "away",
+          "team_score": 139,
+          "opp_score": 118,
+          "result": "W",
+          "label": "W 139-118 @ New Orleans Pelicans"
+        }
+      ]
+    },
+    {
+      "team_name": "Minnesota Timberwolves",
+      "last_5_record": "1-0",
+      "games": [
+        {
+          "date": "2026-02-21",
+          "opponent": "Dallas Mavericks",
+          "location": "home",
+          "team_score": 122,
+          "opp_score": 111,
+          "result": "W",
+          "label": "W 122-111 vs Dallas Mavericks"
+        }
+      ]
+    },
+    {
+      "team_name": "New Orleans Pelicans",
+      "last_5_record": "1-1",
+      "games": [
+        {
+          "date": "2026-02-21",
+          "opponent": "Milwaukee Bucks",
+          "location": "home",
+          "team_score": 118,
+          "opp_score": 139,
+          "result": "L",
+          "label": "L 118-139 vs Milwaukee Bucks"
+        },
+        {
+          "date": "2026-02-22",
+          "opponent": "Philadelphia 76ers",
+          "location": "home",
+          "team_score": 126,
+          "opp_score": 111,
+          "result": "W",
+          "label": "W 126-111 vs Philadelphia 76ers"
+        }
+      ]
+    },
+    {
+      "team_name": "New York Knicks",
+      "last_5_record": "1-1",
+      "games": [
+        {
+          "date": "2026-02-20",
+          "opponent": "Detroit Pistons",
+          "location": "home",
+          "team_score": 111,
+          "opp_score": 126,
+          "result": "L",
+          "label": "L 111-126 vs Detroit Pistons"
+        },
+        {
+          "date": "2026-02-22",
+          "opponent": "Houston Rockets",
+          "location": "home",
+          "team_score": 108,
+          "opp_score": 106,
+          "result": "W",
+          "label": "W 108-106 vs Houston Rockets"
+        }
+      ]
+    },
+    {
+      "team_name": "Oklahoma City Thunder",
+      "last_5_record": "1-0",
+      "games": [
+        {
+          "date": "2026-02-21",
+          "opponent": "Brooklyn Nets",
+          "location": "home",
+          "team_score": 105,
+          "opp_score": 86,
+          "result": "W",
+          "label": "W 105-86 vs Brooklyn Nets"
+        }
+      ]
+    },
+    {
+      "team_name": "Orlando Magic",
+      "last_5_record": "1-1",
+      "games": [
+        {
+          "date": "2026-02-20",
+          "opponent": "Sacramento Kings",
+          "location": "away",
+          "team_score": 131,
+          "opp_score": 94,
+          "result": "W",
+          "label": "W 131-94 @ Sacramento Kings"
+        },
+        {
+          "date": "2026-02-21",
+          "opponent": "Phoenix Suns",
+          "location": "away",
+          "team_score": 110,
+          "opp_score": 113,
+          "result": "L",
+          "label": "L 110-113 @ Phoenix Suns"
+        }
+      ]
+    },
+    {
+      "team_name": "Philadelphia 76ers",
+      "last_5_record": "0-2",
+      "games": [
+        {
+          "date": "2026-02-20",
+          "opponent": "Atlanta Hawks",
+          "location": "home",
+          "team_score": 107,
+          "opp_score": 117,
+          "result": "L",
+          "label": "L 107-117 vs Atlanta Hawks"
+        },
+        {
+          "date": "2026-02-22",
+          "opponent": "New Orleans Pelicans",
+          "location": "away",
+          "team_score": 111,
+          "opp_score": 126,
+          "result": "L",
+          "label": "L 111-126 @ New Orleans Pelicans"
+        }
+      ]
+    },
+    {
+      "team_name": "Phoenix Suns",
+      "last_5_record": "1-1",
+      "games": [
+        {
+          "date": "2026-02-20",
+          "opponent": "San Antonio Spurs",
+          "location": "away",
+          "team_score": 94,
+          "opp_score": 121,
+          "result": "L",
+          "label": "L 94-121 @ San Antonio Spurs"
+        },
+        {
+          "date": "2026-02-21",
+          "opponent": "Orlando Magic",
+          "location": "home",
+          "team_score": 113,
+          "opp_score": 110,
+          "result": "W",
+          "label": "W 113-110 vs Orlando Magic"
+        }
+      ]
+    },
+    {
+      "team_name": "Portland Trail Blazers",
+      "last_5_record": "0-1",
+      "games": [
+        {
+          "date": "2026-02-21",
+          "opponent": "Denver Nuggets",
+          "location": "home",
+          "team_score": 103,
+          "opp_score": 157,
+          "result": "L",
+          "label": "L 103-157 vs Denver Nuggets"
+        }
+      ]
+    },
+    {
+      "team_name": "Sacramento Kings",
+      "last_5_record": "0-2",
+      "games": [
+        {
+          "date": "2026-02-20",
+          "opponent": "Orlando Magic",
+          "location": "home",
+          "team_score": 94,
+          "opp_score": 131,
+          "result": "L",
+          "label": "L 94-131 vs Orlando Magic"
+        },
+        {
+          "date": "2026-02-22",
+          "opponent": "San Antonio Spurs",
+          "location": "away",
+          "team_score": 122,
+          "opp_score": 139,
+          "result": "L",
+          "label": "L 122-139 @ San Antonio Spurs"
+        }
+      ]
+    },
+    {
+      "team_name": "San Antonio Spurs",
+      "last_5_record": "2-0",
+      "games": [
+        {
+          "date": "2026-02-20",
+          "opponent": "Phoenix Suns",
+          "location": "home",
+          "team_score": 121,
+          "opp_score": 94,
+          "result": "W",
+          "label": "W 121-94 vs Phoenix Suns"
+        },
+        {
+          "date": "2026-02-22",
+          "opponent": "Sacramento Kings",
+          "location": "home",
+          "team_score": 139,
+          "opp_score": 122,
+          "result": "W",
+          "label": "W 139-122 vs Sacramento Kings"
+        }
+      ]
+    },
+    {
+      "team_name": "Team Stars",
+      "last_5_record": "2-1",
+      "games": [
+        {
+          "date": "2026-02-16",
+          "opponent": "Team Stripes",
+          "location": "away",
+          "team_score": 47,
+          "opp_score": 21,
+          "result": "W",
+          "label": "W 47-21 @ Team Stripes"
+        },
+        {
+          "date": "2026-02-15",
+          "opponent": "Team Stripes",
+          "location": "away",
+          "team_score": 40,
+          "opp_score": 42,
+          "result": "L",
+          "label": "L 40-42 @ Team Stripes"
+        },
+        {
+          "date": "2026-02-15",
+          "opponent": "World",
+          "location": "home",
+          "team_score": 37,
+          "opp_score": 35,
+          "result": "W",
+          "label": "W 37-35 vs World"
+        }
+      ]
+    },
+    {
+      "team_name": "Team Stripes",
+      "last_5_record": "2-1",
+      "games": [
+        {
+          "date": "2026-02-16",
+          "opponent": "Team Stars",
+          "location": "home",
+          "team_score": 21,
+          "opp_score": 47,
+          "result": "L",
+          "label": "L 21-47 vs Team Stars"
+        },
+        {
+          "date": "2026-02-15",
+          "opponent": "World",
+          "location": "home",
+          "team_score": 48,
+          "opp_score": 45,
+          "result": "W",
+          "label": "W 48-45 vs World"
+        },
+        {
+          "date": "2026-02-15",
+          "opponent": "Team Stars",
+          "location": "home",
+          "team_score": 42,
+          "opp_score": 40,
+          "result": "W",
+          "label": "W 42-40 vs Team Stars"
+        }
+      ]
+    },
+    {
+      "team_name": "Toronto Raptors",
+      "last_5_record": "1-0",
+      "games": [
+        {
+          "date": "2026-02-20",
+          "opponent": "Chicago Bulls",
+          "location": "away",
+          "team_score": 110,
+          "opp_score": 101,
+          "result": "W",
+          "label": "W 110-101 @ Chicago Bulls"
+        }
+      ]
+    },
+    {
+      "team_name": "Utah Jazz",
+      "last_5_record": "0-1",
+      "games": [
+        {
+          "date": "2026-02-21",
+          "opponent": "Memphis Grizzlies",
+          "location": "away",
+          "team_score": 114,
+          "opp_score": 123,
+          "result": "L",
+          "label": "L 114-123 @ Memphis Grizzlies"
+        }
+      ]
+    },
+    {
+      "team_name": "Washington Wizards",
+      "last_5_record": "2-0",
+      "games": [
+        {
+          "date": "2026-02-20",
+          "opponent": "Indiana Pacers",
+          "location": "home",
+          "team_score": 112,
+          "opp_score": 105,
+          "result": "W",
+          "label": "W 112-105 vs Indiana Pacers"
+        },
+        {
+          "date": "2026-02-21",
+          "opponent": "Indiana Pacers",
+          "location": "home",
+          "team_score": 131,
+          "opp_score": 118,
+          "result": "W",
+          "label": "W 131-118 vs Indiana Pacers"
+        }
+      ]
+    },
+    {
+      "team_name": "World",
+      "last_5_record": "0-2",
+      "games": [
+        {
+          "date": "2026-02-15",
+          "opponent": "Team Stripes",
+          "location": "away",
+          "team_score": 45,
+          "opp_score": 48,
+          "result": "L",
+          "label": "L 45-48 @ Team Stripes"
+        },
+        {
+          "date": "2026-02-15",
+          "opponent": "Team Stars",
+          "location": "away",
+          "team_score": 35,
+          "opp_score": 37,
+          "result": "L",
+          "label": "L 35-37 @ Team Stars"
+        }
+      ]
+    }
+  ]
+}

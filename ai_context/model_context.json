@@ -1,109 +1,113 @@
 {
-  "generated_at": "2026-02-11T00:00:00",
-  "model_name": "NBA Game Prediction Model v2",
-  "model_type": "XGBoost with Probability Calibration",
-  "description": "Machine learning model for predicting NBA game outcomes based on historical data, current team strength, and situational factors",
-  
+  "generated_at": "2026-02-22T00:02:15.758451",
+  "model_name": "NBA Game Prediction Model v3",
+  "model_type": "XGBoost with Logistic Regression Calibration",
+  "model_file": "xgb_v3_with_injuries.json",
+  "calibrator_file": "calibrator_v3.pkl",
+  "description": "XGBoost model trained on NBA games from 2004\u20132022. Expanded from 25 to 31 features in v3 by adding explicit injury columns. Probabilities are isotonically calibrated for accuracy.",
   "features_used": {
     "elo_ratings": {
-      "description": "Team strength ratings based on historical performance (similar to chess Elo)",
-      "features": ["elo_home", "elo_away", "elo_diff"],
-      "typical_range": "1200-1650 (higher is better)"
+      "description": "Team strength ratings derived from the entire NBA historical record. Ratings are adjusted downward for injured players before prediction.",
+      "features": [
+        "elo_home",
+        "elo_away",
+        "elo_diff",
+        "elo_prob"
+      ],
+      "typical_range": "1200\u20131650 (average ~1500; higher = stronger team)"
     },
     "rolling_stats": {
-      "description": "Recent performance metrics (last 10 games)",
+      "description": "Team performance metrics averaged over last 10 games (pre-game window).",
       "features": [
-        "win_roll_home - home team's recent win percentage",
-        "win_roll_away - away team's recent win percentage",
-        "margin_roll_home - home team's recent point differential",
-        "margin_roll_away - away team's recent point differential"
+        "pf_roll_home",
+        "pf_roll_away",
+        "pf_roll_diff",
+        "pa_roll_home",
+        "pa_roll_away",
+        "pa_roll_diff",
+        "win_roll_home",
+        "win_roll_away",
+        "win_roll_diff",
+        "margin_roll_home",
+        "margin_roll_away",
+        "margin_roll_diff"
+      ]
+    },
+    "game_window": {
+      "description": "Number of games played in the rolling window (handles early-season small samples).",
+      "features": [
+        "games_in_window_home",
+        "games_in_window_away"
       ]
     },
     "rest_factors": {
-      "description": "Days of rest and back-to-back game indicators",
+      "description": "Days since last game and back-to-back indicators.",
       "features": [
-        "home_rest_days - days since last game for home team",
-        "away_rest_days - days since last game for away team",
-        "home_b2b - home team playing back-to-back",
-        "away_b2b - away team playing back-to-back"
+        "home_rest_days",
+        "away_rest_days",
+        "home_b2b",
+        "away_b2b",
+        "rest_diff"
       ],
-      "impact": "Teams on back-to-backs typically see 2-5% decrease in win probability"
+      "impact": "Back-to-back teams typically see 2\u20135% decrease in win probability."
     },
     "betting_markets": {
-      "description": "Implied probabilities from betting markets (when available)",
-      "features": ["market_prob_home", "market_prob_away"],
-      "note": "Market odds often reflect late-breaking news like injuries"
+      "description": "Implied win probability from the betting market moneyline. Markets incorporate late-breaking information (trades, injury news) rapidly.",
+      "features": [
+        "market_prob_home",
+        "market_prob_away"
+      ]
     },
-    "injury_adjustments": {
-      "description": "Elo adjustments based on player injuries",
-      "how_it_works": "Current injury reports are fetched from ESPN API. Each injury is assigned a severity score (Out=1.0, Doubtful=0.75, Questionable=0.5). Player importance multipliers are applied (All-Star=2.5x, Starter=1.5x, Bench=1.0x). The total is converted to an Elo adjustment.",
-      "example": "LeBron James (Out) = 1.0 × 2.5 × 20 = -50 Elo points for his team",
-      "note": "Injuries adjust Elo ratings before prediction, not as separate features"
+    "injury_features": {
+      "description": "NEW IN v3 \u2014 Explicit injury columns. Zero for all historical training rows (no historical injury data). Populated from live ESPN API at inference time.",
+      "features": [
+        "home_players_out            \u2014 integer count of home players ruled out",
+        "away_players_out            \u2014 integer count of away players ruled out",
+        "home_players_questionable   \u2014 integer count of questionable home players",
+        "away_players_questionable   \u2014 integer count of questionable away players",
+        "home_injury_severity        \u2014 weighted severity (Out=1.0, Doubtful=0.75, Questionable=0.5, DTD=0.25)",
+        "away_injury_severity        \u2014 weighted severity score for away team"
+      ],
+      "double_encoding_note": "Injuries are encoded twice for robustness: (1) as explicit feature columns above, AND (2) as Elo rating adjustments before prediction. Example: LeBron James (Out) \u2192 Lakers Elo drops ~50 pts \u2192 ~8\u201312% swing in win prob."
     }
   },
-  
+  "total_features": 31,
   "output": {
-    "home_win_probability": "Probability that home team wins (0.0 to 1.0)",
-    "away_win_probability": "Probability that away team wins (0.0 to 1.0)",
-    "confidence_tier": "Categorization of prediction confidence"
+    "home_win_probability": "Calibrated probability that home team wins (0.0\u20131.0)",
+    "away_win_probability": "1 minus home win probability",
+    "confidence_tier": "Human-readable confidence category"
   },
-  
   "confidence_tiers": {
-    "Heavy Favorite": "Win probability > 75% - Very confident prediction",
-    "Moderate Favorite": "Win probability 65-75% - Confident favorite",
-    "Lean Favorite": "Win probability 60-65% - Slight favorite",
-    "Toss-Up": "Win probability 50-60% - Very uncertain outcome",
-    "Lean Underdog": "Win probability 40-50% - Slight underdog (flip perspective)",
-    "Moderate Underdog": "Win probability 35-40% - Clear underdog",
-    "Heavy Underdog": "Win probability < 35% - Major underdog"
+    "Heavy Favorite": "> 75% win probability",
+    "Moderate Favorite": "65\u201375%",
+    "Lean Favorite": "60\u201365%",
+    "Toss-Up": "45\u201355%",
+    "Lean Underdog": "40\u201345%",
+    "Moderate Underdog": "35\u201340%",
+    "Heavy Underdog": "< 35%"
   },
-  
   "important_notes": {
-    "injury_lag": "The model's core features don't include real-time injuries as training data. However, Elo ratings are adjusted based on current injury reports before making predictions, so injury impact IS reflected in the probabilities.",
-    
-    "market_incorporation": "Betting market probabilities are included as features when available. Markets often react quickly to injury news, providing another signal.",
-    
-    "elo_system": "Elo ratings update after each game based on results and margin of victory. A team that wins by 20 points gains more Elo than a team winning by 2.",
-    
-    "calibration": "Probabilities are calibrated to be well-calibrated (i.e., when model says 70%, the team should win ~70% of the time over many games).",
-    
-    "uncertainty": "Toss-up games (near 50/50) are inherently unpredictable. Many factors not in the model (player mood, referee calls, random variance) can swing these games."
-  },
-  
-  "interpretation_guide": {
-    "high_confidence_games": "Games with clear favorites (>70% win probability) tend to be more predictable. These often involve large Elo differences or teams on different performance trajectories.",
-    
-    "toss_ups": "Games near 50/50 are inherently uncertain. The model sees both teams as roughly equal in strength. Small factors can swing the result.",
-    
-    "injury_impact": {
-      "all_star_out": "Major All-Star player out = typically 5-15% shift in win probability",
-      "starter_out": "Regular starter out = typically 2-5% shift",
-      "bench_player_out": "Minimal impact, usually <2%",
-      "multiple_injuries": "Multiple starters out can compound to 15-20%+ impact"
-    },
-    
-    "home_court_advantage": "Home court advantage (~2-3% on average) is built into the model through historical training data and Elo system.",
-    
-    "back_to_backs": "Teams on second night of back-to-back typically see 2-5% decrease in win probability due to fatigue.",
-    
-    "recent_form": "Teams on hot streaks (high recent win %) get a boost in prediction even if their Elo hasn't caught up yet.",
-    
+    "injury_double_encoding": "Injuries affect predictions in two complementary ways: feature columns AND Elo adjustments. This means injury information is reflected even if one channel is unavailable.",
+    "training_injury_zeros": "All injury feature columns were 0 in training rows. The model learns injury impact implicitly through Elo and rolling stats for historical games. At inference time the columns are populated with live ESPN values, giving the model an additional explicit signal.",
+    "market_incorporation": "When betting odds are available they are included as features. Markets often price in injuries within minutes of announcement.",
+    "calibration": "Isotonic regression calibration is applied \u2014 a 70% prediction should win ~70% of the time over a large sample.",
     "model_limitations": {
-      "no_lineups": "Model doesn't know specific starting lineups until game time",
-      "no_player_stats": "Model works at team level, not individual player level",
-      "no_matchups": "Doesn't account for specific team matchup advantages (e.g., Team A struggles against Team B historically)",
-      "lag_on_trades": "Major trades take 5-10 games for Elo to fully reflect impact",
-      "situational_context": "Doesn't know about playoff implications, rest decisions, or tanking strategies"
+      "no_confirmed_lineups": "Model does not see confirmed starting lineups until tip-off.",
+      "lag_on_trades": "Major roster moves take 5\u201310 games to be fully reflected in Elo.",
+      "situational_context": "No awareness of playoff seeding urgency, load management, or tanking.",
+      "injury_timing": "If a player is ruled out after predictions are generated, the model won't reflect it unless re-run."
     }
   },
-  
-  "common_user_questions": {
-    "why_different_from_vegas": "Vegas odds incorporate information from professional bettors and sharp money. They may have access to lineup news or insider information before it's public. Also, odds are set to balance betting action, not just predict outcomes.",
-    
-    "model_vs_market": "When model disagrees strongly with betting markets, it usually means: (1) late injury news the model hasn't incorporated yet, (2) sharp bettors know something, or (3) model found a genuine edge based on underlying team strength.",
-    
-    "how_to_use_predictions": "Use predictions as one input among many. High-confidence picks (>70%) tend to be more reliable. Toss-ups are genuinely uncertain - don't overthink them. Always check injury reports before game time.",
-    
-    "why_did_prediction_fail": "Even 90% favorites lose 10% of the time. Basketball has high variance. Any single game can swing on a hot shooting night, ref calls, or random luck. Evaluate model performance over 50+ games, not individual picks."
+  "interpretation_guide": {
+    "injury_impact_examples": {
+      "all_star_player_out": "\u221240 to \u221260 Elo \u2192 8\u201315% win-prob shift",
+      "starting_player_out": "\u221220 to \u221230 Elo \u2192 3\u20137% shift",
+      "bench_player_out": "Minimal, usually < 2%",
+      "multiple_starters_out": "Can compound to 15\u201325% shift",
+      "questionable_player": "50% weight applied \u2014 about half the Out impact"
+    },
+    "back_to_backs": "2\u20135% decrease in win probability for the tired team.",
+    "home_court": "Built into Elo and rolling stats (~2\u20133% average advantage).",
+    "market_vs_model": "Large divergence (> 5%) usually signals: late injury news the model hasn't seen, sharp-money information, or a genuine model edge."
   }
 }
