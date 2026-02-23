@@ -4,25 +4,57 @@ import 'package:google_fonts/google_fonts.dart';
 import '../Providers/auth_provider.dart';
 import '../Screens/login_screen.dart';
 import '../Screens/main_navigation.dart';
+import '../Screens/promo_video_screen.dart';
 import '../theme/app_theme.dart';
 import 'signal_logo.dart';
 
 /// Auth gate widget that controls access to the app based on authentication state.
-/// Shows LoginScreen when unauthenticated, MainNavigation when authenticated.
-class AuthGate extends ConsumerWidget {
+/// Shows LoginScreen when unauthenticated, a promo video on fresh login, then
+/// MainNavigation when authenticated.
+class AuthGate extends ConsumerStatefulWidget {
   const AuthGate({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AuthGate> createState() => _AuthGateState();
+}
+
+class _AuthGateState extends ConsumerState<AuthGate> {
+  /// Whether the promo video has been shown (or skipped) this session.
+  bool _promoVideoCompleted = false;
+
+  /// Track the previous auth state so we can detect a fresh login.
+  bool _wasSignedIn = false;
+
+  void _onPromoVideoDone() {
+    setState(() {
+      _promoVideoCompleted = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final authState = ref.watch(authStateProvider);
 
     return authState.when(
       data: (user) {
         if (user != null) {
-          // User is signed in, show main app
+          // Detect a fresh login (transition from signed-out → signed-in).
+          if (!_wasSignedIn) {
+            _wasSignedIn = true;
+            // Reset the flag so the video plays for this new login.
+            _promoVideoCompleted = false;
+          }
+
+          if (!_promoVideoCompleted) {
+            return PromoVideoScreen(onComplete: _onPromoVideoDone);
+          }
+
+          // User has seen (or skipped) the video — show main app.
           return const MainNavigation();
         } else {
-          // User is not signed in, show login screen
+          // User signed out — reset state for next login.
+          _wasSignedIn = false;
+          _promoVideoCompleted = false;
           return const LoginScreen();
         }
       },
