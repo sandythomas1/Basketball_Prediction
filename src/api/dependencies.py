@@ -95,8 +95,8 @@ def get_trackers() -> Tuple[EloTracker, StatsTracker]:
 def get_predictor() -> Predictor:
     """Get singleton Predictor instance."""
     models_dir = get_models_dir()
-    model_path = models_dir / "xgb_v2_modern.json"
-    calibrator_path = models_dir / "calibrator.pkl"
+    model_path = models_dir / "xgb_v3_with_injuries.json"
+    calibrator_path = models_dir / "calibrator_v3.pkl"
     
     if not model_path.exists():
         raise RuntimeError(f"Model not found at {model_path}")
@@ -147,8 +147,8 @@ class PredictionService:
             
             # Create predictor with confidence scorer
             models_dir = get_models_dir()
-            model_path = models_dir / "xgb_v2_modern.json"
-            calibrator_path = models_dir / "calibrator.pkl"
+            model_path = models_dir / "xgb_v3_with_injuries.json"
+            calibrator_path = models_dir / "calibrator_v3.pkl"
             
             self._predictor_with_confidence = Predictor(
                 model_path,
