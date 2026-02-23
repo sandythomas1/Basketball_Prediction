@@ -38,8 +38,12 @@ class AuthService {
     defaultValue: '791769083784-25fia4a3ff7le5137846tn8c3ct5japi.apps.googleusercontent.com',
   );
 
+  static const String _googleIOSClientId =
+      '791769083784-16ks16d0rtojh97rsabkhkrne8u3r6a5.apps.googleusercontent.com';
+
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: ['email', 'profile'],
+    clientId: _googleIOSClientId,
     serverClientId: _googleWebClientId,
   );
   final SecureStorageService _secureStorage = SecureStorageService.instance;
