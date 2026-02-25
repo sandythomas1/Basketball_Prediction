@@ -1,7 +1,8 @@
 import 'dart:math';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../Models/game.dart';
-import '../Services/agent_chat_service.dart';
 import '../Services/ai_chat_service.dart';
 
 // ── Chat message model ────────────────────────────────────────────────────────
@@ -48,7 +49,7 @@ class AIChatState {
   final int chatsRemaining;
   final bool isRateLimited;
 
-  static const int dailyLimit = AgentChatService.dailyLimit;
+  static const int dailyLimit = 3;
 
   const AIChatState({
     this.messages = const [],
@@ -88,9 +89,24 @@ class AIChatState {
 
 class AIChatNotifier extends StateNotifier<AIChatState> {
   final AIChatService _service;
-  final AgentChatService _agentService = AgentChatService();
 
   AIChatNotifier(this._service) : super(const AIChatState());
+
+  // ── RTDB usage helpers ─────────────────────────────────────────────────
+
+  static String _todayString() {
+    final now = DateTime.now();
+    final y = now.year.toString();
+    final m = now.month.toString().padLeft(2, '0');
+    final d = now.day.toString().padLeft(2, '0');
+    return '$y-$m-$d';
+  }
+
+  DatabaseReference? _usageRef() {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return null;
+    return FirebaseDatabase.instance.ref('usage/$uid/${_todayString()}');
+  }
 
   // ── Initialization ──────────────────────────────────────────────────────
 
@@ -128,7 +144,10 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
   /// Fetch today's chat count from Firebase Realtime Database and update state.
   Future<void> _fetchAndApplyUsage() async {
     try {
-      final used = await _agentService.fetchTodayUsage();
+      final ref = _usageRef();
+      if (ref == null) return;
+      final snap = await ref.get();
+      final used = (snap.value as num?)?.toInt() ?? 0;
       final remaining = max(0, AIChatState.dailyLimit - used);
       state = state.copyWith(
         chatsUsedToday: used,
@@ -138,6 +157,15 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
     } catch (_) {
       // Non-fatal — usage display will just show defaults
     }
+  }
+
+  /// Atomically increment today's usage in RTDB and return the new count.
+  Future<int> _incrementUsage() async {
+    final ref = _usageRef();
+    if (ref == null) return state.chatsUsedToday + 1;
+    await ref.set(ServerValue.increment(1));
+    final snap = await ref.get();
+    return (snap.value as num?)?.toInt() ?? (state.chatsUsedToday + 1);
   }
 
   // ── Messaging ───────────────────────────────────────────────────────────
@@ -195,9 +223,8 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
       updated[updated.length - 1] =
           ChatMessage(text: fullResponse, isUser: false, isLoading: false);
 
-      // Decrement remaining optimistically (server is the source of truth;
-      // the backend already incremented before we got the response)
-      final newUsed = state.chatsUsedToday + 1;
+      // Persist the usage increment to RTDB and read back the authoritative count
+      final newUsed = await _incrementUsage();
       final newRemaining = max(0, AIChatState.dailyLimit - newUsed);
 
       state = state.copyWith(
@@ -207,27 +234,6 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
         chatsRemaining: newRemaining,
         isRateLimited: newRemaining == 0,
       );
-    } on AgentChatException catch (e) {
-      if (e.isRateLimited) {
-        // Server confirmed the limit — update state and show friendly message
-        final used = e.chatsUsedToday ?? AIChatState.dailyLimit;
-        final updated = [...state.messages];
-        updated[updated.length - 1] = ChatMessage(
-          text: "You've used all ${AIChatState.dailyLimit} free AI chats for today. "
-              "Come back tomorrow or upgrade to Pro for unlimited access. 🔓",
-          isUser: false,
-          isLoading: false,
-        );
-        state = state.copyWith(
-          messages: updated,
-          isLoading: false,
-          chatsUsedToday: used,
-          chatsRemaining: 0,
-          isRateLimited: true,
-        );
-      } else {
-        _replaceLastMessageWithError(e.message);
-      }
     } catch (e) {
       _replaceLastMessageWithError(
         'Sorry, I encountered an error. Please try again.\n\n'

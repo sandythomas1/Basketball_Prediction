@@ -13,7 +13,7 @@ class AgentChatService {
       FirebaseFunctions.instanceFor(region: 'us-west1');
   String? _sessionId;
 
-  static const int dailyLimit = 10;
+  static const int dailyLimit = 3;
 
   // ── Session management ────────────────────────────────────────────────────
 

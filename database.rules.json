@@ -188,6 +188,16 @@
       }
     },
     
+    "usage": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        "$date": {
+          ".write": "auth != null && auth.uid == $uid",
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100"
+        }
+      }
+    },
+    
     "$other": {
       ".read": false,
       ".write": false
