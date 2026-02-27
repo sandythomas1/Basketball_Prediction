@@ -29,6 +29,7 @@ todos:
   - id: testing-submit
     content: Build release AAB, test all flows, submit to Play Store
     status: pending
+isProject: false
 ---
 
 # Signal Sports -- Google Play Store Launch Plan (1 Week)
@@ -69,6 +70,8 @@ graph TB
   clientApp --> RevenueCat
 ```
 
+
+
 ---
 
 ## Day 1-2: Fix AI Chat + Implement Free/Pro Tier Logic
@@ -77,9 +80,9 @@ graph TB
 
 The current system has two parallel AI services that are not properly coordinated:
 
-- [`ai_chat_service.dart`](app/lib/Services/ai_chat_service.dart) -- Vertex AI Gemini streaming (actually sends messages)
-- [`agent_chat_service.dart`](app/lib/Services/agent_chat_service.dart) -- Dialogflow CX via Cloud Functions (tracks usage)
-- [`ai_chat_provider.dart`](app/lib/Providers/ai_chat_provider.dart) -- Uses `AIChatService` for streaming but `AgentChatService` for usage tracking
+- `[ai_chat_service.dart](app/lib/Services/ai_chat_service.dart)` -- Vertex AI Gemini streaming (actually sends messages)
+- `[agent_chat_service.dart](app/lib/Services/agent_chat_service.dart)` -- Dialogflow CX via Cloud Functions (tracks usage)
+- `[ai_chat_provider.dart](app/lib/Providers/ai_chat_provider.dart)` -- Uses `AIChatService` for streaming but `AgentChatService` for usage tracking
 
 The provider calls `_service.sendMessageStream(text)` (Vertex AI, no usage tracking) but only fetches usage from the Dialogflow agent service. The Vertex AI path never increments the usage counter, so the count is wrong.
 
@@ -92,14 +95,14 @@ Recommendation: **(A)** -- increment `usage/$uid/$today` in RTDB from the `AICha
 
 ### 2. Change Free Tier to 3 Chats/Day
 
-- Update `DAILY_FREE_CHAT_LIMIT` in [`functions/index.js`](functions/index.js) from `10` to `3`
-- Update `dailyLimit` in [`agent_chat_service.dart`](app/lib/Services/agent_chat_service.dart) from `10` to `3`
+- Update `DAILY_FREE_CHAT_LIMIT` in `[functions/index.js](functions/index.js)` from `10` to `3`
+- Update `dailyLimit` in `[agent_chat_service.dart](app/lib/Services/agent_chat_service.dart)` from `10` to `3`
 - Update `AIChatState.dailyLimit` to `3`
-- Update the locked state text in [`ai_chat_widget.dart`](app/lib/Widgets/ai_chat_widget.dart) from "10 free chats" to "3 free chats"
+- Update the locked state text in `[ai_chat_widget.dart](app/lib/Widgets/ai_chat_widget.dart)` from "10 free chats" to "3 free chats"
 
 ### 3. Add Subscription Status to User Model
 
-Add a `subscriptionTier` field to [`user_profile.dart`](app/lib/Models/user_profile.dart):
+Add a `subscriptionTier` field to `[user_profile.dart](app/lib/Models/user_profile.dart)`:
 
 ```dart
 final String subscriptionTier; // 'free' or 'pro'
@@ -120,7 +123,7 @@ Store subscription status in Firebase RTDB at `users/$uid/subscription`. Revenue
 
 | Basic predictions (favored team, win %) | Yes | Yes |
 
-| Confidence Score breakdown (expandable factors in [`game_detail_screen.dart`](app/lib/Screens/game_detail_screen.dart) `_ConfidenceScoreIndicator`) | Locked | Yes |
+| Confidence Score breakdown (expandable factors in `[game_detail_screen.dart](app/lib/Screens/game_detail_screen.dart)` `_ConfidenceScoreIndicator`) | Locked | Yes |
 
 | Injury impact analysis (detailed per-player list) | Locked | Yes |
 
@@ -154,11 +157,11 @@ RevenueCat is the right choice for a 1-week timeline:
 ### Implementation
 
 1. Create a RevenueCat account and set up a Google Play project
-2. Add `purchases_flutter` to [`pubspec.yaml`](app/pubspec.yaml)
+2. Add `purchases_flutter` to `[pubspec.yaml](app/pubspec.yaml)`
 3. Create a `SubscriptionService` in `app/lib/Services/`
 4. Create a `PaywallScreen` (upgrade screen shown when free limit hit or locked feature tapped)
 5. Create a `SubscriptionProvider` using Riverpod
-6. Wire the "Upgrade to Pro" button in [`ai_chat_widget.dart`](app/lib/Widgets/ai_chat_widget.dart) (currently a TODO placeholder) to navigate to the paywall
+6. Wire the "Upgrade to Pro" button in `[ai_chat_widget.dart](app/lib/Widgets/ai_chat_widget.dart)` (currently a TODO placeholder) to navigate to the paywall
 
 ---
 
@@ -166,7 +169,7 @@ RevenueCat is the right choice for a 1-week timeline:
 
 Rename the AI assistant from "AI INSIGHTS" to **"Signal"** throughout the app.
 
-Key design improvements for [`ai_chat_widget.dart`](app/lib/Widgets/ai_chat_widget.dart):
+Key design improvements for `[ai_chat_widget.dart](app/lib/Widgets/ai_chat_widget.dart)`:
 
 - Replace generic "AI INSIGHTS" header with "Signal" branding and a distinctive avatar
 - Full-screen chat mode (not just a collapsible 440px box)
@@ -193,6 +196,7 @@ Key design improvements for [`ai_chat_widget.dart`](app/lib/Widgets/ai_chat_widg
 ### Steps
 
 1. **Create a Dockerfile** for the FastAPI prediction API:
+
 ```dockerfile
 FROM python:3.11-slim
 WORKDIR /app
@@ -205,9 +209,9 @@ COPY data/ data/
 CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8080"]
 ```
 
-2. **Deploy to Cloud Run** via `gcloud run deploy`
-3. **Update** `RENDER_API_URL` in Cloud Functions env to point to the new Cloud Run URL
-4. **Update** `app_config.dart` API base URL
+1. **Deploy to Cloud Run** via `gcloud run deploy`
+2. **Update** `RENDER_API_URL` in Cloud Functions env to point to the new Cloud Run URL
+3. **Update** `app_config.dart` API base URL
 
 ### Daily Scripts as Cloud Run Job
 
@@ -224,11 +228,11 @@ Deploy as a **Cloud Run Job** triggered by **Cloud Scheduler** at 9 AM ET daily 
 
 ### Android App Configuration
 
-1. **Change application ID** from `com.example.app` in [`build.gradle.kts`](app/android/app/build.gradle.kts) to something like `com.signalsports.app`
+1. **Change application ID** from `com.example.app` in `[build.gradle.kts](app/android/app/build.gradle.kts)` to something like `com.signalsports.app`
 2. **Create a release signing keystore** (`keytool -genkey ...`) and configure `signingConfigs` in Gradle
 3. **Set `minSdk`** appropriately (currently `flutter.minSdkVersion` which is 21 -- fine)
 4. **Update** `namespace` from `com.example.app` to match new application ID
-5. **Remove** leftover git tutorial comments from [`main.dart`](app/lib/main.dart)
+5. **Remove** leftover git tutorial comments from `[main.dart](app/lib/main.dart)`
 
 ### Play Store Requirements
 

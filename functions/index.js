@@ -22,7 +22,7 @@ const storage = new Storage();
 // Constants
 // =============================================================================
 
-const DAILY_FREE_CHAT_LIMIT = 10;
+const DAILY_FREE_CHAT_LIMIT = 3;
 
 // =============================================================================
 // Configuration

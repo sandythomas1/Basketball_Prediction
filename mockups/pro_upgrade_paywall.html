@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Signal Sports – Pro Upgrade</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #0d1117;
+    color: #f0f6fc;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .phone-frame {
+    width: 390px;
+    min-height: 100vh;
+    background: #0d1117;
+    position: relative;
+    overflow-y: auto;
+  }
+
+  /* ── Top bar ─────────────────────────────── */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px 8px;
+  }
+  .top-bar .close-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: #8b949e;
+    font-size: 18px;
+  }
+  .top-bar .close-btn:hover { background: rgba(255,255,255,0.1); }
+
+  /* ── Hero ─────────────────────────────────── */
+  .hero {
+    text-align: center;
+    padding: 24px 24px 0;
+  }
+  .hero-icon {
+    width: 72px; height: 72px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, rgba(188,140,255,0.15), rgba(88,166,255,0.15));
+    border: 1px solid rgba(188,140,255,0.25);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 32px;
+  }
+  .hero h1 {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #bc8cff, #58a6ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero p {
+    font-size: 15px;
+    color: #8b949e;
+    line-height: 1.5;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  /* ── Usage badge ──────────────────────────── */
+  .usage-badge {
+    margin: 20px auto 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: rgba(248,81,73,0.1);
+    border: 1px solid rgba(248,81,73,0.25);
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: #f85149;
+  }
+
+  /* ── Features ─────────────────────────────── */
+  .features {
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .feature-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: #161b22;
+    border-radius: 14px;
+    border: 1px solid #30363d;
+  }
+  .feature-icon {
+    width: 40px; height: 40px; min-width: 40px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .feature-icon.purple { background: rgba(188,140,255,0.12); }
+  .feature-icon.blue   { background: rgba(88,166,255,0.12); }
+  .feature-icon.green  { background: rgba(63,185,80,0.12); }
+  .feature-icon.teal   { background: rgba(0,212,204,0.12); }
+
+  .feature-text h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .feature-text p {
+    font-size: 13px;
+    color: #8b949e;
+    line-height: 1.4;
+  }
+
+  /* ── Pricing card ─────────────────────────── */
+  .pricing-section {
+    padding: 0 24px 20px;
+  }
+  .pricing-card {
+    background: linear-gradient(135deg, rgba(188,140,255,0.06), rgba(88,166,255,0.06));
+    border: 1px solid rgba(188,140,255,0.2);
+    border-radius: 18px;
+    padding: 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .pricing-card::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle at 30% 30%, rgba(188,140,255,0.04), transparent 60%);
+    pointer-events: none;
+  }
+  .pricing-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: #8b949e;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .pricing-amount {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+  .pricing-amount .dollar {
+    font-size: 22px;
+    font-weight: 700;
+    color: #bc8cff;
+  }
+  .pricing-amount .value {
+    font-size: 48px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #bc8cff, #58a6ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+  }
+  .pricing-amount .period {
+    font-size: 15px;
+    color: #8b949e;
+  }
+  .pricing-note {
+    font-size: 13px;
+    color: #6e7681;
+    margin-top: 2px;
+  }
+
+  /* ── CTA button ───────────────────────────── */
+  .cta-section {
+    padding: 0 24px 12px;
+  }
+  .cta-btn {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #bc8cff, #58a6ff);
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .cta-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 30px rgba(188,140,255,0.25);
+  }
+  .cta-btn:active { transform: translateY(0); }
+
+  .restore-link {
+    display: block;
+    text-align: center;
+    padding: 12px;
+    font-size: 13px;
+    color: #6e7681;
+    cursor: pointer;
+  }
+  .restore-link:hover { color: #8b949e; }
+
+  /* ── Free tier reminder ───────────────────── */
+  .free-reminder {
+    text-align: center;
+    padding: 0 24px 32px;
+    font-size: 13px;
+    color: #6e7681;
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+<div class="phone-frame">
+
+  <!-- Top bar -->
+  <div class="top-bar">
+    <div class="close-btn">&times;</div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-icon">&#x2728;</div>
+    <h1>Upgrade to Pro</h1>
+    <p>Unlock unlimited AI game analysis and get the edge on every matchup.</p>
+    <div class="usage-badge">
+      <span>&#x1F512;</span> 3 / 3 free chats used today
+    </div>
+  </div>
+
+  <!-- Features -->
+  <div class="features">
+    <div class="feature-row">
+      <div class="feature-icon purple">&#x1F4AC;</div>
+      <div class="feature-text">
+        <h3>Unlimited AI Chats</h3>
+        <p>No daily cap — ask as many questions as you want</p>
+      </div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-icon blue">&#x26A1;</div>
+      <div class="feature-text">
+        <h3>Priority Responses</h3>
+        <p>Faster model with deeper, more detailed analysis</p>
+      </div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-icon green">&#x1F3AF;</div>
+      <div class="feature-text">
+        <h3>Advanced Insights</h3>
+        <p>Player props, injury impact scores, and trend data</p>
+      </div>
+    </div>
+    <div class="feature-row">
+      <div class="feature-icon teal">&#x1F514;</div>
+      <div class="feature-text">
+        <h3>Smart Alerts</h3>
+        <p>Get notified when high-confidence picks drop</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pricing -->
+  <div class="pricing-section">
+    <div class="pricing-card">
+      <div class="pricing-label">Signal Pro</div>
+      <div class="pricing-amount">
+        <span class="dollar">$</span>
+        <span class="value">4</span>
+        <span class="period">.99/mo</span>
+      </div>
+      <div class="pricing-note">Cancel anytime &bull; 3-day free trial</div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-section">
+    <button class="cta-btn">Start Free Trial</button>
+    <div class="restore-link">Restore purchase</div>
+  </div>
+
+  <!-- Free reminder -->
+  <div class="free-reminder">
+    Not ready? You'll still get 3 free AI chats<br>every day — resets at midnight.
+  </div>
+
+</div>
+</body>
+</html>

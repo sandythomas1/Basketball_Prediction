@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../Models/game.dart';
 import '../Providers/ai_chat_provider.dart';
+import '../Screens/pro_upgrade_screen.dart';
 import '../theme/app_theme.dart';
 
 /// AI Chat Widget for game analysis conversations
@@ -67,6 +68,9 @@ class _AIChatWidgetState extends ConsumerState<AIChatWidget> {
     ref.listen<AIChatState>(aiChatProvider, (previous, next) {
       if (previous?.messages.length != next.messages.length) {
         _scrollToBottom();
+      }
+      if (previous?.isRateLimited == false && next.isRateLimited) {
+        ProUpgradeScreen.show(context);
       }
     });
 
@@ -287,7 +291,7 @@ class _AIChatWidgetState extends ConsumerState<AIChatWidget> {
                   size: 18, color: AppColors.accentPurple),
               const SizedBox(width: 8),
               Text(
-                "You've used all ${ref.read(aiChatProvider).dailyLimit} free chats today",
+                "You've used all 3 free chats today",
                 style: GoogleFonts.dmSans(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -318,15 +322,7 @@ class _AIChatWidgetState extends ConsumerState<AIChatWidget> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: TextButton(
-                onPressed: () {
-                  // TODO: navigate to paywall / subscription screen
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Pro upgrade coming soon!'),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                },
+                onPressed: () => ProUpgradeScreen.show(context),
                 style: TextButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
@@ -457,7 +453,7 @@ class _ChatUsagePill extends StatelessWidget {
     if (isOut) {
       pillColor = Colors.red.withOpacity(0.12);
       textColor = Colors.red.shade400;
-    } else if (remaining <= 3) {
+    } else if (remaining <= 1) {
       pillColor = Colors.orange.withOpacity(0.12);
       textColor = Colors.orange.shade600;
     } else {
