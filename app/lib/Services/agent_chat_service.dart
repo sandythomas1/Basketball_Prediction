@@ -13,7 +13,12 @@ class AgentChatService {
       FirebaseFunctions.instanceFor(region: 'us-west1');
   String? _sessionId;
 
-  static const int dailyLimit = 10;
+  /// Default daily limit for free-tier users.
+  /// Pro users get unlimited (handled by the provider layer).
+  static const int freeDailyLimit = 3;
+
+  /// Legacy alias — callers that don't know about tiers fall back to free.
+  static const int dailyLimit = freeDailyLimit;
 
   // ── Session management ────────────────────────────────────────────────────
 

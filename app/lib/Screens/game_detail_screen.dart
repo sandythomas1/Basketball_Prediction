@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pie_chart/pie_chart.dart';
 import '../Models/game.dart';
+import '../Providers/subscription_provider.dart';
 import '../Widgets/team_logo.dart';
 import '../Widgets/ai_chat_widget.dart';
 import '../theme/app_theme.dart';
@@ -571,8 +572,11 @@ class _ContextCard extends StatelessWidget {
   }
 }
 
-/// Confidence score indicator with expandable factor breakdown
-class _ConfidenceScoreIndicator extends StatefulWidget {
+/// Confidence score indicator with expandable factor breakdown.
+///
+/// The score bar + qualifier are always visible. The expandable factor
+/// breakdown is gated behind the Pro tier.
+class _ConfidenceScoreIndicator extends ConsumerStatefulWidget {
   final int score;
   final String? qualifier;
   final Map<String, dynamic>? factors;
@@ -584,10 +588,12 @@ class _ConfidenceScoreIndicator extends StatefulWidget {
   });
 
   @override
-  State<_ConfidenceScoreIndicator> createState() => _ConfidenceScoreIndicatorState();
+  ConsumerState<_ConfidenceScoreIndicator> createState() =>
+      _ConfidenceScoreIndicatorState();
 }
 
-class _ConfidenceScoreIndicatorState extends State<_ConfidenceScoreIndicator> {
+class _ConfidenceScoreIndicatorState
+    extends ConsumerState<_ConfidenceScoreIndicator> {
   bool _isExpanded = false;
 
   Color _getScoreColor() {
@@ -599,7 +605,8 @@ class _ConfidenceScoreIndicatorState extends State<_ConfidenceScoreIndicator> {
   @override
   Widget build(BuildContext context) {
     final scoreColor = _getScoreColor();
-    
+    final isPro = ref.watch(isProProvider);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -617,7 +624,8 @@ class _ConfidenceScoreIndicatorState extends State<_ConfidenceScoreIndicator> {
             ),
             if (widget.qualifier != null)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: scoreColor.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(8),
@@ -659,11 +667,32 @@ class _ConfidenceScoreIndicatorState extends State<_ConfidenceScoreIndicator> {
             ),
           ],
         ),
-        // Expandable factors breakdown
+        // Expandable factors breakdown — Pro-only
         if (widget.factors != null) ...[
           const SizedBox(height: 12),
           GestureDetector(
             onTap: () {
+              if (!isPro) {
+                // Show upgrade prompt for free users
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Upgrade to Pro to see the confidence breakdown',
+                      style: GoogleFonts.dmSans(fontSize: 14),
+                    ),
+                    behavior: SnackBarBehavior.floating,
+                    duration: const Duration(seconds: 3),
+                    action: SnackBarAction(
+                      label: 'Upgrade',
+                      textColor: AppColors.accentPurple,
+                      onPressed: () {
+                        // TODO: navigate to paywall
+                      },
+                    ),
+                  ),
+                );
+                return;
+              }
               setState(() {
                 _isExpanded = !_isExpanded;
               });
@@ -671,8 +700,15 @@ class _ConfidenceScoreIndicatorState extends State<_ConfidenceScoreIndicator> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                if (!isPro) ...[
+                  Icon(Icons.lock_outline,
+                      size: 14, color: AppColors.accentPurple),
+                  const SizedBox(width: 4),
+                ],
                 Text(
-                  _isExpanded ? 'Hide Details' : 'Show Details',
+                  isPro
+                      ? (_isExpanded ? 'Hide Details' : 'Show Details')
+                      : 'Pro: Show Details',
                   style: GoogleFonts.dmSans(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
@@ -681,14 +717,16 @@ class _ConfidenceScoreIndicatorState extends State<_ConfidenceScoreIndicator> {
                 ),
                 const SizedBox(width: 4),
                 Icon(
-                  _isExpanded ? Icons.expand_less : Icons.expand_more,
+                  isPro
+                      ? (_isExpanded ? Icons.expand_less : Icons.expand_more)
+                      : Icons.expand_more,
                   size: 16,
                   color: AppColors.accentBlue,
                 ),
               ],
             ),
           ),
-          if (_isExpanded) ...[
+          if (_isExpanded && isPro) ...[
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(12),

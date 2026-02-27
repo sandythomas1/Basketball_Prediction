@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../Models/game.dart';
 import '../Services/agent_chat_service.dart';
 import '../Services/ai_chat_service.dart';
+import 'subscription_provider.dart';
 
 // ── Chat message model ────────────────────────────────────────────────────────
 
@@ -48,7 +49,9 @@ class AIChatState {
   final int chatsRemaining;
   final bool isRateLimited;
 
-  static const int dailyLimit = AgentChatService.dailyLimit;
+  /// The effective daily limit for the current user. Injected from subscription
+  /// tier at provider-creation time. Defaults to the free-tier limit.
+  final int dailyLimit;
 
   const AIChatState({
     this.messages = const [],
@@ -57,8 +60,9 @@ class AIChatState {
     this.error,
     this.currentGame,
     this.chatsUsedToday = 0,
-    this.chatsRemaining = dailyLimit,
+    this.chatsRemaining = AgentChatService.freeDailyLimit,
     this.isRateLimited = false,
+    this.dailyLimit = AgentChatService.freeDailyLimit,
   });
 
   AIChatState copyWith({
@@ -70,6 +74,7 @@ class AIChatState {
     int? chatsUsedToday,
     int? chatsRemaining,
     bool? isRateLimited,
+    int? dailyLimit,
   }) {
     return AIChatState(
       messages: messages ?? this.messages,
@@ -80,6 +85,7 @@ class AIChatState {
       chatsUsedToday: chatsUsedToday ?? this.chatsUsedToday,
       chatsRemaining: chatsRemaining ?? this.chatsRemaining,
       isRateLimited: isRateLimited ?? this.isRateLimited,
+      dailyLimit: dailyLimit ?? this.dailyLimit,
     );
   }
 }
@@ -90,7 +96,12 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
   final AIChatService _service;
   final AgentChatService _agentService = AgentChatService();
 
-  AIChatNotifier(this._service) : super(const AIChatState());
+  /// [dailyLimit] is injected from the subscription-tier provider.
+  AIChatNotifier(this._service, {int dailyLimit = AgentChatService.freeDailyLimit})
+      : super(AIChatState(
+          dailyLimit: dailyLimit,
+          chatsRemaining: dailyLimit,
+        ));
 
   // ── Initialization ──────────────────────────────────────────────────────
 
@@ -129,11 +140,12 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
   Future<void> _fetchAndApplyUsage() async {
     try {
       final used = await _agentService.fetchTodayUsage();
-      final remaining = max(0, AIChatState.dailyLimit - used);
+      final limit = state.dailyLimit;
+      final remaining = max(0, limit - used);
       state = state.copyWith(
         chatsUsedToday: used,
         chatsRemaining: remaining,
-        isRateLimited: used >= AIChatState.dailyLimit,
+        isRateLimited: used >= limit,
       );
     } catch (_) {
       // Non-fatal — usage display will just show defaults
@@ -151,10 +163,12 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
 
     if (state.isLoading) return;
 
+    final limit = state.dailyLimit;
+
     // Optimistic check — block at the UI layer before even calling the API
     if (state.isRateLimited) {
       _appendSystemMessage(
-        "You've used all ${AIChatState.dailyLimit} free AI chats for today. "
+        "You've used all $limit free AI chats for today. "
         "Come back tomorrow or upgrade to Pro for unlimited access. 🔓",
       );
       return;
@@ -198,7 +212,7 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
       // Decrement remaining optimistically (server is the source of truth;
       // the backend already incremented before we got the response)
       final newUsed = state.chatsUsedToday + 1;
-      final newRemaining = max(0, AIChatState.dailyLimit - newUsed);
+      final newRemaining = max(0, limit - newUsed);
 
       state = state.copyWith(
         messages: updated,
@@ -210,10 +224,10 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
     } on AgentChatException catch (e) {
       if (e.isRateLimited) {
         // Server confirmed the limit — update state and show friendly message
-        final used = e.chatsUsedToday ?? AIChatState.dailyLimit;
+        final used = e.chatsUsedToday ?? limit;
         final updated = [...state.messages];
         updated[updated.length - 1] = ChatMessage(
-          text: "You've used all ${AIChatState.dailyLimit} free AI chats for today. "
+          text: "You've used all $limit free AI chats for today. "
               "Come back tomorrow or upgrade to Pro for unlimited access. 🔓",
           isUser: false,
           isLoading: false,
@@ -260,7 +274,8 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
 
   void reset() {
     _service.clearChat();
-    state = const AIChatState();
+    final limit = state.dailyLimit;
+    state = AIChatState(dailyLimit: limit, chatsRemaining: limit);
   }
 
   String _getInitialMessage(Game game) {
@@ -288,12 +303,19 @@ final aiChatServiceProvider = Provider<AIChatService>((ref) {
 final aiChatProvider =
     StateNotifierProvider<AIChatNotifier, AIChatState>((ref) {
   final service = ref.watch(aiChatServiceProvider);
-  return AIChatNotifier(service);
+  final chatLimit = ref.watch(dailyChatLimitProvider);
+  return AIChatNotifier(service, dailyLimit: chatLimit);
 });
 
-/// One-shot quick analysis (no chat, no usage tracking)
+/// One-shot quick analysis — gated behind Pro tier.
+///
+/// Free users will get a teaser string instead of the full analysis.
 final gameAnalysisProvider =
     FutureProvider.family<String, Game>((ref, game) async {
+  final isPro = ref.watch(isProProvider);
+  if (!isPro) {
+    return 'Upgrade to Pro to unlock AI game narratives.';
+  }
   final service = ref.watch(aiChatServiceProvider);
   return service.generateQuickAnalysis(game);
 });

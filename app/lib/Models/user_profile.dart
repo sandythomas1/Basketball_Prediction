@@ -9,6 +9,13 @@ class UserProfile {
   final DateTime createdAt;
   final int followersCount;
 
+  // ── Subscription ──────────────────────────────────────────────────────────
+  /// 'free' or 'pro'. Defaults to 'free' for all users.
+  final String subscriptionTier;
+
+  /// When the current subscription period expires. `null` for free users.
+  final DateTime? subscriptionExpiry;
+
   UserProfile({
     required this.uid,
     required this.email,
@@ -18,10 +25,15 @@ class UserProfile {
     this.photoUrl,
     required this.createdAt,
     this.followersCount = 0,
+    this.subscriptionTier = 'free',
+    this.subscriptionExpiry,
   });
 
   /// Create from Firebase Realtime Database JSON
   factory UserProfile.fromJson(String uid, Map<dynamic, dynamic> json) {
+    // Subscription data lives at users/$uid/subscription in RTDB
+    final sub = json['subscription'] as Map<dynamic, dynamic>?;
+
     return UserProfile(
       uid: uid,
       email: json['email'] as String? ?? '',
@@ -33,6 +45,10 @@ class UserProfile {
           ? DateTime.fromMillisecondsSinceEpoch(json['createdAt'] as int)
           : DateTime.now(),
       followersCount: json['followersCount'] as int? ?? 0,
+      subscriptionTier: sub?['tier'] as String? ?? 'free',
+      subscriptionExpiry: sub?['expiry'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(sub!['expiry'] as int)
+          : null,
     );
   }
 
@@ -46,6 +62,11 @@ class UserProfile {
       'photoUrl': photoUrl,
       'createdAt': createdAt.millisecondsSinceEpoch,
       'followersCount': followersCount,
+      'subscription': {
+        'tier': subscriptionTier,
+        if (subscriptionExpiry != null)
+          'expiry': subscriptionExpiry!.millisecondsSinceEpoch,
+      },
     };
   }
 
@@ -59,6 +80,8 @@ class UserProfile {
     String? photoUrl,
     DateTime? createdAt,
     int? followersCount,
+    String? subscriptionTier,
+    DateTime? subscriptionExpiry,
   }) {
     return UserProfile(
       uid: uid ?? this.uid,
@@ -69,8 +92,22 @@ class UserProfile {
       photoUrl: photoUrl ?? this.photoUrl,
       createdAt: createdAt ?? this.createdAt,
       followersCount: followersCount ?? this.followersCount,
+      subscriptionTier: subscriptionTier ?? this.subscriptionTier,
+      subscriptionExpiry: subscriptionExpiry ?? this.subscriptionExpiry,
     );
   }
+
+  // ── Subscription helpers ────────────────────────────────────────────────
+
+  /// Whether the user is on the Pro plan **and** it hasn't expired.
+  bool get isPro {
+    if (subscriptionTier != 'pro') return false;
+    if (subscriptionExpiry == null) return true; // lifetime / no expiry set
+    return subscriptionExpiry!.isAfter(DateTime.now());
+  }
+
+  /// Convenience inverse of [isPro].
+  bool get isFree => !isPro;
 
   /// Get display name (first + last name)
   String get displayName => '$firstName $lastName'.trim();

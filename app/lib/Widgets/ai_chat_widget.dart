@@ -287,7 +287,7 @@ class _AIChatWidgetState extends ConsumerState<AIChatWidget> {
                   size: 18, color: AppColors.accentPurple),
               const SizedBox(width: 8),
               Text(
-                "You've used all 10 free chats today",
+                "You've used all ${ref.read(aiChatProvider).dailyLimit} free chats today",
                 style: GoogleFonts.dmSans(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -447,7 +447,7 @@ class _ChatUsagePill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final used = chatState.chatsUsedToday;
-    final limit = AIChatState.dailyLimit;
+    final limit = chatState.dailyLimit;
     final remaining = chatState.chatsRemaining;
     final isOut = chatState.isRateLimited;
 
