@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../Screens/pro_upgrade_screen.dart';
 import '../theme/app_theme.dart';
 
 /// A semi-transparent overlay placed on top of a widget that is locked behind
@@ -48,24 +49,7 @@ class ProLockedOverlay extends StatelessWidget {
         Positioned.fill(
           child: GestureDetector(
             onTap: () {
-              // TODO: Navigate to PaywallScreen when it exists
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Upgrade to Pro to unlock $featureName',
-                    style: GoogleFonts.dmSans(fontSize: 14),
-                  ),
-                  behavior: SnackBarBehavior.floating,
-                  duration: const Duration(seconds: 3),
-                  action: SnackBarAction(
-                    label: 'Upgrade',
-                    textColor: AppColors.accentPurple,
-                    onPressed: () {
-                      // TODO: navigate to paywall
-                    },
-                  ),
-                ),
-              );
+              ProUpgradeScreen.show(context);
             },
             child: Container(
               decoration: BoxDecoration(

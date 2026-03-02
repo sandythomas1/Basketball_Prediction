@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'firebase_options.dart';
+import 'Services/subscription_service.dart';
 import 'Widgets/auth_gate.dart';
 import 'Providers/theme_provider.dart';
 import 'theme/app_theme.dart';
@@ -40,7 +41,11 @@ void main() async {
     // Firebase already initialized or App Check failed, continue
     debugPrint('Firebase init warning: $e');
   }
-  
+
+  // Initialize RevenueCat after Firebase so SubscriptionService can identify
+  // the Firebase user immediately on startup.
+  await SubscriptionService.instance.initialize();
+
   runApp(
     const ProviderScope(
       child: MyApp(),

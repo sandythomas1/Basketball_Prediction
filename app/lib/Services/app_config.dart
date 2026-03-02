@@ -17,6 +17,24 @@ class AppConfig {
   );
 
   // ============================================================================
+  // REVENUECAT
+  // ============================================================================
+
+  /// RevenueCat public Android API key.
+  /// Replace with your key from: RC Dashboard → Project Settings → API Keys.
+  static const String revenueCatAndroidApiKey = 'YOUR_RC_ANDROID_KEY_HERE';
+
+  /// RevenueCat entitlement identifier that represents the Pro tier.
+  static const String rcProEntitlement = 'pro';
+
+  /// RevenueCat offering identifier for the default paywall.
+  static const String rcDefaultOffering = 'default';
+
+  /// RevenueCat product IDs — must match what you create in Play Console.
+  static const String rcMonthlyProductId = 'signal_pro_monthly';
+  static const String rcAnnualProductId = 'signal_pro_annual';
+
+  // ============================================================================
   // API ENDPOINTS
   // ============================================================================
 

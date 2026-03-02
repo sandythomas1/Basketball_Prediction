@@ -6,6 +6,11 @@ import '../Models/game.dart';
 import '../Services/ai_chat_service.dart';
 import 'subscription_provider.dart';
 
+// ── Constants ─────────────────────────────────────────────────────────────────
+
+/// Free-tier daily AI-chat limit. Keep in sync with the Cloud Function.
+const int _freeDailyLimit = 3;
+
 // ── Chat message model ────────────────────────────────────────────────────────
 
 class ChatMessage {
@@ -61,9 +66,9 @@ class AIChatState {
     this.error,
     this.currentGame,
     this.chatsUsedToday = 0,
-    this.chatsRemaining = AgentChatService.freeDailyLimit,
+    this.chatsRemaining = _freeDailyLimit,
     this.isRateLimited = false,
-    this.dailyLimit = AgentChatService.freeDailyLimit,
+    this.dailyLimit = _freeDailyLimit,
   });
 
   AIChatState copyWith({
@@ -96,7 +101,8 @@ class AIChatState {
 class AIChatNotifier extends StateNotifier<AIChatState> {
   final AIChatService _service;
 
-  AIChatNotifier(this._service) : super(const AIChatState());
+  AIChatNotifier(this._service, {int dailyLimit = _freeDailyLimit})
+      : super(AIChatState(dailyLimit: dailyLimit, chatsRemaining: dailyLimit));
 
   // ── Initialization ──────────────────────────────────────────────────────
 
@@ -131,6 +137,17 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
     );
   }
 
+  /// Build a Firebase RTDB ref for today's usage counter for the current user.
+  /// Returns `null` when no user is signed in.
+  DatabaseReference? _usageRef() {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return null;
+    final today = DateTime.now();
+    final dateKey =
+        '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+    return FirebaseDatabase.instance.ref('usage/$uid/$dateKey');
+  }
+
   /// Fetch today's chat count from Firebase Realtime Database and update state.
   Future<void> _fetchAndApplyUsage() async {
     try {
@@ -148,15 +165,6 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
     } catch (_) {
       // Non-fatal — usage display will just show defaults
     }
-  }
-
-  /// Atomically increment today's usage in RTDB and return the new count.
-  Future<int> _incrementUsage() async {
-    final ref = _usageRef();
-    if (ref == null) return state.chatsUsedToday + 1;
-    await ref.set(ServerValue.increment(1));
-    final snap = await ref.get();
-    return (snap.value as num?)?.toInt() ?? (state.chatsUsedToday + 1);
   }
 
   // ── Messaging ───────────────────────────────────────────────────────────
@@ -216,10 +224,9 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
       updated[updated.length - 1] =
           ChatMessage(text: fullResponse, isUser: false, isLoading: false);
 
-      // Decrement remaining optimistically (server is the source of truth;
-      // the backend already incremented before we got the response)
+      // Decrement remaining optimistically
       final newUsed = state.chatsUsedToday + 1;
-      final newRemaining = max(0, AIChatState.dailyLimit - newUsed);
+      final newRemaining = max(0, state.dailyLimit - newUsed);
 
       state = state.copyWith(
         messages: updated,
@@ -228,13 +235,15 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
         chatsRemaining: newRemaining,
         isRateLimited: newRemaining == 0,
       );
-    } on AgentChatException catch (e) {
-      if (e.isRateLimited) {
-        // Server confirmed the limit — update state and show friendly message
-        final used = e.chatsUsedToday ?? AIChatState.dailyLimit;
+    } catch (e) {
+      final msg = e.toString().replaceAll('Exception:', '').trim();
+      // Detect rate-limit responses from the AI service layer
+      if (msg.toLowerCase().contains('rate') ||
+          msg.toLowerCase().contains('limit') ||
+          msg.toLowerCase().contains('exhausted')) {
         final updated = [...state.messages];
         updated[updated.length - 1] = ChatMessage(
-          text: "You've used all ${AIChatState.dailyLimit} free AI chats for today. "
+          text: "You've used all ${state.dailyLimit} free AI chats for today. "
               "Come back tomorrow or upgrade to Pro for unlimited access. 🔓",
           isUser: false,
           isLoading: false,
@@ -242,18 +251,15 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
         state = state.copyWith(
           messages: updated,
           isLoading: false,
-          chatsUsedToday: used,
+          chatsUsedToday: state.dailyLimit,
           chatsRemaining: 0,
           isRateLimited: true,
         );
       } else {
-        _replaceLastMessageWithError(e.message);
+        _replaceLastMessageWithError(
+          'Sorry, I encountered an error. Please try again.\n\n$msg',
+        );
       }
-    } catch (e) {
-      _replaceLastMessageWithError(
-        'Sorry, I encountered an error. Please try again.\n\n'
-        '${e.toString().replaceAll('Exception:', '').trim()}',
-      );
     }
   }
 

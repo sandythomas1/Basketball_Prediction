@@ -4,11 +4,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pie_chart/pie_chart.dart';
 import '../Models/game.dart';
 import '../Providers/subscription_provider.dart';
+import '../Widgets/pro_locked_overlay.dart';
 import '../Widgets/team_logo.dart';
 import '../Widgets/ai_chat_widget.dart';
 import '../theme/app_theme.dart';
 
 import 'forums_discussions_screen.dart';
+import 'pro_upgrade_screen.dart';
 
 /// Detailed game screen with prediction visualization
 class GameDetailScreen extends ConsumerWidget {
@@ -98,6 +100,9 @@ class GameDetailScreen extends ConsumerWidget {
             const SizedBox(height: 16),
             // Elo Ratings Card
             _EloCard(game: game),
+            const SizedBox(height: 16),
+            // Injury Impact Card (Pro-gated)
+            _InjuryCard(game: game),
             const SizedBox(height: 16),
             // Game Context Card
             _ContextCard(game: game),
@@ -572,6 +577,224 @@ class _ContextCard extends StatelessWidget {
   }
 }
 
+/// Injury impact card — always shows the advantage badge; per-player list is
+/// gated behind the Pro tier using [ProLockedOverlay].
+class _InjuryCard extends ConsumerWidget {
+  final Game game;
+
+  const _InjuryCard({required this.game});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isPro = ref.watch(isProProvider);
+    final homeInjuries = game.homeInjuries ?? [];
+    final awayInjuries = game.awayInjuries ?? [];
+    final hasAnyInjuries = homeInjuries.isNotEmpty || awayInjuries.isNotEmpty;
+
+    Color _advantageColor(String? advantage) {
+      switch (advantage) {
+        case 'home':
+          return AppColors.accentGreen;
+        case 'away':
+          return AppColors.liveRed;
+        default:
+          return AppColors.accentYellow;
+      }
+    }
+
+    String _advantageLabel(String? advantage) {
+      switch (advantage) {
+        case 'home':
+          return 'Home Advantage';
+        case 'away':
+          return 'Away Advantage';
+        default:
+          return 'Even';
+      }
+    }
+
+    // Build the locked player list (shown faded + overlay for free users).
+    Widget playerList = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (homeInjuries.isNotEmpty) ...[
+          Text(
+            game.homeTeam,
+            style: GoogleFonts.dmSans(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: context.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 6),
+          ...homeInjuries.map((p) => _InjuryPlayerRow(player: p)),
+          const SizedBox(height: 12),
+        ],
+        if (awayInjuries.isNotEmpty) ...[
+          Text(
+            game.awayTeam,
+            style: GoogleFonts.dmSans(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: context.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 6),
+          ...awayInjuries.map((p) => _InjuryPlayerRow(player: p)),
+        ],
+        if (!hasAnyInjuries)
+          Text(
+            'No significant injuries reported.',
+            style: GoogleFonts.dmSans(
+              fontSize: 13,
+              color: context.textMuted,
+            ),
+          ),
+      ],
+    );
+
+    final advantageColor = _advantageColor(game.injuryAdvantage);
+    final advantageLabel = _advantageLabel(game.injuryAdvantage);
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: context.bgCard,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header row with Pro badge
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'INJURY REPORT',
+                style: GoogleFonts.spaceMono(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w400,
+                  color: context.textMuted,
+                  letterSpacing: 1.5,
+                ),
+              ),
+              if (!isPro)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: AppColors.accentPurple.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                        color: AppColors.accentPurple.withOpacity(0.3)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.lock_outline,
+                          size: 11, color: AppColors.accentPurple),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Pro',
+                        style: GoogleFonts.dmSans(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.accentPurple,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          // Advantage badge — always visible
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: advantageColor.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(8),
+              border:
+                  Border.all(color: advantageColor.withOpacity(0.3)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.medical_services_outlined,
+                    size: 14, color: advantageColor),
+                const SizedBox(width: 6),
+                Text(
+                  'Health Advantage: $advantageLabel',
+                  style: GoogleFonts.dmSans(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: advantageColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Per-player list — gated behind Pro
+          ProLockedOverlay(
+            isLocked: !isPro,
+            featureName: 'Injury Impact Analysis',
+            child: playerList,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InjuryPlayerRow extends StatelessWidget {
+  final String player;
+
+  const _InjuryPlayerRow({required this.player});
+
+  @override
+  Widget build(BuildContext context) {
+    final upper = player.toUpperCase();
+    Color statusColor;
+    if (upper.contains('(O)') || upper.contains('OUT')) {
+      statusColor = AppColors.liveRed;
+    } else if (upper.contains('(D)') || upper.contains('DOUBTFUL')) {
+      statusColor = AppColors.accentOrange;
+    } else if (upper.contains('(Q)') || upper.contains('QUESTIONABLE')) {
+      statusColor = AppColors.accentYellow;
+    } else {
+      statusColor = context.textSecondary;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        children: [
+          Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(
+              color: statusColor,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              player,
+              style: GoogleFonts.dmSans(
+                fontSize: 13,
+                color: context.textPrimary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 /// Confidence score indicator with expandable factor breakdown.
 ///
 /// The score bar + qualifier are always visible. The expandable factor
@@ -673,24 +896,7 @@ class _ConfidenceScoreIndicatorState
           GestureDetector(
             onTap: () {
               if (!isPro) {
-                // Show upgrade prompt for free users
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Upgrade to Pro to see the confidence breakdown',
-                      style: GoogleFonts.dmSans(fontSize: 14),
-                    ),
-                    behavior: SnackBarBehavior.floating,
-                    duration: const Duration(seconds: 3),
-                    action: SnackBarAction(
-                      label: 'Upgrade',
-                      textColor: AppColors.accentPurple,
-                      onPressed: () {
-                        // TODO: navigate to paywall
-                      },
-                    ),
-                  ),
-                );
+                ProUpgradeScreen.show(context);
                 return;
               }
               setState(() {

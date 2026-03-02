@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
+
+import '../Providers/subscription_provider.dart';
+import '../Services/subscription_service.dart';
 import '../theme/app_theme.dart';
 
-/// Full-screen paywall that appears when the user exhausts free AI chats.
+/// Full-screen paywall shown when the user hits a Pro-only feature.
 ///
-/// Subscription logic is a placeholder -- wire RevenueCat / StoreKit here.
-class ProUpgradeScreen extends StatelessWidget {
+/// Lets the user choose between Monthly ($4.99) and Annual ($29.99) plans,
+/// then drives the purchase through [SubscriptionService].
+class ProUpgradeScreen extends ConsumerStatefulWidget {
   const ProUpgradeScreen({super.key});
 
   static Future<void> show(BuildContext context) {
@@ -31,6 +37,126 @@ class ProUpgradeScreen extends StatelessWidget {
   }
 
   @override
+  ConsumerState<ProUpgradeScreen> createState() => _ProUpgradeScreenState();
+}
+
+class _ProUpgradeScreenState extends ConsumerState<ProUpgradeScreen> {
+  // 'monthly' or 'annual'
+  String _selectedPlan = 'annual';
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  // Packages fetched from RevenueCat
+  Package? _monthlyPackage;
+  Package? _annualPackage;
+  bool _offeringsLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadOfferings();
+  }
+
+  Future<void> _loadOfferings() async {
+    final service = ref.read(subscriptionServiceProvider);
+    final packages = await service.getProPackages();
+    if (mounted) {
+      setState(() {
+        _monthlyPackage = packages['monthly'];
+        _annualPackage = packages['annual'];
+        _offeringsLoading = false;
+      });
+    }
+  }
+
+  Future<void> _purchase() async {
+    final package =
+        _selectedPlan == 'annual' ? _annualPackage : _monthlyPackage;
+
+    if (package == null) {
+      setState(() {
+        _errorMessage =
+            'Products not available yet — make sure your Play Console subscription products are live.';
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    final service = ref.read(subscriptionServiceProvider);
+    final result = await service.purchasePackage(package);
+
+    if (!mounted) return;
+
+    if (result.success && result.isPro) {
+      // Invalidate the RevenueCat provider so isProProvider refreshes.
+      ref.invalidate(revenueCatProProvider);
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Welcome to Signal Pro! All features are now unlocked.',
+            style: GoogleFonts.dmSans(fontSize: 14),
+          ),
+          backgroundColor: AppColors.accentGreen,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    } else if (result.error != null &&
+        !result.error!.contains('cancelled')) {
+      setState(() {
+        _errorMessage = result.error;
+      });
+    }
+
+    if (mounted) setState(() => _isLoading = false);
+  }
+
+  Future<void> _restore() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    final service = ref.read(subscriptionServiceProvider);
+    final result = await service.restorePurchases();
+
+    if (!mounted) return;
+
+    if (result.isPro) {
+      ref.invalidate(revenueCatProProvider);
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Pro subscription restored!',
+            style: GoogleFonts.dmSans(fontSize: 14),
+          ),
+          backgroundColor: AppColors.accentGreen,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    } else if (result.success && !result.isPro) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'No active subscription found.',
+            style: GoogleFonts.dmSans(fontSize: 14),
+          ),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    } else if (result.error != null) {
+      setState(() => _errorMessage = result.error);
+    }
+
+    if (mounted) setState(() => _isLoading = false);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.bgPrimary,
@@ -48,9 +174,15 @@ class ProUpgradeScreen extends StatelessWidget {
                     const SizedBox(height: 28),
                     _buildFeatures(context),
                     const SizedBox(height: 28),
+                    _buildPlanToggle(context),
+                    const SizedBox(height: 16),
                     _buildPricingCard(context),
                     const SizedBox(height: 24),
                     _buildCta(context),
+                    if (_errorMessage != null) ...[
+                      const SizedBox(height: 12),
+                      _buildError(context),
+                    ],
                     const SizedBox(height: 8),
                     _buildRestoreLink(context),
                     const SizedBox(height: 16),
@@ -74,7 +206,7 @@ class ProUpgradeScreen extends StatelessWidget {
       child: Row(
         children: [
           GestureDetector(
-            onTap: () => Navigator.of(context).pop(),
+            onTap: _isLoading ? null : () => Navigator.of(context).pop(),
             child: Container(
               width: 36,
               height: 36,
@@ -116,7 +248,8 @@ class ProUpgradeScreen extends StatelessWidget {
             ),
           ),
           child: const Center(
-            child: Icon(Icons.auto_awesome, size: 32, color: AppColors.accentPurple),
+            child: Icon(Icons.auto_awesome,
+                size: 32, color: AppColors.accentPurple),
           ),
         ),
         const SizedBox(height: 20),
@@ -182,22 +315,23 @@ class ProUpgradeScreen extends StatelessWidget {
         subtitle: 'No daily cap — ask as many questions as you want',
       ),
       _FeatureData(
-        icon: Icons.bolt,
-        color: AppColors.accentBlue,
-        title: 'Priority Responses',
-        subtitle: 'Faster model with deeper, more detailed analysis',
-      ),
-      _FeatureData(
         icon: Icons.insights,
-        color: AppColors.accentGreen,
-        title: 'Advanced Insights',
-        subtitle: 'Player props, injury impact scores, and trend data',
+        color: AppColors.accentBlue,
+        title: 'Confidence Breakdown',
+        subtitle:
+            'See exactly why the model is confident — factor-by-factor',
       ),
       _FeatureData(
-        icon: Icons.notifications_active_outlined,
+        icon: Icons.medical_services_outlined,
+        color: AppColors.accentGreen,
+        title: 'Injury Impact Analysis',
+        subtitle: 'Full per-player injury reports & health advantage scores',
+      ),
+      _FeatureData(
+        icon: Icons.bolt,
         color: AppColors.accentOrange,
-        title: 'Smart Alerts',
-        subtitle: 'Get notified when high-confidence picks drop',
+        title: 'Quick AI Narratives',
+        subtitle: 'One-tap AI game previews for every matchup',
       ),
     ];
 
@@ -260,9 +394,45 @@ class ProUpgradeScreen extends StatelessWidget {
     );
   }
 
+  // ── Plan toggle ────────────────────────────────────────────────────────────
+
+  Widget _buildPlanToggle(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: context.bgCard,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: Row(
+        children: [
+          _PlanChip(
+            label: 'Monthly',
+            sublabel: '\$4.99/mo',
+            selected: _selectedPlan == 'monthly',
+            onTap: () => setState(() => _selectedPlan = 'monthly'),
+          ),
+          _PlanChip(
+            label: 'Annual',
+            sublabel: '\$29.99/yr',
+            badge: 'Save 50%',
+            selected: _selectedPlan == 'annual',
+            onTap: () => setState(() => _selectedPlan = 'annual'),
+          ),
+        ],
+      ),
+    );
+  }
+
   // ── Pricing card ───────────────────────────────────────────────────────────
 
   Widget _buildPricingCard(BuildContext context) {
+    final isAnnual = _selectedPlan == 'annual';
+    final price = isAnnual ? '29' : '4';
+    final cents = isAnnual ? '.99/yr' : '.99/mo';
+    final subline = isAnnual
+        ? 'Just \$2.50/month  •  Cancel anytime'
+        : 'Cancel anytime  •  3-day free trial';
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
@@ -309,7 +479,7 @@ class ProUpgradeScreen extends StatelessWidget {
                   colors: [AppColors.accentPurple, AppColors.accentBlue],
                 ).createShader(bounds),
                 child: Text(
-                  '4',
+                  price,
                   style: GoogleFonts.dmSans(
                     fontSize: 48,
                     fontWeight: FontWeight.w700,
@@ -321,7 +491,7 @@ class ProUpgradeScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 24),
                 child: Text(
-                  '.99/mo',
+                  cents,
                   style: GoogleFonts.dmSans(
                     fontSize: 15,
                     color: context.textMuted,
@@ -332,7 +502,7 @@ class ProUpgradeScreen extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            'Cancel anytime  \u2022  3-day free trial',
+            subline,
             style: GoogleFonts.dmSans(fontSize: 13, color: context.textMuted),
           ),
         ],
@@ -343,6 +513,10 @@ class ProUpgradeScreen extends StatelessWidget {
   // ── CTA button ─────────────────────────────────────────────────────────────
 
   Widget _buildCta(BuildContext context) {
+    final isAnnual = _selectedPlan == 'annual';
+    final ctaLabel =
+        isAnnual ? 'Get Annual Plan' : 'Start Free Trial';
+
     return SizedBox(
       width: double.infinity,
       child: DecoratedBox(
@@ -360,30 +534,82 @@ class ProUpgradeScreen extends StatelessWidget {
           ],
         ),
         child: TextButton(
-          onPressed: () {
-            // TODO: integrate RevenueCat / StoreKit purchase flow
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Subscriptions coming soon!'),
-                duration: Duration(seconds: 2),
-              ),
-            );
-          },
+          onPressed: (_isLoading || _offeringsLoading) ? null : _purchase,
           style: TextButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
             ),
           ),
-          child: Text(
-            'Start Free Trial',
-            style: GoogleFonts.dmSans(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
+          child: _isLoading
+              ? const SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+              : _offeringsLoading
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          'Loading plans…',
+                          style: GoogleFonts.dmSans(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    )
+                  : Text(
+                      ctaLabel,
+                      style: GoogleFonts.dmSans(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+        ),
+      ),
+    );
+  }
+
+  // ── Error message ──────────────────────────────────────────────────────────
+
+  Widget _buildError(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: AppColors.liveRed.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.liveRed.withOpacity(0.25)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.error_outline, size: 16, color: AppColors.liveRed),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              _errorMessage!,
+              style: GoogleFonts.dmSans(
+                fontSize: 13,
+                color: AppColors.liveRed,
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -392,15 +618,7 @@ class ProUpgradeScreen extends StatelessWidget {
 
   Widget _buildRestoreLink(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        // TODO: restore purchases via RevenueCat
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Restore purchases coming soon!'),
-            duration: Duration(seconds: 2),
-          ),
-        );
-      },
+      onTap: _isLoading ? null : _restore,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Text(
@@ -423,6 +641,91 @@ class ProUpgradeScreen extends StatelessWidget {
     );
   }
 }
+
+// ── Plan toggle chip ──────────────────────────────────────────────────────────
+
+class _PlanChip extends StatelessWidget {
+  final String label;
+  final String sublabel;
+  final String? badge;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _PlanChip({
+    required this.label,
+    required this.sublabel,
+    this.badge,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          margin: const EdgeInsets.all(4),
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: selected
+                ? AppColors.accentPurple.withOpacity(0.15)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(10),
+            border: selected
+                ? Border.all(color: AppColors.accentPurple.withOpacity(0.5))
+                : null,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                label,
+                style: GoogleFonts.dmSans(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: selected
+                      ? AppColors.accentPurple
+                      : context.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                sublabel,
+                style: GoogleFonts.dmSans(
+                  fontSize: 12,
+                  color: selected ? AppColors.accentPurple : context.textMuted,
+                ),
+              ),
+              if (badge != null) ...[
+                const SizedBox(height: 4),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: AppColors.accentGreen.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    badge!,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.accentGreen,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Feature row data ──────────────────────────────────────────────────────────
 
 class _FeatureData {
   final IconData icon;

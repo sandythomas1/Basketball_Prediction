@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'secure_storage_service.dart';
+import 'subscription_service.dart';
 
 /// Result class for authentication operations
 class AuthResult {
@@ -140,7 +141,10 @@ class AuthService {
   Future<void> signOut() async {
     // Clear secure storage first
     await _secureStorage.clearAuthData();
-    
+
+    // Reset RevenueCat to anonymous so the next user starts fresh.
+    await SubscriptionService.instance.onUserSignedOut();
+
     // Then sign out from Firebase and Google
     await Future.wait([
       _auth.signOut(),
@@ -148,15 +152,20 @@ class AuthService {
     ]);
   }
   
-  /// Record successful login in secure storage
+  /// Record successful login in secure storage and identify the user in
+  /// RevenueCat so their subscription is linked to their Firebase UID.
   Future<void> _recordSuccessfulLogin(User user) async {
     await _secureStorage.saveUserId(user.uid);
     await _secureStorage.recordLogin();
-    
+
     // Set session expiry (e.g., 7 days)
     await _secureStorage.saveSessionExpiry(
       DateTime.now().add(const Duration(days: 7)),
     );
+
+    // Tell RevenueCat who is logged in so purchase history is attributed
+    // to the correct user across devices.
+    await SubscriptionService.instance.onUserSignedIn(user.uid);
   }
 
   /// Convert Firebase error codes to user-friendly messages
