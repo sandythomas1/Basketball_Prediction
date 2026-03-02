@@ -70,7 +70,14 @@ dependencies:
   video_player: ^2.9.2
 
   # In-app subscriptions via RevenueCat (Play Billing)
-  purchases_flutter: ^8.2.0
+  purchases_flutter: ^9.12.3
+  purchases_ui_flutter: ^9.12.3
+
+  # Environment variables (.env file support)
+  flutter_dotenv: ^5.1.0
+
+  # URL launcher (Play Store subscription management)
+  url_launcher: ^6.2.5
 
 dev_dependencies:
   # Testing packages
@@ -101,6 +108,7 @@ flutter:
 
   assets:
     - lib/Assets/
+    - .env
 
   # To add assets to your application, add an assets section, like this:
   # assets:

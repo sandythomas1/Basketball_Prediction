@@ -1,3 +1,5 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 /// Application configuration for different environments.
 ///
 /// Handles API endpoint configuration for development vs production.
@@ -21,8 +23,10 @@ class AppConfig {
   // ============================================================================
 
   /// RevenueCat public Android API key.
-  /// Replace with your key from: RC Dashboard → Project Settings → API Keys.
-  static const String revenueCatAndroidApiKey = 'YOUR_RC_ANDROID_KEY_HERE';
+  /// Loaded from .env file (REVENUECAT_ANDROID_KEY) or falls back to test key.
+  /// Make sure to call `dotenv.load()` in main.dart before accessing this.
+  static String get revenueCatAndroidApiKey =>
+      dotenv.env['REVENUECAT_ANDROID_KEY'] ?? '';
 
   /// RevenueCat entitlement identifier that represents the Pro tier.
   static const String rcProEntitlement = 'pro';

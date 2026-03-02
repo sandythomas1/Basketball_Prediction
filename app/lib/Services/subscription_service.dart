@@ -147,31 +147,33 @@ class SubscriptionService {
   Future<SubscriptionResult> purchasePackage(Package package) async {
     if (!_initialized) await initialize();
     try {
-      final info = await Purchases.purchasePackage(package);
+      // In v9+, purchasePackage returns a wrapper object (PurchaseResult)
+      // which contains the resulting CustomerInfo.
+      final result = await Purchases.purchasePackage(package);
+      final info = result.customerInfo;
       final isPro = info.entitlements.active
           .containsKey(AppConfig.rcProEntitlement);
+
       if (isPro) {
         await syncToFirebase(info);
       }
       return SubscriptionResult(success: true, isPro: isPro);
-    } on PurchasesErrorCode catch (e) {
-      if (e == PurchasesErrorCode.purchaseCancelledError) {
+    } catch (e) {
+      final msg = e.toString();
+      // Best-effort detection of user cancellation based on error text.
+      if (msg.toLowerCase().contains('cancelled') ||
+          msg.contains('purchaseCancelledError')) {
         return const SubscriptionResult(
           success: false,
           isPro: false,
           error: 'Purchase cancelled.',
         );
       }
+
       return SubscriptionResult(
         success: false,
         isPro: false,
-        error: e.toString(),
-      );
-    } catch (e) {
-      return SubscriptionResult(
-        success: false,
-        isPro: false,
-        error: e.toString(),
+        error: msg,
       );
     }
   }

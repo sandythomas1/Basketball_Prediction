@@ -14,6 +14,8 @@ import 'notifications_screen.dart';
 import '../Screens/forums_discussions_screen.dart';
 import '../Screens/user_search_screen.dart';
 import '../Providers/theme_provider.dart';
+import '../Providers/subscription_provider.dart';
+import 'subscription_screen.dart';
 
 /// Screen showing all of today's games with prediction access
 class TodayGamesScreen extends ConsumerWidget {
@@ -553,6 +555,17 @@ class _AppDrawer extends ConsumerWidget {
                   }
                 ),
                 const Divider(height: 1),
+                _DrawerSubscriptionItem(
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const SubscriptionScreen()),
+                    );
+                  },
+                ),
+                const Divider(height: 1),
                 // User Search Section
                 UserSearchWidget(
                   showAsDrawerSection: true,
@@ -912,6 +925,70 @@ class _DrawerItemWithBadge extends ConsumerWidget {
         Icons.chevron_right,
         color: context.textMuted,
         size: 20,
+      ),
+      onTap: onTap,
+    );
+  }
+}
+
+/// Drawer item that shows "Subscription" with a FREE / PRO badge.
+class _DrawerSubscriptionItem extends ConsumerWidget {
+  final VoidCallback onTap;
+
+  const _DrawerSubscriptionItem({required this.onTap});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isPro = ref.watch(isProProvider);
+
+    return ListTile(
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: context.bgCard,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Icon(
+          Icons.workspace_premium,
+          color: isPro ? AppColors.accentPurple : context.textSecondary,
+          size: 22,
+        ),
+      ),
+      title: Text(
+        'Subscription',
+        style: GoogleFonts.dmSans(
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
+          color: context.textPrimary,
+        ),
+      ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(
+              color: isPro
+                  ? AppColors.accentPurple.withOpacity(0.15)
+                  : context.textMuted.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Text(
+              isPro ? 'PRO' : 'FREE',
+              style: GoogleFonts.spaceMono(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: isPro ? AppColors.accentPurple : context.textMuted,
+              ),
+            ),
+          ),
+          const SizedBox(width: 4),
+          Icon(
+            Icons.chevron_right,
+            color: context.textMuted,
+            size: 20,
+          ),
+        ],
       ),
       onTap: onTap,
     );

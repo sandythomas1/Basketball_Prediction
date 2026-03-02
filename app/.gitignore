@@ -46,3 +46,5 @@ app.*.map.json
 
 # hide firebase.options.dart
 lib/firebase_options.dart
+.env
+lib/Services/app_config.dart
