@@ -38,6 +38,8 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
     _loadData();
   }
 
+  bool get _hasPackages => _monthlyPackage != null || _annualPackage != null;
+
   Future<void> _loadData() async {
     final service = ref.read(subscriptionServiceProvider);
     final packages = await service.getProPackages();
@@ -48,6 +50,12 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
         _annualPackage = packages['annual'];
         _customerInfo = info;
         _offeringsLoading = false;
+        // Proactively show error when offerings fail to load
+        if (!_hasPackages) {
+          _errorMessage =
+              'Subscription products are not available yet. '
+              'Please check back later or contact support.';
+        }
       });
     }
   }
@@ -614,6 +622,14 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
   // ── Plan toggle ────────────────────────────────────────────────────────
 
   Widget _buildPlanToggle(BuildContext context) {
+    // Use real store prices when available
+    final monthlyLabel = _monthlyPackage != null
+        ? '${_monthlyPackage!.storeProduct.priceString}/mo'
+        : '\$4.99/mo';
+    final annualLabel = _annualPackage != null
+        ? '${_annualPackage!.storeProduct.priceString}/yr'
+        : '\$29.99/yr';
+
     return Container(
       decoration: BoxDecoration(
         color: context.bgCard,
@@ -624,13 +640,13 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
         children: [
           _PlanChip(
             label: 'Monthly',
-            sublabel: '\$4.99/mo',
+            sublabel: monthlyLabel,
             selected: _selectedPlan == 'monthly',
             onTap: () => setState(() => _selectedPlan = 'monthly'),
           ),
           _PlanChip(
             label: 'Annual',
-            sublabel: '\$29.99/yr',
+            sublabel: annualLabel,
             badge: 'Save 50%',
             selected: _selectedPlan == 'annual',
             onTap: () => setState(() => _selectedPlan = 'annual'),
@@ -644,8 +660,19 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
 
   Widget _buildPricingCard(BuildContext context) {
     final isAnnual = _selectedPlan == 'annual';
-    final price = isAnnual ? '29' : '4';
-    final cents = isAnnual ? '.99/yr' : '.99/mo';
+
+    // Use real store prices when available, otherwise fall back to defaults
+    final pkg = isAnnual ? _annualPackage : _monthlyPackage;
+    final String price;
+    final String cents;
+    if (pkg != null) {
+      final priceStr = pkg.storeProduct.priceString; // e.g. "$29.99"
+      price = priceStr;
+      cents = isAnnual ? '/yr' : '/mo';
+    } else {
+      price = isAnnual ? '\$29' : '\$4';
+      cents = isAnnual ? '.99/yr' : '.99/mo';
+    }
     final subline = isAnnual
         ? 'Just \$2.50/month  •  Cancel anytime'
         : 'Cancel anytime  •  3-day free trial';
@@ -678,19 +705,8 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
           const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text(
-                  '\$',
-                  style: GoogleFonts.dmSans(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.accentPurple,
-                  ),
-                ),
-              ),
               ShaderMask(
                 shaderCallback: (bounds) => const LinearGradient(
                   colors: [AppColors.accentPurple, AppColors.accentBlue],
@@ -706,7 +722,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 24),
+                padding: const EdgeInsets.only(bottom: 6),
                 child: Text(
                   cents,
                   style: GoogleFonts.dmSans(
@@ -732,25 +748,30 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
   Widget _buildCta(BuildContext context) {
     final isAnnual = _selectedPlan == 'annual';
     final ctaLabel = isAnnual ? 'Get Annual Plan' : 'Start Free Trial';
+    final canPurchase = !_isLoading && !_offeringsLoading && _hasPackages;
 
     return SizedBox(
       width: double.infinity,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [AppColors.accentPurple, AppColors.accentBlue],
+          gradient: LinearGradient(
+            colors: canPurchase
+                ? const [AppColors.accentPurple, AppColors.accentBlue]
+                : [Colors.grey.shade600, Colors.grey.shade500],
           ),
           borderRadius: BorderRadius.circular(14),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.accentPurple.withOpacity(0.25),
-              blurRadius: 20,
-              offset: const Offset(0, 6),
-            ),
-          ],
+          boxShadow: canPurchase
+              ? [
+                  BoxShadow(
+                    color: AppColors.accentPurple.withOpacity(0.25),
+                    blurRadius: 20,
+                    offset: const Offset(0, 6),
+                  ),
+                ]
+              : [],
         ),
         child: TextButton(
-          onPressed: (_isLoading || _offeringsLoading) ? null : _purchase,
+          onPressed: canPurchase ? _purchase : null,
           style: TextButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(

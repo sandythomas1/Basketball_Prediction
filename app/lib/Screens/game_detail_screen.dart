@@ -92,7 +92,7 @@ class GameDetailScreen extends ConsumerWidget {
             // Matchup Header
             _MatchupHeader(game: game),
             const SizedBox(height: 24),
-            // AI Insights Chat Widget (replaces static narrative)
+            // Signal AI Chat Widget (replaces static narrative)
             AIChatWidget(game: game),
             const SizedBox(height: 16),
             // Prediction Card

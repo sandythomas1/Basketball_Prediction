@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 import 'app_config.dart';
@@ -36,8 +37,18 @@ class SubscriptionService {
   Future<void> initialize() async {
     if (_initialized) return;
 
+    final apiKey = AppConfig.revenueCatAndroidApiKey;
+    if (apiKey.isEmpty) {
+      debugPrint(
+        '⚠️ RevenueCat API key is not set. '
+        'Add REVENUECAT_ANDROID_KEY to your .env file. '
+        'Subscriptions will be unavailable.',
+      );
+      return; // Skip RC initialisation — the app can still run without it.
+    }
+
     await Purchases.setLogLevel(LogLevel.info);
-    final config = PurchasesConfiguration(AppConfig.revenueCatAndroidApiKey);
+    final config = PurchasesConfiguration(apiKey);
     await Purchases.configure(config);
 
     // If a Firebase user is already signed in, identify them in RevenueCat so
@@ -60,7 +71,12 @@ class SubscriptionService {
   /// Call when a user signs out so RevenueCat resets to an anonymous ID.
   Future<void> onUserSignedOut() async {
     if (!_initialized) return;
-    await Purchases.logOut();
+    try {
+      await Purchases.logOut();
+    } catch (_) {
+      // Safe to ignore — the user was already anonymous or RC wasn't
+      // configured, so there's nothing to log out of.
+    }
   }
 
   Future<void> _identifyUser(String uid) async {

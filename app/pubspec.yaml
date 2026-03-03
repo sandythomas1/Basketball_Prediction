@@ -73,6 +73,9 @@ dependencies:
   purchases_flutter: ^9.12.3
   purchases_ui_flutter: ^9.12.3
 
+  # Markdown rendering (Signal chat)
+  flutter_markdown: ^0.7.6+2
+
   # Environment variables (.env file support)
   flutter_dotenv: ^5.1.0
 
