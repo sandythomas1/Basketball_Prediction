@@ -38,6 +38,8 @@ const AGENT_CONFIG = {
   languageCode: 'en',
 };
 
+// Base URL for the predictions API (Cloud Run)
+// For now we keep the env var name RENDER_API_URL to avoid changing other code.
 const RENDER_API_URL = process.env.RENDER_API_URL;
 
 // Deploy region — us-west1 keeps latency low for US West Coast users

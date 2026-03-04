@@ -42,9 +42,12 @@ class AppConfig {
   // API ENDPOINTS
   // ============================================================================
 
-  /// Production API base URL (Render hosting)
+  /// Production API base URL (Cloud Run hosting)
+  ///
+  /// Replace this placeholder with your deployed Cloud Run service URL, e.g.:
+  /// https://nba-predictions-api-xxxx-uc.a.run.app
   static const String _productionApiUrl =
-      'https://nba-prediction-api-nq5b.onrender.com';
+      'https://YOUR_CLOUD_RUN_SERVICE_URL_HERE';
 
   /// Development API base URL (local)
   /// Note: Android emulator uses 10.0.2.2 to reach host machine's localhost
