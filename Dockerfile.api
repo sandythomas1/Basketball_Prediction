@@ -2,20 +2,35 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install system dependencies only if needed. For now, keep it minimal.
-# If builds fail for packages like xgboost, you can extend this with build tools.
-
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code and model/state assets
 COPY src/ src/
-COPY models/ models/
 COPY state/ state/
+COPY data/ data/
 
-# Cloud Run will send traffic to this port
+# Models may be vendored locally or downloaded from GCS at build time.
+# The Cloud Build pipeline runs `gsutil cp` before `docker build`, so the
+# directory should always exist.  The COPY will fail-fast if it is missing,
+# which is the desired behaviour — never deploy without a model.
+COPY models/ models/
+
+# Startup helper: if models are absent at run time (e.g. local dev without
+# models checked in), attempt a download from GCS.
+COPY <<'EOF' /app/entrypoint.sh
+#!/bin/sh
+set -e
+if [ ! -f models/xgb_v3_with_injuries.json ] && [ -n "$MODEL_BUCKET" ]; then
+  echo "Downloading models from gs://$MODEL_BUCKET/models/ ..."
+  gsutil -m cp "gs://$MODEL_BUCKET/models/*" models/ 2>/dev/null || true
+fi
+exec "$@"
+EOF
+RUN chmod +x /app/entrypoint.sh
+
 ENV PORT=8080
 
-# Start FastAPI app with uvicorn
+ENTRYPOINT ["/app/entrypoint.sh"]
 CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8080"]
 

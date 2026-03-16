@@ -6,8 +6,6 @@ import '../Providers/games_provider.dart';
 import '../Widgets/team_logo.dart';
 import '../theme/app_theme.dart';
 
-
-/// Screen showing finished games with final scores
 class FinishedGamesScreen extends ConsumerWidget {
   const FinishedGamesScreen({super.key});
 
@@ -88,19 +86,12 @@ class FinishedGamesScreen extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.error_outline,
-            size: 48,
-            color: AppColors.errorRed,
-          ),
+          Icon(Icons.error_outline, size: 48, color: AppColors.errorRed),
           const SizedBox(height: 16),
           Text(
             error,
             textAlign: TextAlign.center,
-            style: GoogleFonts.dmSans(
-              fontSize: 16,
-              color: context.textSecondary,
-            ),
+            style: GoogleFonts.dmSans(fontSize: 16, color: context.textSecondary),
           ),
           const SizedBox(height: 16),
           ElevatedButton(
@@ -123,26 +114,16 @@ class FinishedGamesScreen extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.sports_outlined,
-              size: 48,
-              color: context.textMuted,
-            ),
+            Icon(Icons.sports_outlined, size: 48, color: context.textMuted),
             const SizedBox(height: 16),
             Text(
               'No finished games yet',
-              style: GoogleFonts.dmSans(
-                fontSize: 16,
-                color: context.textSecondary,
-              ),
+              style: GoogleFonts.dmSans(fontSize: 16, color: context.textSecondary),
             ),
             const SizedBox(height: 8),
             Text(
               'Completed games will appear here',
-              style: GoogleFonts.dmSans(
-                fontSize: 14,
-                color: context.textMuted,
-              ),
+              style: GoogleFonts.dmSans(fontSize: 14, color: context.textMuted),
             ),
           ],
         ),
@@ -154,13 +135,10 @@ class FinishedGamesScreen extends ConsumerWidget {
       color: AppColors.accentOrange,
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 8),
-        itemCount: games.length + 1, // +1 for header
+        itemCount: games.length + 1,
         itemBuilder: (context, index) {
-          if (index == 0) {
-            return _buildHeader(context, games.length);
-          }
-          final game = games[index - 1];
-          return _FinishedGameCard(game: game);
+          if (index == 0) return _buildHeader(context, games.length);
+          return _FinishedGameCard(game: games[index - 1]);
         },
       ),
     );
@@ -171,11 +149,7 @@ class FinishedGamesScreen extends ConsumerWidget {
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: Row(
         children: [
-          Icon(
-            Icons.check_circle,
-            size: 14,
-            color: context.textMuted,
-          ),
+          Icon(Icons.check_circle, size: 14, color: context.textMuted),
           const SizedBox(width: 8),
           Text(
             'FINAL',
@@ -219,95 +193,127 @@ class FinishedGamesScreen extends ConsumerWidget {
   }
 }
 
-class _FinishedGameCard extends StatelessWidget {
-  final Game game;
+// ---------------------------------------------------------------------------
+// Finished game card with expandable boxscore
+// ---------------------------------------------------------------------------
 
+class _FinishedGameCard extends StatefulWidget {
+  final Game game;
   const _FinishedGameCard({required this.game});
 
   @override
+  State<_FinishedGameCard> createState() => _FinishedGameCardState();
+}
+
+class _FinishedGameCardState extends State<_FinishedGameCard> {
+  bool _expanded = false;
+
+  @override
   Widget build(BuildContext context) {
+    final game = widget.game;
     final homeScore = int.tryParse(game.homeScore) ?? 0;
     final awayScore = int.tryParse(game.awayScore) ?? 0;
     final homeWon = homeScore > awayScore;
-    final awayWon = awayScore > homeScore;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      decoration: BoxDecoration(
-        color: context.bgCard,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: context.borderColor),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+    return GestureDetector(
+      onTap: game.hasBoxScore
+          ? () => setState(() => _expanded = !_expanded)
+          : null,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        decoration: BoxDecoration(
+          color: context.bgCard,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: context.borderColor),
+        ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Teams with scores
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _TeamScoreRow(
-                        team: game.homeTeam,
-                        score: game.homeScore,
-                        isWinner: homeWon,
-                        isAway: false,
-                      ),
-                      const SizedBox(height: 10),
-                      _TeamScoreRow(
-                        team: game.awayTeam,
-                        score: game.awayScore,
-                        isWinner: awayWon,
-                        isAway: true,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            // Footer with date
-            Container(
-              padding: const EdgeInsets.only(top: 12),
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(color: context.borderColor),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            // Top section: scores
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
                 children: [
-                  Text(
-                    game.date,
-                    style: GoogleFonts.spaceMono(
-                      fontSize: 12,
-                      color: context.textSecondary,
-                    ),
+                  _TeamScoreRow(
+                    team: game.homeTeam,
+                    score: game.homeScore,
+                    isWinner: homeWon,
+                    isAway: false,
                   ),
+                  const SizedBox(height: 10),
+                  _TeamScoreRow(
+                    team: game.awayTeam,
+                    score: game.awayScore,
+                    isWinner: !homeWon && awayScore != homeScore,
+                    isAway: true,
+                  ),
+                  const SizedBox(height: 12),
+                  // Footer
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
+                    padding: const EdgeInsets.only(top: 12),
                     decoration: BoxDecoration(
-                      color: context.textMuted.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      'FINAL',
-                      style: GoogleFonts.dmSans(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: context.textSecondary,
-                        letterSpacing: 0.5,
+                      border: Border(
+                        top: BorderSide(color: context.borderColor),
                       ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          game.date,
+                          style: GoogleFonts.spaceMono(
+                            fontSize: 12,
+                            color: context.textSecondary,
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            if (game.hasBoxScore) ...[
+                              Icon(
+                                _expanded
+                                    ? Icons.expand_less
+                                    : Icons.expand_more,
+                                size: 18,
+                                color: context.textMuted,
+                              ),
+                              const SizedBox(width: 8),
+                            ],
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: context.textMuted.withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                'FINAL',
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: context.textSecondary,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
+            ),
+
+            // Expandable boxscore
+            AnimatedCrossFade(
+              firstChild: const SizedBox.shrink(),
+              secondChild: game.hasBoxScore
+                  ? _BoxScoreSection(game: game)
+                  : const SizedBox.shrink(),
+              crossFadeState:
+                  _expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+              duration: const Duration(milliseconds: 250),
             ),
           ],
         ),
@@ -315,6 +321,258 @@ class _FinishedGameCard extends StatelessWidget {
     );
   }
 }
+
+// ---------------------------------------------------------------------------
+// Boxscore section (quarter table + leaders)
+// ---------------------------------------------------------------------------
+
+class _BoxScoreSection extends StatelessWidget {
+  final Game game;
+  const _BoxScoreSection({required this.game});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: context.bgSecondary,
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(16),
+          bottomRight: Radius.circular(16),
+        ),
+      ),
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Divider(color: context.borderColor, height: 1),
+          const SizedBox(height: 12),
+
+          // Quarter-by-quarter table
+          _QuarterTable(game: game),
+
+          // Game leaders
+          if (game.leaders != null && game.leaders!.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            Text(
+              'GAME LEADERS',
+              style: GoogleFonts.spaceMono(
+                fontSize: 10,
+                fontWeight: FontWeight.w400,
+                color: context.textMuted,
+                letterSpacing: 1.5,
+              ),
+            ),
+            const SizedBox(height: 8),
+            ...game.leaders!.map((l) => _LeaderRow(leader: l, game: game)),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _QuarterTable extends StatelessWidget {
+  final Game game;
+  const _QuarterTable({required this.game});
+
+  @override
+  Widget build(BuildContext context) {
+    final labels = game.quarterLabels;
+    final homeQ = game.homeQuarters ?? [];
+    final awayQ = game.awayQuarters ?? [];
+    final homeTotal = int.tryParse(game.homeScore) ?? 0;
+    final awayTotal = int.tryParse(game.awayScore) ?? 0;
+    final homeWon = homeTotal > awayTotal;
+
+    return Table(
+      columnWidths: {
+        0: const FlexColumnWidth(2.2),
+        for (int i = 0; i < labels.length; i++)
+          i + 1: const FlexColumnWidth(1),
+        labels.length + 1: const FlexColumnWidth(1.2),
+      },
+      children: [
+        // Header
+        TableRow(
+          children: [
+            _cell(context, '', isHeader: true),
+            ...labels.map((l) => _cell(context, l, isHeader: true)),
+            _cell(context, 'T', isHeader: true),
+          ],
+        ),
+        // Home row
+        TableRow(
+          children: [
+            _teamCell(context, game.homeTeam, bold: homeWon),
+            ...List.generate(labels.length, (i) {
+              final val = i < homeQ.length ? homeQ[i].toString() : '-';
+              return _cell(context, val, bold: homeWon);
+            }),
+            _cell(context, homeTotal.toString(),
+                bold: homeWon, accent: homeWon),
+          ],
+        ),
+        // Away row
+        TableRow(
+          children: [
+            _teamCell(context, game.awayTeam, bold: !homeWon),
+            ...List.generate(labels.length, (i) {
+              final val = i < awayQ.length ? awayQ[i].toString() : '-';
+              return _cell(context, val, bold: !homeWon);
+            }),
+            _cell(context, awayTotal.toString(),
+                bold: !homeWon, accent: !homeWon),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _cell(
+    BuildContext context,
+    String text, {
+    bool isHeader = false,
+    bool bold = false,
+    bool accent = false,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Text(
+        text,
+        textAlign: TextAlign.center,
+        style: GoogleFonts.spaceMono(
+          fontSize: 12,
+          fontWeight:
+              isHeader || bold ? FontWeight.w600 : FontWeight.w400,
+          color: isHeader
+              ? context.textMuted
+              : accent
+                  ? AppColors.accentGreen
+                  : context.textPrimary,
+        ),
+      ),
+    );
+  }
+
+  Widget _teamCell(BuildContext context, String teamName,
+      {bool bold = false}) {
+    final abbr =
+        getEspnAbbreviation(teamName).toUpperCase();
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          TeamLogo(teamName: teamName, size: 18, borderRadius: 4),
+          const SizedBox(width: 6),
+          Text(
+            abbr,
+            style: GoogleFonts.spaceMono(
+              fontSize: 12,
+              fontWeight: bold ? FontWeight.w700 : FontWeight.w400,
+              color: context.textPrimary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Leader row
+// ---------------------------------------------------------------------------
+
+class _LeaderRow extends StatelessWidget {
+  final GameLeader leader;
+  final Game game;
+  const _LeaderRow({required this.leader, required this.game});
+
+  String get _categoryLabel {
+    switch (leader.category) {
+      case 'points':
+        return 'PTS';
+      case 'rebounds':
+        return 'REB';
+      case 'assists':
+        return 'AST';
+      default:
+        return leader.category.toUpperCase();
+    }
+  }
+
+  IconData get _categoryIcon {
+    switch (leader.category) {
+      case 'points':
+        return Icons.sports_basketball;
+      case 'rebounds':
+        return Icons.swap_vert;
+      case 'assists':
+        return Icons.handshake_outlined;
+      default:
+        return Icons.star_outline;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final teamName = leader.isHome ? game.homeTeam : game.awayTeam;
+    final abbr =
+        getEspnAbbreviation(teamName).toUpperCase();
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          Container(
+            width: 28,
+            height: 28,
+            decoration: BoxDecoration(
+              color: context.bgCard,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(_categoryIcon, size: 14, color: context.textMuted),
+          ),
+          const SizedBox(width: 10),
+          SizedBox(
+            width: 36,
+            child: Text(
+              _categoryLabel,
+              style: GoogleFonts.spaceMono(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: context.textMuted,
+              ),
+            ),
+          ),
+          const SizedBox(width: 4),
+          Expanded(
+            child: Text(
+              '${leader.playerName} ($abbr)',
+              style: GoogleFonts.dmSans(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: context.textPrimary,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Text(
+            leader.displayValue,
+            style: GoogleFonts.spaceMono(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: context.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Team + score row (reused from original)
+// ---------------------------------------------------------------------------
 
 class _TeamScoreRow extends StatelessWidget {
   final String team;
@@ -336,8 +594,9 @@ class _TeamScoreRow extends StatelessWidget {
         TeamLogo(
           teamName: team,
           size: 32,
-          backgroundColor:
-              isWinner ? AppColors.accentGreen.withOpacity(0.1) : context.bgSecondary,
+          backgroundColor: isWinner
+              ? AppColors.accentGreen.withOpacity(0.1)
+              : context.bgSecondary,
         ),
         const SizedBox(width: 10),
         Expanded(
@@ -356,11 +615,7 @@ class _TeamScoreRow extends StatelessWidget {
               ),
               if (isWinner) ...[
                 const SizedBox(width: 8),
-                Icon(
-                  Icons.emoji_events,
-                  size: 16,
-                  color: AppColors.accentYellow,
-                ),
+                Icon(Icons.emoji_events, size: 16, color: AppColors.accentYellow),
               ],
             ],
           ),

@@ -6,13 +6,16 @@ from datetime import datetime
 
 from fastapi import APIRouter, Depends
 
+from core.state_sync import download_state_from_gcs
+
 from ..schemas import (
     HealthResponse,
     StateInfoResponse,
     TeamsListResponse,
     TeamInfo,
 )
-from ..dependencies import get_prediction_service, get_state_manager, PredictionService
+from ..dependencies import get_prediction_service, PredictionService, get_state_dir
+from ..middleware import verify_firebase_token, FirebaseUser
 
 
 router = APIRouter(tags=["system"])
@@ -96,12 +99,21 @@ async def list_teams(
 @router.post("/state/reload")
 async def reload_state(
     service: PredictionService = Depends(get_prediction_service),
+    user: FirebaseUser | None = Depends(verify_firebase_token),
 ):
     """
     Reload state from disk.
     
     Useful after running update_state.py to pick up new data.
     """
+    try:
+        synced_files = download_state_from_gcs(get_state_dir())
+    except Exception:
+        synced_files = 0
     service.reload_state()
-    return {"status": "ok", "message": "State reloaded"}
+    return {
+        "status": "ok",
+        "message": "State reloaded",
+        "synced_state_files": synced_files,
+    }
 

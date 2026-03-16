@@ -42,12 +42,13 @@ class AppConfig {
   // API ENDPOINTS
   // ============================================================================
 
-  /// Production API base URL (Cloud Run hosting)
+  /// Production API base URL (Cloud Run hosting).
   ///
-  /// Replace this placeholder with your deployed Cloud Run service URL, e.g.:
-  /// https://nba-predictions-api-xxxx-uc.a.run.app
-  static const String _productionApiUrl =
-      'https://YOUR_CLOUD_RUN_SERVICE_URL_HERE';
+  /// Prefer setting `PRODUCTION_API_URL` in app/.env for each environment.
+  /// Fallback uses the Cloud Run service hostname pattern.
+  static String get _productionApiUrl =>
+      dotenv.env['PRODUCTION_API_URL'] ??
+      'https://nba-predictions-api-791769083784.us-west1.run.app';
 
   /// Development API base URL (local)
   /// Note: Android emulator uses 10.0.2.2 to reach host machine's localhost

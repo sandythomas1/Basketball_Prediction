@@ -14,11 +14,36 @@ from ..schemas import (
     GamesWithPredictionsResponse,
     PredictionInfo,
     GameContext,
+    EspnScoreboardResponse,
 )
 from ..dependencies import get_prediction_service, PredictionService
+from ..middleware import verify_firebase_token, FirebaseUser
 
 
 router = APIRouter(prefix="/games", tags=["games"])
+
+
+@router.get("/scoreboard", response_model=EspnScoreboardResponse)
+async def get_espn_scoreboard(
+    service: PredictionService = Depends(get_prediction_service),
+):
+    """
+    Proxy ESPN scoreboard through the backend.
+
+    Returns the raw ESPN scoreboard data re-packaged via our schema so the
+    Flutter client never calls ESPN directly (single point of failure).
+    """
+    try:
+        games = service.espn_client.get_games()
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"ESPN fetch failed: {e}")
+
+    return EspnScoreboardResponse(
+        date=date.today().isoformat(),
+        fetched_at=datetime.now().isoformat(),
+        count=len(games),
+        games=[game_result_to_info(g) for g in games],
+    )
 
 
 def game_result_to_info(game) -> GameInfo:
@@ -126,6 +151,7 @@ async def get_today_games(
 @router.get("/today/with-predictions", response_model=GamesWithPredictionsResponse)
 async def get_today_games_with_predictions(
     service: PredictionService = Depends(get_prediction_service),
+    user: FirebaseUser | None = Depends(verify_firebase_token),
 ):
     """
     Get today's games from ESPN with predictions included.
@@ -171,6 +197,7 @@ async def get_games_by_date(
 async def get_games_with_predictions_by_date(
     game_date: str,
     service: PredictionService = Depends(get_prediction_service),
+    user: FirebaseUser | None = Depends(verify_firebase_token),
 ):
     """
     Get games for a specific date from ESPN with predictions included.

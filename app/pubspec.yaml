@@ -82,6 +82,9 @@ dependencies:
   # URL launcher (Play Store subscription management)
   url_launcher: ^6.2.5
 
+  # Native share sheet
+  share_plus: ^7.0.0
+
 dev_dependencies:
   # Testing packages
   mockito: ^5.4.4

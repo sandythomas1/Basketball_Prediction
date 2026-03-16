@@ -154,6 +154,14 @@ class GamesListResponse(BaseModel):
     games: List[GameInfo]
 
 
+class EspnScoreboardResponse(BaseModel):
+    """Response for GET /games/scoreboard — ESPN proxy."""
+    date: str
+    fetched_at: str
+    count: int
+    games: List[GameInfo]
+
+
 class GamesWithPredictionsResponse(BaseModel):
     """Response for GET /games/today/with-predictions."""
     date: str

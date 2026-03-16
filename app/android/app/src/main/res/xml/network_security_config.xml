@@ -32,9 +32,9 @@
         <domain includeSubdomains="false">127.0.0.1</domain>
     </domain-config>
     
-    <!-- Production API domain - HTTPS only with certificate transparency -->
+    <!-- Production API domains - HTTPS only with certificate transparency -->
     <domain-config cleartextTrafficPermitted="false">
-        <domain includeSubdomains="true">nba-prediction-api-nq5b.onrender.com</domain>
+        <domain includeSubdomains="true">a.run.app</domain>
         <domain includeSubdomains="true">firebaseio.com</domain>
         <domain includeSubdomains="true">firebase.googleapis.com</domain>
         <domain includeSubdomains="true">firebasestorage.googleapis.com</domain>

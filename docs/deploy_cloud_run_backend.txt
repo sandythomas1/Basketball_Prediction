@@ -1,0 +1,217 @@
+================================================================================
+  HOW TO DEPLOY CLOUD RUN BACKEND TO RUN THE SIGNAL SPORTS APP
+================================================================================
+
+This guide walks through deploying the NBA prediction API and daily job to
+Google Cloud Run so the Flutter app can fetch predictions in production.
+
+--------------------------------------------------------------------------------
+1. PREREQUISITES
+--------------------------------------------------------------------------------
+
+  - Google Cloud account with billing enabled
+  - gcloud CLI installed and authenticated:
+      gcloud auth login
+      gcloud config set project YOUR_PROJECT_ID
+
+  - Required GCP APIs enabled:
+      gcloud services enable run.googleapis.com
+      gcloud services enable cloudbuild.googleapis.com
+      gcloud services enable artifactregistry.googleapis.com
+      gcloud services enable scheduler.googleapis.com
+
+  - Docker (optional; Cloud Build runs in the cloud)
+
+--------------------------------------------------------------------------------
+2. REQUIRED LOCAL ASSETS (must exist before build)
+--------------------------------------------------------------------------------
+
+  The Docker build copies these directories. They must exist locally:
+
+    models/
+      - xgb_v3_with_injuries.json   (trained XGBoost model)
+      - calibrator_v3.pkl           (isotonic calibrator)
+
+    state/
+      - elo.json
+      - stats.json
+      - metadata.json
+
+    data/
+      - (optional; can be empty)
+
+  If models/ or state/ are missing, run bootstrap first:
+      python src/bootstrap_state.py
+      python src/xgb_boost_model.py   # trains and saves model
+
+--------------------------------------------------------------------------------
+3. ENVIRONMENT VARIABLES
+--------------------------------------------------------------------------------
+
+  Set these before running the deploy script:
+
+    PROJECT_ID     (required)  Your GCP project ID
+    STATE_BUCKET   (required)  GCS bucket for shared state (e.g. nba-prediction-data-metadata)
+    REGION         (optional)  Default: us-west1
+    STATE_PREFIX   (optional)  Default: state
+
+  Optional for production:
+    ODDS_API_KEY   Add to --set-env-vars if using The Odds API
+    ALLOWED_ORIGINS  Comma-separated CORS origins
+    FIREBASE_AUTH_REQUIRED  Set to true to require Firebase tokens
+
+--------------------------------------------------------------------------------
+4. DEPLOY USING BASH (Linux / macOS / WSL)
+--------------------------------------------------------------------------------
+
+  From the project root:
+
+    export PROJECT_ID=your-gcp-project-id
+    export STATE_BUCKET=nba-prediction-data-metadata
+
+    ./scripts/deploy_cloud_run.sh
+
+  The script will:
+    1. Run pytest (tests must pass)
+    2. Build the API Docker image via Cloud Build
+    3. Deploy nba-predictions-api to Cloud Run
+    4. Build the daily job Docker image
+    5. Create or update nba-predictions-daily-job
+
+  At the end it prints the Cloud Run API URL. Save it for the Flutter app.
+
+--------------------------------------------------------------------------------
+5. DEPLOY USING POWERSHELL (Windows)
+--------------------------------------------------------------------------------
+
+  From the project root in PowerShell:
+
+    $env:PROJECT_ID = "your-gcp-project-id"
+    $env:STATE_BUCKET = "nba-prediction-data-metadata"
+
+    .\scripts\deploy_cloud_run.ps1
+
+  Same steps as bash. The script prints the API URL when done.
+
+--------------------------------------------------------------------------------
+6. CONFIGURE THE FLUTTER APP
+--------------------------------------------------------------------------------
+
+  After deployment, update the app to use your Cloud Run URL:
+
+  1. Open app/.env (create from app/.env.example if needed)
+
+  2. Set:
+       PRODUCTION_API_URL=https://nba-predictions-api-XXXXXX.us-west1.run.app
+
+     Replace XXXXXX with your project number (from the URL printed by the script)
+
+  3. Rebuild the app:
+       cd app
+       flutter build apk --dart-define=PRODUCTION=true
+
+--------------------------------------------------------------------------------
+7. FIREBASE CLOUD FUNCTIONS (AI CHAT)
+--------------------------------------------------------------------------------
+
+  The Firebase functions (chatWithAgent, refreshDailyContext) call your API.
+  Update functions/.env:
+
+    RENDER_API_URL=https://nba-predictions-api-XXXXXX.us-west1.run.app
+
+  Then redeploy functions:
+    cd functions
+    npm install
+    firebase deploy --only functions
+
+--------------------------------------------------------------------------------
+8. DAILY JOB & CLOUD SCHEDULER (optional)
+--------------------------------------------------------------------------------
+
+  The daily job updates Elo/stats and generates predictions. To run it on a
+  schedule (e.g. 8:50 AM ET daily):
+
+  1. Create a service account with Cloud Run Invoker role (or use default)
+
+  2. Run:
+       export PROJECT_ID=your-project
+       export SERVICE_ACCOUNT=your-sa@project.iam.gserviceaccount.com
+       ./scripts/create_cloud_scheduler_job.sh
+
+  3. To run the job manually for testing:
+       gcloud run jobs execute nba-predictions-daily-job \
+         --project YOUR_PROJECT_ID \
+         --region us-west1
+
+--------------------------------------------------------------------------------
+9. MANUAL DEPLOYMENT (without scripts)
+--------------------------------------------------------------------------------
+
+  If you prefer to run commands yourself:
+
+  Build API image:
+    gcloud builds submit --config cloudbuild.api.yaml \
+      --substitutions "_IMAGE=gcr.io/PROJECT_ID/nba-predictions-api:latest" .
+
+  Deploy API service:
+    gcloud run deploy nba-predictions-api \
+      --image gcr.io/PROJECT_ID/nba-predictions-api:latest \
+      --region us-west1 \
+      --platform managed \
+      --allow-unauthenticated \
+      --set-env-vars "ENVIRONMENT=production,STATE_BUCKET=YOUR_BUCKET" \
+      --cpu 0.25 \
+      --memory 512Mi \
+      --min-instances 1 \
+      --max-instances 2
+
+  Build and deploy job (after getting SERVICE_URL from describe):
+    gcloud builds submit --config cloudbuild.job.yaml \
+      --substitutions "_IMAGE=gcr.io/PROJECT_ID/nba-predictions-job:latest" .
+
+    gcloud run jobs create nba-predictions-daily-job \
+      --image gcr.io/PROJECT_ID/nba-predictions-job:latest \
+      --region us-west1 \
+      --set-env-vars "ENVIRONMENT=production,STATE_BUCKET=YOUR_BUCKET,API_BASE_URL=SERVICE_URL" \
+      --tasks 1 \
+      --max-retries 1
+
+--------------------------------------------------------------------------------
+10. TROUBLESHOOTING
+--------------------------------------------------------------------------------
+
+  Build fails with "Model not found":
+    - Ensure models/xgb_v3_with_injuries.json exists
+    - Or set MODEL_BUCKET and ensure models are in gs://BUCKET/models/
+
+  Tests fail during Cloud Build:
+    - Run locally: python -m pytest test/ -v
+    - Fix any failing tests before deploying
+
+  API returns 502 or cold start is slow:
+    - min-instances 1 keeps one instance warm (adds cost)
+    - Increase memory/cpu if needed
+
+  CORS errors from Flutter app:
+    - Set ALLOWED_ORIGINS in Cloud Run env vars
+    - For dev, use ENVIRONMENT=development (allows *)
+
+  Daily job fails:
+    - Check job logs: gcloud run jobs executions list --job nba-predictions-daily-job
+    - Ensure STATE_BUCKET has state files (elo.json, stats.json, metadata.json)
+    - Ensure API_BASE_URL is correct in job env vars
+
+--------------------------------------------------------------------------------
+11. QUICK REFERENCE
+--------------------------------------------------------------------------------
+
+  API URL format:
+    https://nba-predictions-api-PROJECT_NUMBER.REGION.run.app
+
+  Health check:
+    curl https://YOUR_API_URL/health
+
+  Test predictions:
+    curl https://YOUR_API_URL/predict/today
+
+================================================================================

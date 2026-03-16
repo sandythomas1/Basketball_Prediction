@@ -16,6 +16,7 @@ from .odds_client import OddsClient, GameOdds
 from .injury_client import InjuryClient, PlayerInjury, TeamInjuryReport, calculate_injury_adjustment
 from .injury_cache import InjuryCache, get_global_cache
 from .player_importance import PlayerTier, get_player_tier, get_player_importance_multiplier
+from .state_sync import download_state_from_gcs, upload_state_to_gcs
 
 # Configuration module (optional import)
 try:
@@ -48,5 +49,7 @@ __all__ = [
     "PlayerTier",
     "get_player_tier",
     "get_player_importance_multiplier",
+    "download_state_from_gcs",
+    "upload_state_to_gcs",
     "config",
 ]

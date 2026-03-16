@@ -1,152 +1,67 @@
-# 🏀 NBA Game Prediction Model
+# Signal Sports — NBA Game Prediction Platform
 
-An XGBoost-based machine learning system for predicting NBA game outcomes, featuring Elo ratings, rolling team statistics, and rest day analysis.
+A full-stack NBA prediction platform powered by an XGBoost ML model, served via FastAPI on Google Cloud Run, and consumed by a Flutter mobile app with AI chat, social features, and in-app subscriptions.
+
+---
+
+## Architecture
+
+| Layer | Technology | Hosting |
+|-------|-----------|---------|
+| ML Backend | Python 3.11 · FastAPI · XGBoost | Google Cloud Run |
+| Daily Pipeline | Cloud Run Job · Cloud Scheduler | GCP |
+| AI Chat | Dialogflow CX via Firebase Cloud Functions | Firebase |
+| Mobile App | Flutter · Riverpod · Firebase Auth | Android (Play Store) |
+| State Storage | JSON files synced to GCS bucket | Google Cloud Storage |
 
 ---
 
 ## Model Overview
 
-This project implements a **binary classification model** using XGBoost to predict the probability that the home team wins an NBA game. The model combines historical Elo ratings with rolling performance metrics and rest/fatigue indicators to generate calibrated win probabilities.
-
-### Key Highlights
-
-- **Algorithm**: XGBoost (Gradient Boosted Trees)
-- **Task**: Binary classification (home win vs. away win)
-- **Features**: 23 engineered features
-- **Calibration**: Platt scaling via logistic regression
+- **Algorithm**: XGBoost (Gradient Boosted Trees) — binary classification
+- **Model file**: `models/xgb_v3_with_injuries.json`
+- **Calibration**: Isotonic regression (`calibrator_v3.pkl`)
+- **Features**: **31 engineered features** across 6 categories
 - **Data Span**: NBA seasons 2004–2025
+- **Temporal split**: Train 2004–2018 · Validation 2019–2020 · Test 2022+
 
----
+### Feature Vector (31 features)
 
-## Features
+| Category | Count | Features |
+|----------|-------|----------|
+| Elo Ratings | 4 | `elo_home`, `elo_away`, `elo_diff`, `elo_prob` |
+| Rolling Offense | 6 | `pf_roll_home/away/diff`, `pa_roll_home/away/diff` |
+| Rolling Performance | 6 | `win_roll_home/away/diff`, `margin_roll_home/away/diff` |
+| Schedule & Rest | 7 | `games_in_window_home/away`, `home/away_rest_days`, `home/away_b2b`, `rest_diff` |
+| Market Odds | 2 | `market_prob_home`, `market_prob_away` |
+| Injury Impact | 6 | `injury_adj_home/away`, `injury_severity_home/away`, `injury_count_home/away` |
 
-The model uses **23 carefully engineered features** organized into four categories:
+### Elo System
 
-### 1. Elo Rating Features (4)
-
-| Feature | Description |
-|---------|-------------|
-| `elo_home` | Current Elo rating of home team |
-| `elo_away` | Current Elo rating of away team |
-| `elo_diff` | Elo difference (home − away) |
-| `elo_prob` | Elo-based win probability with 70-point home court advantage |
-
-**Elo System Parameters:**
-- Base rating: 1500
-- K-factor: 20
-- Home court advantage: 70 points
+- Base: 1500 · K-factor: 20 · Home-court advantage: 70 pts
 - Season carryover: 70% (30% regression to mean)
 
-### 2. Rolling Offensive Stats (6)
+### Confidence Scoring
 
-| Feature | Description |
-|---------|-------------|
-| `pf_roll_home` | Home team avg points scored (last 10 games) |
-| `pf_roll_away` | Away team avg points scored (last 10 games) |
-| `pf_roll_diff` | Points for differential |
-| `pa_roll_home` | Home team avg points allowed (last 10 games) |
-| `pa_roll_away` | Away team avg points allowed (last 10 games) |
-| `pa_roll_diff` | Points against differential |
+Each prediction includes a 0–100 **confidence score** built from five factors:
 
-### 3. Rolling Performance Stats (6)
+| Factor | Max | Description |
+|--------|-----|-------------|
+| Consensus Agreement | 25 | Model ↔ market probability alignment |
+| Feature Alignment | 25 | All stat signals pointing the same direction |
+| Form Stability | 20 | Low volatility in recent margin/win trends |
+| Schedule Context | 15 | Rest advantage, no back-to-back |
+| Matchup History | 15 | Elo gap and head-to-head signals |
 
-| Feature | Description |
-|---------|-------------|
-| `win_roll_home` | Home team win % (last 10 games) |
-| `win_roll_away` | Away team win % (last 10 games) |
-| `win_roll_diff` | Win rate differential |
-| `margin_roll_home` | Home team avg margin (last 10 games) |
-| `margin_roll_away` | Away team avg margin (last 10 games) |
-| `margin_roll_diff` | Margin differential |
-
-### 4. Schedule & Rest Features (7)
-
-| Feature | Description |
-|---------|-------------|
-| `games_in_window_home` | Games played by home team in window |
-| `games_in_window_away` | Games played by away team in window |
-| `home_rest_days` | Days since home team's last game |
-| `away_rest_days` | Days since away team's last game |
-| `home_b2b` | Home team on back-to-back (1/0) |
-| `away_b2b` | Away team on back-to-back (1/0) |
-| `rest_diff` | Rest advantage (home − away) |
-
----
-
-## Model Architecture
-
-### XGBoost Configuration
-
-```python
-XGBClassifier(
-    n_estimators=800,
-    learning_rate=0.03,
-    max_depth=3,
-    subsample=0.9,
-    colsample_bytree=0.9,
-    min_child_weight=5,
-    reg_lambda=1.0,
-    reg_alpha=0.0,
-    objective="binary:logistic",
-    eval_metric="logloss",
-    random_state=42
-)
-```
-
-### Calibration
-
-Raw model probabilities are calibrated using **Platt scaling** (logistic regression) trained on the validation set. This ensures predicted probabilities align with observed win rates.
-
----
-
-## Training Methodology
-
-### Data Split Strategy
-
-The model uses a **temporal split** to prevent data leakage:
-
-| Split | Seasons | Purpose |
-|-------|---------|---------|
-| **Train** | 2004–2018 | Model training |
-| **Validation** | 2019–2020 | Early stopping & calibration |
-| **Test** | 2022+ | Final evaluation |
-
-### Why Temporal Splits?
-
-- Prevents future data from leaking into training
-- Simulates real-world deployment conditions
-- Ensures model generalizes to unseen seasons
-
----
-
-## Performance Metrics
-
-The model is evaluated on multiple metrics:
-
-| Metric | Description |
-|--------|-------------|
-| **Log Loss** | Measures probability calibration |
-| **Accuracy** | Classification accuracy at 50% threshold |
-| **ROC-AUC** | Discrimination ability |
-| **Brier Score** | Probability accuracy |
-
-### Calibration Analysis
-
-The model's predictions are compared against actual win rates across probability bins to verify calibration quality.
-
----
-
-## Confidence Tiers
-
-Predictions are mapped to interpretable confidence tiers:
+### Confidence Tiers
 
 | Probability Range | Tier |
 |-------------------|------|
-| ≥ 75% | Heavy Favorite |
-| 65% – 74% | Moderate Favorite |
-| 55% – 64% | Lean Favorite |
-| 45% – 54% | Toss-Up |
-| 35% – 44% | Lean Underdog |
+| ≥ 75% | Strong Favorite |
+| 65–74% | Moderate Favorite |
+| 55–64% | Lean Favorite |
+| 45–54% | Toss-Up |
+| 35–44% | Lean Underdog |
 | < 35% | Strong Underdog |
 
 ---
@@ -156,127 +71,189 @@ Predictions are mapped to interpretable confidence tiers:
 ```
 Basketball_Prediction/
 ├── models/
-│   ├── xgb_v2_modern.json    # Trained XGBoost model
-│   └── calibrator.pkl        # Platt scaling calibrator
-├── data/
-│   ├── raw/
-│   │   └── nba_2008-2025.csv # Raw game data
-│   └── processed/
-│       ├── features_3.csv    # Engineered features
-│       ├── games_with_elo_rest.csv
-│       └── model_predictions.csv
-├── src/
-│   ├── xgb_boost_model.py    # Model training script
-│   ├── benchmark.py          # Evaluation & benchmarking
-│   ├── core/
-│   │   ├── predictor.py      # Inference class
-│   │   ├── feature_builder.py# Feature construction
-│   │   ├── elo_tracker.py    # Elo rating system
-│   │   └── stats_tracker.py  # Rolling statistics
-│   └── api/
-│       └── main.py           # FastAPI endpoints
+│   ├── xgb_v3_with_injuries.json   # Trained XGBoost model (v3, 31 features)
+│   └── calibrator_v3.pkl           # Isotonic calibrator
 ├── state/
-│   ├── elo.json              # Current Elo ratings
-│   └── stats.json            # Team game histories
-└── app/                      # Flutter mobile app
-```
-
----
-
-## Usage
-
-### Making Predictions
-
-```python
-from src.core.predictor import Predictor
-from src.core.feature_builder import FeatureBuilder
-from src.core.elo_tracker import EloTracker
-from src.core.stats_tracker import StatsTracker
-from pathlib import Path
-
-# Load model and calibrator
-predictor = Predictor(
-    model_path=Path("models/xgb_v2_modern.json"),
-    calibrator_path=Path("models/calibrator.pkl")
-)
-
-# Load current state
-elo_tracker = EloTracker.from_file(Path("state/elo.json"))
-stats_tracker = StatsTracker.from_file(Path("state/stats.json"))
-feature_builder = FeatureBuilder(elo_tracker, stats_tracker)
-
-# Predict a game
-result = predictor.predict_game(
-    home_id=1610612747,  # Lakers
-    away_id=1610612738,  # Celtics
-    game_date="2026-01-15",
-    feature_builder=feature_builder
-)
-
-print(result)
-# {
-#     "prob_home_win": 0.5234,
-#     "prob_away_win": 0.4766,
-#     "confidence_tier": "Toss-Up",
-#     "is_calibrated": True,
-#     "home_team_id": 1610612747,
-#     "away_team_id": 1610612738,
-#     "game_date": "2026-01-15"
-# }
-```
-
-### Training the Model
-
-```bash
-python src/xgb_boost_model.py
-```
-
-### Running the API
-
-```bash
-uvicorn src.api.main:app --reload
-```
-
----
-
-## Dependencies
-
-```
-pandas>=2.0.0
-numpy>=1.24.0
-scikit-learn>=1.3.0
-xgboost>=2.0.0
-joblib>=1.3.0
-fastapi>=0.109.0
-uvicorn>=0.27.0
-```
-
-Install all dependencies:
-
-```bash
-pip install -r requirements.txt
+│   ├── elo.json                    # Current team Elo ratings
+│   ├── stats.json                  # Rolling 10-game windows
+│   └── metadata.json               # Pipeline metadata
+├── src/
+│   ├── core/
+│   │   ├── predictor.py            # XGBoost inference + calibration
+│   │   ├── feature_builder.py      # 31-feature vector construction
+│   │   ├── elo_tracker.py          # Elo rating system
+│   │   ├── stats_tracker.py        # Rolling statistics
+│   │   ├── confidence_scorer.py    # 0-100 confidence scoring
+│   │   ├── injury_client.py        # ESPN injury reports
+│   │   ├── injury_cache.py         # Thread-safe TTL cache
+│   │   ├── player_importance.py    # All-Star / starter tier weighting
+│   │   ├── odds_client.py          # The Odds API integration
+│   │   ├── espn_client.py          # ESPN scoreboard API
+│   │   ├── team_mapper.py          # ESPN ↔ NBA ID mapping
+│   │   ├── state_manager.py        # Atomic state load/save
+│   │   ├── state_sync.py           # GCS bucket sync
+│   │   └── game_processor.py       # Process completed games
+│   ├── api/
+│   │   ├── main.py                 # FastAPI application
+│   │   ├── config.py               # Environment-based settings
+│   │   ├── schemas.py              # Pydantic v2 request/response models
+│   │   ├── dependencies.py         # Singleton service wiring
+│   │   ├── middleware/
+│   │   │   ├── firebase_auth.py    # Firebase ID token verification
+│   │   │   ├── security.py         # Security headers
+│   │   │   └── rate_limiter.py     # slowapi rate limiting
+│   │   └── routes/
+│   │       ├── health.py           # /health, /state/info, /teams
+│   │       ├── predictions.py      # /predict/today, /predict/game, /predict/batch
+│   │       └── games.py            # /games/today, /games/scoreboard, with-predictions
+│   ├── jobs/
+│   │   └── daily_cloud_run_job.py  # Daily state update + prediction generation
+│   ├── daily_predictions.py        # Generate daily prediction JSON
+│   └── update_state.py             # Process yesterday's games into state
+├── functions/
+│   └── index.js                    # Firebase Cloud Functions (AI chat, context refresh)
+├── app/                            # Flutter mobile app (Signal Sports)
+│   ├── lib/
+│   │   ├── Screens/                # 17 screens (auth, games, profile, forums, etc.)
+│   │   ├── Providers/              # Riverpod providers (games, AI chat, subscriptions)
+│   │   ├── Services/               # Config, auth, cache, subscriptions
+│   │   ├── Widgets/                # AI chat, team logos, pro overlays
+│   │   └── Models/                 # Game data model
+│   └── pubspec.yaml
+├── test/                           # Python test suite (pytest)
+├── Dockerfile.api                  # Cloud Run API image
+├── Dockerfile.job                  # Cloud Run Job image
+├── cloudbuild.api.yaml             # Cloud Build — API (tests → build → push)
+├── cloudbuild.job.yaml             # Cloud Build — Job (tests → build → push)
+└── requirements.txt
 ```
 
 ---
 
 ## API Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/health` | GET | Health check |
-| `/predictions/today` | GET | Today's game predictions |
-| `/predictions/game` | POST | Predict specific game |
-| `/games` | GET | List upcoming games |
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
+| `/health` | GET | No | Health check |
+| `/state/info` | GET | No | Pipeline metadata |
+| `/state/reload` | POST | Yes | Reload state from GCS |
+| `/teams` | GET | No | All teams with Elo ratings |
+| `/predict/today` | GET | Yes | Today's game predictions |
+| `/predict/{date}` | GET | Yes | Predictions for a specific date |
+| `/predict/game` | POST | Yes | Predict a single matchup |
+| `/predict/batch` | POST | Yes | Predict multiple matchups |
+| `/games/today` | GET | No | Today's ESPN games |
+| `/games/scoreboard` | GET | No | ESPN scoreboard proxy |
+| `/games/today/with-predictions` | GET | Yes | Games + predictions combined |
+| `/games/{date}` | GET | No | Games for a specific date |
+| `/games/{date}/with-predictions` | GET | Yes | Games + predictions for a date |
+
+**Authentication**: When `FIREBASE_AUTH_REQUIRED=true`, protected endpoints require a valid Firebase ID token in the `Authorization: Bearer <token>` header. In development mode (default), auth is optional.
 
 ---
 
-## Future Improvements
+## Quick Start
 
-- [ ] Incorporate player-level features (injuries, rest)
-- [ ] Add advanced metrics (offensive/defensive ratings)
-- [ ] Implement ensemble methods
-- [ ] Real-time odds integration for edge detection
-- [ ] Historical backtesting framework
+### Backend (Local Development)
+
+```bash
+pip install -r requirements.txt
+
+# Bootstrap state (first time only)
+python src/bootstrap_state.py
+
+# Run the API
+uvicorn src.api.main:app --reload --port 8000
+```
+
+### Flutter App
+
+```bash
+cd app
+flutter pub get
+flutter run --dart-define=PRODUCTION=false
+```
+
+### Run Tests
+
+```bash
+pytest test/ -v
+```
+
+---
+
+## Deployment
+
+### Cloud Run API
+
+```bash
+gcloud builds submit --config cloudbuild.api.yaml \
+  --substitutions=_IMAGE=us-west1-docker.pkg.dev/PROJECT/repo/nba-api:latest
+```
+
+### Cloud Run Job (Daily Pipeline)
+
+```bash
+gcloud builds submit --config cloudbuild.job.yaml \
+  --substitutions=_IMAGE=us-west1-docker.pkg.dev/PROJECT/repo/nba-job:latest
+```
+
+### Environment Variables (Production)
+
+```env
+ENVIRONMENT=production
+ALLOWED_ORIGINS=https://your-domain.com
+RATE_LIMIT_PER_MINUTE=30
+FIREBASE_AUTH_REQUIRED=true
+ODDS_API_KEY=your_key
+STATE_BUCKET=nba-prediction-data-metadata
+MODEL_BUCKET=nba-prediction-data-metadata
+```
+
+---
+
+## Flutter App (Signal Sports)
+
+### Key Features
+
+- Firebase Auth (email + Google sign-in)
+- Real-time game predictions with confidence scores
+- AI-powered chat assistant (Dialogflow CX via Firebase Functions)
+- Injury impact analysis (Pro-gated)
+- Social features: user profiles, forums, follow system
+- RevenueCat subscription paywall (Pro tier)
+- Offline caching with automatic fallback
+- Share predictions via native share sheet
+- Dark/light theme support
+
+### App Environment
+
+Set `PRODUCTION=true` via `--dart-define` for production builds. The app reads additional keys from `app/.env`:
+
+```env
+PRODUCTION_API_URL=https://your-cloud-run-url.run.app
+REVENUECAT_ANDROID_KEY=your_rc_key
+RECAPTCHA_SITE_KEY=your_recaptcha_key
+```
+
+---
+
+## Dependencies
+
+### Python
+
+```
+xgboost · scikit-learn · fastapi · uvicorn · pydantic · slowapi
+firebase-admin · google-cloud-storage · requests · numpy · pandas
+```
+
+### Flutter
+
+```
+flutter_riverpod · firebase_core · firebase_auth · firebase_app_check
+http · cached_network_image · pie_chart · share_plus · google_fonts
+purchases_flutter · flutter_markdown · flutter_dotenv · flutter_secure_storage
+```
 
 ---
 
@@ -286,5 +263,4 @@ MIT License
 
 ---
 
-*Built with XGBoost, FastAPI, and Flutter*
-
+*Built with XGBoost, FastAPI, Flutter, Firebase, and Google Cloud*

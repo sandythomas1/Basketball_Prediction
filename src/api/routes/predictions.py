@@ -20,6 +20,7 @@ from ..schemas import (
     GameContext,
 )
 from ..dependencies import get_prediction_service, PredictionService
+from ..middleware import verify_firebase_token, FirebaseUser
 
 # Rate limiter
 limiter = Limiter(key_func=get_remote_address)
@@ -97,6 +98,7 @@ def build_prediction_response(
 async def predict_today(
     request: Request,
     service: PredictionService = Depends(get_prediction_service),
+    user: FirebaseUser | None = Depends(verify_firebase_token),
 ):
     """
     Get predictions for today's scheduled games.
@@ -112,6 +114,7 @@ async def predict_date(
     game_date: str,
     request: Request,
     service: PredictionService = Depends(get_prediction_service),
+    user: FirebaseUser | None = Depends(verify_firebase_token),
 ):
     """
     Get predictions for games on a specific date.
@@ -167,6 +170,7 @@ async def predict_game(
     request: Request,
     game_request: PredictGameRequest,
     service: PredictionService = Depends(get_prediction_service),
+    user: FirebaseUser | None = Depends(verify_firebase_token),
 ):
     """
     Predict a single game matchup.
@@ -247,6 +251,7 @@ async def predict_batch(
     request: Request,
     batch_request: PredictBatchRequest,
     service: PredictionService = Depends(get_prediction_service),
+    user: FirebaseUser | None = Depends(verify_firebase_token),
 ):
     """
     Predict multiple game matchups at once.

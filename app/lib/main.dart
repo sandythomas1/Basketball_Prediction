@@ -9,11 +9,6 @@ import 'Services/subscription_service.dart';
 import 'Widgets/auth_gate.dart';
 import 'Providers/theme_provider.dart';
 import 'theme/app_theme.dart';
-// git tutorial feature
-// try again// test
-// MC
-//pr request
-//DG test
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,8 +39,9 @@ void main() async {
       appleProvider: kDebugMode 
           ? AppleProvider.debug 
           : AppleProvider.deviceCheck,
-      // For web, use reCAPTCHA Enterprise (requires setup in Firebase Console)
-      webProvider: ReCaptchaEnterpriseProvider('YOUR_RECAPTCHA_SITE_KEY'),
+      webProvider: ReCaptchaEnterpriseProvider(
+        dotenv.env['RECAPTCHA_SITE_KEY'] ?? '',
+      ),
     );
   } catch (e) {
     // Firebase already initialized or App Check failed, continue

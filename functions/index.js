@@ -4,7 +4,7 @@
  * Functions:
  *  - chatWithAgent          HTTP  — secure Dialogflow CX proxy
  *  - cleanupOldForumMessages  Scheduled — nightly forum cleanup
- *  - refreshDailyContext      Scheduled — daily GCS data refresh (9 AM ET)
+ *  - refreshDailyContext      Scheduled — daily GCS data refresh (9:05 AM ET)
  */
 
 const functions = require('firebase-functions');
@@ -49,13 +49,15 @@ const REGION = 'us-west1';
 // Startup validation — fail fast if required env vars are missing
 // ---------------------------------------------------------------------------
 const REQUIRED_ENV_VARS = ['GCP_PROJECT_ID', 'GCP_AGENT_ID', 'RENDER_API_URL'];
-for (const key of REQUIRED_ENV_VARS) {
-  if (!process.env[key]) {
-    throw new Error(
-      `Missing required environment variable: ${key}. ` +
-      'Add it to functions/.env (local) or Cloud Function environment settings (deployed).'
-    );
-  }
+
+function assertRequiredEnvVars() {
+  const missing = REQUIRED_ENV_VARS.filter((key) => !process.env[key]);
+  if (missing.length === 0) return;
+
+  throw new Error(
+    `Missing required environment variable(s): ${missing.join(', ')}. ` +
+    'Add them to functions/.env (local) or Cloud Function environment settings (deployed).'
+  );
 }
 
 // GCS bucket that the Vertex AI agent data store reads from
@@ -356,7 +358,7 @@ async function fetchHeadToHead(days = 120) {
 }
 
 /**
- * Fetch today's predictions from the Render API, enriched with injury data.
+ * Fetch today's predictions from the Cloud Run API, enriched with injury data.
  * Falls back to an empty list if the API is unreachable.
  */
 async function fetchTodayPredictions(injuryLookup) {
@@ -365,7 +367,7 @@ async function fetchTodayPredictions(injuryLookup) {
     const data = await fetchJSON(`${RENDER_API_URL}/predict/today`, 20000);
     apiGames = data.games || [];
   } catch (err) {
-    console.warn(`⚠ Could not reach Render API (${err.message}). Predictions will be empty.`);
+    console.warn(`⚠ Could not reach predictions API (${err.message}). Predictions will be empty.`);
   }
 
   const games = apiGames.map(game => {
@@ -531,8 +533,8 @@ function buildModelContext() {
 // =============================================================================
 
 /**
- * Runs daily at 9 AM Eastern Time (14:00 UTC).
- * Fetches all data from ESPN + Render API, builds JSON context files,
+ * Runs daily at 9:05 AM Eastern Time.
+ * Fetches all data from ESPN + Cloud Run API, builds JSON context files,
  * and uploads them to GCS for the Vertex AI agent data store.
  *
  * Files written to gs://nba-prediction-data-metadata/ai_context/:
@@ -546,9 +548,10 @@ function buildModelContext() {
 exports.refreshDailyContext = functions
   .region(REGION)
   .pubsub
-  .schedule('0 14 * * *')   // 9 AM ET (UTC-5 winter / UTC-4 summer — 14:00 UTC is safe)
+  .schedule('5 9 * * *')   // 9:05 AM ET
   .timeZone('America/New_York')
   .onRun(async (_context) => {
+    assertRequiredEnvVars();
     console.log('=== refreshDailyContext started ===');
 
     try {
@@ -574,7 +577,7 @@ exports.refreshDailyContext = functions
       await uploadToGCS('head_to_head.json', headToHead);
 
       // Step 5: Today's predictions (injury-enriched + market divergence)
-      console.log('[5/6] Fetching today\'s predictions from Render API...');
+      console.log('[5/6] Fetching today\'s predictions from Cloud Run API...');
       const predictions = await fetchTodayPredictions(injuryLookup);
       await uploadToGCS('daily_predictions.json', predictions);
 
@@ -628,6 +631,7 @@ exports.refreshDailyContext = functions
 exports.chatWithAgent = functions
   .region(REGION)
   .https.onCall(async (data, context) => {
+  assertRequiredEnvVars();
   if (!context.auth) {
     throw new functions.https.HttpsError(
       'unauthenticated',

@@ -168,11 +168,21 @@ async def startup_event():
     Initialize components on startup.
     """
     from .dependencies import get_prediction_service
+    from core.state_sync import download_state_from_gcs
+
+    state_dir = Path(__file__).parent.parent.parent / "state"
+    try:
+        synced_files = download_state_from_gcs(state_dir)
+    except Exception as e:
+        synced_files = 0
+        print(f"⚠ GCS state sync skipped: {e}")
     
     print(f"🚀 Starting {settings.api_title} v{settings.api_version}")
     print(f"📍 Environment: {settings.environment}")
     print(f"🌐 CORS Origins: {settings.cors_origins}")
     print(f"⏱️  Rate Limit: {settings.rate_limit_per_minute}/minute")
+    if synced_files > 0:
+        print(f"☁ Synced {synced_files} state file(s) from GCS")
     
     try:
         service = get_prediction_service()

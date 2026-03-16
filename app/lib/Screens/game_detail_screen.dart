@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pie_chart/pie_chart.dart';
+import 'package:share_plus/share_plus.dart';
 import '../Models/game.dart';
 import '../Providers/subscription_provider.dart';
 import '../Widgets/pro_locked_overlay.dart';
@@ -78,7 +79,18 @@ class GameDetailScreen extends ConsumerWidget {
             child: IconButton(
               icon: Icon(Icons.share, color: context.textSecondary),
               onPressed: () {
-                // Share functionality
+                final prob = (game.favoredProb * 100).toStringAsFixed(1);
+                final favored = game.favoredTeam ?? game.homeTeam;
+                final tier = game.confidenceTier ?? 'Toss-Up';
+                final text = StringBuffer()
+                  ..writeln('${game.awayTeam} @ ${game.homeTeam}')
+                  ..writeln('${game.date} \u2022 ${game.time}')
+                  ..writeln()
+                  ..writeln('Signal Sports prediction:')
+                  ..writeln('$favored $prob% ($tier)')
+                  ..writeln()
+                  ..write('Get predictions at signalsports.app');
+                Share.share(text.toString());
               },
             ),
           ),
