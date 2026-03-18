@@ -1,0 +1,385 @@
+================================================================================
+  NBA BASKETBALL PREDICTION - CLOUD BACKEND DEPLOYMENT GUIDE
+================================================================================
+
+PROJECT:   NBA Predictions API (nba-predictions-api)
+PLATFORM:  Google Cloud Run + Google Cloud Storage
+RUNTIME:   Python 3.11 / FastAPI / Uvicorn
+DATE:      March 2026
+
+--------------------------------------------------------------------------------
+  TABLE OF CONTENTS
+--------------------------------------------------------------------------------
+  1. Prerequisites
+  2. One-Time GCP Project Setup
+  3. Required Environment Variables
+  4. Deployment Scripts
+  5. Step-by-Step Manual Deployment
+  6. Cloud Scheduler Setup (Daily Job)
+  7. Post-Deployment Verification
+  8. Environment Variables Reference
+  9. Rollback Procedure
+  10. Troubleshooting
+
+================================================================================
+  1. PREREQUISITES
+================================================================================
+
+TOOLS REQUIRED:
+  - Google Cloud SDK (gcloud CLI)   https://cloud.google.com/sdk/docs/install
+  - Docker Desktop                  https://docs.docker.com/get-docker/
+  - Python 3.11+                    https://python.org
+  - Git
+
+VERIFY TOOLS ARE INSTALLED:
+  gcloud --version
+  docker --version
+  python --version
+
+GOOGLE CLOUD SERVICES THAT MUST BE ENABLED:
+  - Cloud Run API
+  - Cloud Build API
+  - Container Registry API (or Artifact Registry)
+  - Cloud Scheduler API
+  - Cloud Storage API
+  - IAM API
+
+================================================================================
+  2. ONE-TIME GCP PROJECT SETUP
+================================================================================
+
+  Step 1: Authenticate with Google Cloud
+  ----------------------------------------
+    gcloud auth login
+    gcloud auth configure-docker
+
+  Step 2: Set your project
+  ----------------------------------------
+    gcloud config set project YOUR_PROJECT_ID
+    # e.g.: gcloud config set project nba-predictions-29e45
+
+  Step 3: Enable required APIs
+  ----------------------------------------
+    gcloud services enable run.googleapis.com
+    gcloud services enable cloudbuild.googleapis.com
+    gcloud services enable containerregistry.googleapis.com
+    gcloud services enable cloudscheduler.googleapis.com
+    gcloud services enable storage.googleapis.com
+    gcloud services enable iam.googleapis.com
+
+  Step 4: Create Cloud Storage buckets
+  ----------------------------------------
+    # State/model bucket (for prediction state files)
+    gsutil mb -l us-west1 gs://YOUR_STATE_BUCKET
+
+    # Model bucket (for XGBoost model files)
+    gsutil mb -l us-west1 gs://YOUR_MODEL_BUCKET
+
+  Step 5: Upload model files to GCS
+  ----------------------------------------
+    gsutil cp models/xgb_v3_with_injuries.json gs://YOUR_MODEL_BUCKET/models/
+    gsutil cp state/*.json gs://YOUR_STATE_BUCKET/state/
+
+  Step 6: Create a Service Account for Cloud Scheduler
+  ----------------------------------------
+    gcloud iam service-accounts create nba-scheduler-sa \
+      --display-name="NBA Predictions Scheduler"
+
+    gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
+      --member="serviceAccount:nba-scheduler-sa@YOUR_PROJECT_ID.iam.gserviceaccount.com" \
+      --role="roles/run.invoker"
+
+================================================================================
+  3. REQUIRED ENVIRONMENT VARIABLES
+================================================================================
+
+  Set these before running either deployment script.
+
+  MAC / LINUX (Terminal):
+  ----------------------------------------
+    export PROJECT_ID="your-gcp-project-id"
+    export STATE_BUCKET="your-state-bucket-name"
+    export MODEL_BUCKET="your-model-bucket-name"
+    export REGION="us-west1"
+    export STATE_PREFIX="state"
+
+  WINDOWS (PowerShell):
+  ----------------------------------------
+    $env:PROJECT_ID   = "your-gcp-project-id"
+    $env:STATE_BUCKET = "your-state-bucket-name"
+    $env:MODEL_BUCKET = "your-model-bucket-name"
+    $env:REGION       = "us-west1"
+    $env:STATE_PREFIX = "state"
+
+  OPTIONAL VARIABLES:
+  ----------------------------------------
+    INJURY_ADJUSTMENTS_ENABLED   = true          (default: true)
+    INJURY_ADJUSTMENT_MULTIPLIER = 20            (default: 20)
+    INJURY_MAX_ADJUSTMENT        = -100          (default: -100)
+    INJURY_CACHE_TTL             = 14400         (default: 14400 seconds)
+    LOG_INJURY_ADJUSTMENTS       = true          (default: true)
+    DEBUG_INJURY_CALCULATIONS    = false         (default: false)
+    INJURY_USE_STALE_CACHE       = true          (default: true)
+
+================================================================================
+  4. DEPLOYMENT SCRIPTS
+================================================================================
+
+  Two automated scripts are included in the scripts/ folder:
+
+  MAC / LINUX:
+    scripts/deploy_backend_mac.sh
+    
+    USAGE:
+      chmod +x scripts/deploy_backend_mac.sh
+      PROJECT_ID=your-project STATE_BUCKET=your-bucket ./scripts/deploy_backend_mac.sh
+    
+    OR with all options:
+      PROJECT_ID=my-project \
+      STATE_BUCKET=my-state-bucket \
+      MODEL_BUCKET=my-model-bucket \
+      REGION=us-west1 \
+      ./scripts/deploy_backend_mac.sh
+
+  WINDOWS (PowerShell):
+    scripts/deploy_backend_windows.ps1
+    
+    USAGE:
+      $env:PROJECT_ID   = "your-project"
+      $env:STATE_BUCKET = "your-bucket"
+      .\scripts\deploy_backend_windows.ps1
+    
+    NOTE: You may need to allow script execution first:
+      Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+================================================================================
+  5. STEP-BY-STEP MANUAL DEPLOYMENT
+================================================================================
+
+  STEP 1: Authenticate
+  ----------------------------------------
+    gcloud auth login
+    gcloud auth configure-docker
+    gcloud config set project $PROJECT_ID
+
+  STEP 2: Build and Deploy the API Service
+  ----------------------------------------
+    API_IMAGE="gcr.io/${PROJECT_ID}/nba-predictions-api:latest"
+    
+    # Build image via Cloud Build (includes running tests)
+    gcloud builds submit \
+      --project "${PROJECT_ID}" \
+      --config cloudbuild.api.yaml \
+      --substitutions "_IMAGE=${API_IMAGE}" \
+      .
+    
+    # Deploy to Cloud Run
+    gcloud run deploy nba-predictions-api \
+      --project "${PROJECT_ID}" \
+      --image "${API_IMAGE}" \
+      --region "${REGION}" \
+      --platform managed \
+      --allow-unauthenticated \
+      --set-env-vars "ENVIRONMENT=production,STATE_BUCKET=${STATE_BUCKET},STATE_PREFIX=${STATE_PREFIX},MODEL_BUCKET=${MODEL_BUCKET}" \
+      --cpu 0.25 \
+      --memory 512Mi \
+      --min-instances 1 \
+      --max-instances 2
+
+  STEP 3: Get the deployed API URL
+  ----------------------------------------
+    SERVICE_URL=$(gcloud run services describe nba-predictions-api \
+      --project "${PROJECT_ID}" \
+      --region "${REGION}" \
+      --format='value(status.url)')
+    echo "API deployed at: $SERVICE_URL"
+
+  STEP 4: Build and Deploy the Daily Job
+  ----------------------------------------
+    JOB_IMAGE="gcr.io/${PROJECT_ID}/nba-predictions-job:latest"
+    
+    # Build job image
+    gcloud builds submit \
+      --project "${PROJECT_ID}" \
+      --config cloudbuild.job.yaml \
+      --substitutions "_IMAGE=${JOB_IMAGE}" \
+      .
+    
+    # Create or update Cloud Run Job
+    gcloud run jobs create nba-predictions-daily-job \
+      --project "${PROJECT_ID}" \
+      --image "${JOB_IMAGE}" \
+      --region "${REGION}" \
+      --set-env-vars "ENVIRONMENT=production,STATE_BUCKET=${STATE_BUCKET},STATE_PREFIX=${STATE_PREFIX},API_BASE_URL=${SERVICE_URL}" \
+      --tasks 1 \
+      --max-retries 1
+
+  STEP 5: Run the job manually to test
+  ----------------------------------------
+    gcloud run jobs execute nba-predictions-daily-job \
+      --project "${PROJECT_ID}" \
+      --region "${REGION}"
+
+================================================================================
+  6. CLOUD SCHEDULER SETUP (DAILY JOB)
+================================================================================
+
+  Run the dedicated scheduler script to trigger the daily job at 8:50 AM ET:
+
+  MAC / LINUX:
+    PROJECT_ID=your-project \
+    SERVICE_ACCOUNT=nba-scheduler-sa@your-project.iam.gserviceaccount.com \
+    ./scripts/create_cloud_scheduler_job.sh
+
+  WINDOWS (PowerShell - manual):
+    $ProjectId      = "your-project"
+    $Region         = "us-west1"
+    $ServiceAccount = "nba-scheduler-sa@your-project.iam.gserviceaccount.com"
+    $RunUri         = "https://${Region}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${ProjectId}/jobs/nba-predictions-daily-job:run"
+    
+    gcloud scheduler jobs create http nba-predictions-daily-schedule `
+      --project $ProjectId `
+      --location $Region `
+      --schedule "50 8 * * *" `
+      --time-zone "America/New_York" `
+      --uri $RunUri `
+      --http-method POST `
+      --oauth-service-account-email $ServiceAccount
+
+  SCHEDULE DETAILS:
+    Cron: "50 8 * * *"  =  Every day at 8:50 AM Eastern Time
+    Timezone: America/New_York
+    Job: nba-predictions-daily-job (Cloud Run Job)
+
+================================================================================
+  7. POST-DEPLOYMENT VERIFICATION
+================================================================================
+
+  HEALTH CHECK:
+    curl https://YOUR_SERVICE_URL/health
+
+  TODAY'S PREDICTIONS:
+    curl https://YOUR_SERVICE_URL/api/v1/predict/today
+
+  SPECIFIC DATE:
+    curl https://YOUR_SERVICE_URL/api/v1/predict/2026-03-17
+
+  EXPECTED HEALTHY RESPONSE:
+    { "status": "ok", "model": "xgb_v3_with_injuries", "version": "..." }
+
+  CHECK CLOUD RUN LOGS:
+    gcloud logging read \
+      "resource.type=cloud_run_revision AND resource.labels.service_name=nba-predictions-api" \
+      --project="${PROJECT_ID}" \
+      --limit=50
+
+  CHECK JOB LOGS:
+    gcloud logging read \
+      "resource.type=cloud_run_job AND resource.labels.job_name=nba-predictions-daily-job" \
+      --project="${PROJECT_ID}" \
+      --limit=50
+
+  VERIFY INJURY ADJUSTMENTS ARE ACTIVE:
+    curl https://YOUR_SERVICE_URL/api/v1/predict/today | python -m json.tool
+    # Look for "injury_adjustment" fields in response
+
+================================================================================
+  8. ENVIRONMENT VARIABLES REFERENCE
+================================================================================
+
+  Variable                       Default        Description
+  -------------------------------------------------------------------
+  PROJECT_ID                     (required)     GCP Project ID
+  STATE_BUCKET                   (required)     GCS bucket for state files
+  MODEL_BUCKET                   (optional)     GCS bucket for model files
+  STATE_PREFIX                   state          Prefix/folder inside bucket
+  REGION                         us-west1       Cloud Run region
+  ENVIRONMENT                    production     Runtime environment flag
+  INJURY_ADJUSTMENTS_ENABLED     true           Enable injury-based Elo adjustments
+  INJURY_ADJUSTMENT_MULTIPLIER   20             Multiplier for injury penalty
+  INJURY_MAX_ADJUSTMENT          -100           Max Elo penalty for injuries
+  INJURY_CACHE_TTL               14400          Injury data cache TTL (seconds)
+  LOG_INJURY_ADJUSTMENTS         true           Log injury calculations
+  DEBUG_INJURY_CALCULATIONS      false          Verbose debug logging
+  INJURY_USE_STALE_CACHE         true           Use stale cache if ESPN API fails
+  PORT                           8080           API server port (set by Cloud Run)
+
+================================================================================
+  9. ROLLBACK PROCEDURE
+================================================================================
+
+  OPTION A: Disable injury adjustments without redeploying
+  ----------------------------------------
+    gcloud run services update nba-predictions-api \
+      --project "${PROJECT_ID}" \
+      --region "${REGION}" \
+      --update-env-vars "INJURY_ADJUSTMENTS_ENABLED=false"
+
+  OPTION B: Rollback to a previous container revision
+  ----------------------------------------
+    # List revisions
+    gcloud run revisions list \
+      --service nba-predictions-api \
+      --project "${PROJECT_ID}" \
+      --region "${REGION}"
+    
+    # Route 100% traffic to a previous revision
+    gcloud run services update-traffic nba-predictions-api \
+      --project "${PROJECT_ID}" \
+      --region "${REGION}" \
+      --to-revisions REVISION_NAME=100
+
+  OPTION C: Disable predictions in the app
+  ----------------------------------------
+    Update app/lib/services/api_service.dart to point to a fallback endpoint.
+
+================================================================================
+  10. TROUBLESHOOTING
+================================================================================
+
+  ISSUE: "Permission denied" when running gcloud
+  FIX:   Run: gcloud auth login && gcloud auth configure-docker
+
+  ISSUE: Docker build fails locally
+  FIX:   Ensure Docker Desktop is running: docker info
+
+  ISSUE: Cloud Build fails on tests
+  FIX:   Run tests locally first: python -m pytest test/ -v --tb=short
+
+  ISSUE: Cloud Run service returns 503
+  FIX:   Check logs, ensure MODEL_BUCKET is set and model files exist in GCS
+         gsutil ls gs://YOUR_MODEL_BUCKET/models/
+
+  ISSUE: Injury adjustments not showing in predictions
+  FIX:   Verify env var: gcloud run services describe nba-predictions-api
+         Look for INJURY_ADJUSTMENTS_ENABLED=true in env vars
+
+  ISSUE: Daily job not triggering
+  FIX:   Check Cloud Scheduler:
+         gcloud scheduler jobs list --project="${PROJECT_ID}"
+         gcloud scheduler jobs describe nba-predictions-daily-schedule
+
+  ISSUE: "Model file not found" error
+  FIX:   Upload model to GCS:
+         gsutil cp models/xgb_v3_with_injuries.json gs://YOUR_MODEL_BUCKET/models/
+
+  ISSUE: PowerShell script blocked on Windows
+  FIX:   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+--------------------------------------------------------------------------------
+  SUPPORT FILES
+--------------------------------------------------------------------------------
+  Dockerfile.api             API service container definition
+  Dockerfile.job             Daily job container definition
+  cloudbuild.api.yaml        Cloud Build pipeline for API image
+  cloudbuild.job.yaml        Cloud Build pipeline for job image
+  render.yaml                Render.com deployment config (alternative)
+  scripts/deploy_backend_mac.sh         Automated deploy script (Mac/Linux)
+  scripts/deploy_backend_windows.ps1    Automated deploy script (Windows)
+  scripts/create_cloud_scheduler_job.sh Cloud Scheduler setup script
+  DEPLOYMENT_CHECKLIST.md    Pre/post deployment checklist
+  docs/INJURY_ADJUSTMENTS.md Injury adjustment feature documentation
+
+================================================================================
+  END OF CLOUD_BACKEND_DEPLOYMENT.txt
+================================================================================
