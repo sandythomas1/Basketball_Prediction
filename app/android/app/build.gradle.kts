@@ -32,7 +32,7 @@ android {
 
     defaultConfig {
         applicationId = "com.signalsports.app"
-        minSdk = flutter.minSdkVersion  // Required for Firebase Auth
+        minSdk = 21  // Required for Firebase Auth and RevenueCat
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

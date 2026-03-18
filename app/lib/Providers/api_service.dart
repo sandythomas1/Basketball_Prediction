@@ -37,12 +37,47 @@ class ApiService {
     return headers;
   }
 
+  /// Returns the current date in PST/PDT as YYYYMMDD (for ESPN API).
+  String _getPstDateCompact() {
+    final pst = _nowInPst();
+    return '${pst.year}${pst.month.toString().padLeft(2, '0')}${pst.day.toString().padLeft(2, '0')}';
+  }
+
+  /// Returns the current date in PST/PDT as YYYY-MM-DD (for backend API).
+  String _getPstDateIso() {
+    final pst = _nowInPst();
+    return '${pst.year}-${pst.month.toString().padLeft(2, '0')}-${pst.day.toString().padLeft(2, '0')}';
+  }
+
+  /// Converts UTC now to PST (UTC-8) or PDT (UTC-7) based on US DST rules.
+  DateTime _nowInPst() {
+    final utc = DateTime.now().toUtc();
+    return utc.subtract(Duration(hours: _isPdt(utc) ? 7 : 8));
+  }
+
+  /// Returns true if US daylight saving time (PDT) is active for [utc].
+  /// DST starts on the second Sunday of March and ends the first Sunday of November.
+  bool _isPdt(DateTime utc) {
+    final year = utc.year;
+    final marchFirst = DateTime.utc(year, 3, 1);
+    // Second Sunday of March (day 1 = Monday in weekday, 7 = Sunday)
+    final dstStart = marchFirst.add(
+      Duration(days: (7 - (marchFirst.weekday % 7)) % 7 + 7),
+    );
+    final novFirst = DateTime.utc(year, 11, 1);
+    // First Sunday of November
+    final dstEnd = novFirst.add(
+      Duration(days: (7 - (novFirst.weekday % 7)) % 7),
+    );
+    return utc.isAfter(dstStart) && utc.isBefore(dstEnd);
+  }
+
   /// Fetch today's games + predictions in a single backend call.
   ///
   /// Falls back to null if the backend is unreachable so the caller can
   /// degrade to the ESPN-direct path.
   Future<Map<String, dynamic>?> fetchGamesWithPredictions() async {
-    final url = '$fastApiBaseUrl/games/today/with-predictions';
+    final url = '$fastApiBaseUrl/games/${_getPstDateIso()}/with-predictions';
     if (AppConfig.enableDebugLogging) {
       debugPrint('Fetching games+predictions from: $url');
     }
@@ -79,9 +114,7 @@ class ApiService {
 
   /// Fetch today's games from ESPN API (fallback when backend is down).
   Future<Map<String, dynamic>> fetchEspnScoreboard() async {
-    final now = DateTime.now();
-    final dateParam =
-        '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
+    final dateParam = _getPstDateCompact();
 
     try {
       final response = await http

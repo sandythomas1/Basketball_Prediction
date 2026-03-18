@@ -397,6 +397,13 @@ class _ProUpgradeScreenState extends ConsumerState<ProUpgradeScreen> {
   // ── Plan toggle ────────────────────────────────────────────────────────────
 
   Widget _buildPlanToggle(BuildContext context) {
+    final monthlyLabel = _monthlyPackage != null
+        ? '${_monthlyPackage!.storeProduct.priceString}/mo'
+        : '\$4.99/mo';
+    final annualLabel = _annualPackage != null
+        ? '${_annualPackage!.storeProduct.priceString}/yr'
+        : '\$29.99/yr';
+
     return Container(
       decoration: BoxDecoration(
         color: context.bgCard,
@@ -407,13 +414,13 @@ class _ProUpgradeScreenState extends ConsumerState<ProUpgradeScreen> {
         children: [
           _PlanChip(
             label: 'Monthly',
-            sublabel: '\$4.99/mo',
+            sublabel: monthlyLabel,
             selected: _selectedPlan == 'monthly',
             onTap: () => setState(() => _selectedPlan = 'monthly'),
           ),
           _PlanChip(
             label: 'Annual',
-            sublabel: '\$29.99/yr',
+            sublabel: annualLabel,
             badge: 'Save 50%',
             selected: _selectedPlan == 'annual',
             onTap: () => setState(() => _selectedPlan = 'annual'),
@@ -427,8 +434,9 @@ class _ProUpgradeScreenState extends ConsumerState<ProUpgradeScreen> {
 
   Widget _buildPricingCard(BuildContext context) {
     final isAnnual = _selectedPlan == 'annual';
-    final price = isAnnual ? '29' : '4';
-    final cents = isAnnual ? '.99/yr' : '.99/mo';
+    final pkg = isAnnual ? _annualPackage : _monthlyPackage;
+    final price = pkg != null ? pkg.storeProduct.priceString : (isAnnual ? '\$29.99' : '\$4.99');
+    final period = isAnnual ? '/yr' : '/mo';
     final subline = isAnnual
         ? 'Just \$2.50/month  •  Cancel anytime'
         : 'Cancel anytime  •  3-day free trial';
@@ -461,19 +469,8 @@ class _ProUpgradeScreenState extends ConsumerState<ProUpgradeScreen> {
           const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text(
-                  '\$',
-                  style: GoogleFonts.dmSans(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.accentPurple,
-                  ),
-                ),
-              ),
               ShaderMask(
                 shaderCallback: (bounds) => const LinearGradient(
                   colors: [AppColors.accentPurple, AppColors.accentBlue],
@@ -489,9 +486,9 @@ class _ProUpgradeScreenState extends ConsumerState<ProUpgradeScreen> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 24),
+                padding: const EdgeInsets.only(bottom: 6),
                 child: Text(
-                  cents,
+                  period,
                   style: GoogleFonts.dmSans(
                     fontSize: 15,
                     color: context.textMuted,

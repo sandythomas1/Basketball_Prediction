@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /Users/sandythomas/development/Basketball_Prediction -type f -name Makefile -o -name Dockerfile -o -name docker-compose.yml -o -name *.sh -o -name .github -type d)",
+      "Bash(gcloud config:*)",
+      "Bash(gcloud storage:*)",
+      "Bash(gcloud run:*)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); envs=d[''''spec''''][''''template''''][''''spec''''][''''containers''''][0].get\\(''''env'''',[]\\); [print\\(e[''''name''''],''''='''',e.get\\(''''value'''',''''''''\\)\\) for e in envs]\")",
+      "Bash(grep -rn \"today\\\\|date\\\\|timezone\\\\|PST\\\\|UTC\" /Users/sandythomas/development/Basketball_Prediction/src/api/ --include=*.py -l)",
+      "Bash(find /Users/sandythomas/development/Basketball_Prediction/src -name *.py)",
+      "Bash(flutter analyze:*)",
+      "Bash(PROJECT_ID=nba-predictions-29e45 STATE_BUCKET=nba-prediction-data-metadata SKIP_TESTS=true ./scripts/deploy_backend_mac.sh)",
+      "Bash(PROJECT_ID=nba-predictions-29e45 STATE_BUCKET=nba-prediction-data-metadata ./scripts/deploy_cloud_run.sh)",
+      "Bash(chmod +x scripts/deploy_cloud_run.sh)",
+      "Bash(PROJECT_ID=nba-predictions-29e45 STATE_BUCKET=nba-prediction-data-metadata bash scripts/deploy_cloud_run.sh)",
+      "Bash(npm run:*)",
+      "Bash(npm install:*)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://nba-predictions-api-vnwwurr52q-uw.a.run.app/health)",
+      "Bash(pod install:*)",
+      "Bash(flutter run:*)",
+      "Bash(flutter build:*)",
+      "Bash(ls /Users/sandythomas/development/Basketball_Prediction/app/.env*)",
+      "Bash(ls /Users/sandythomas/development/Basketball_Prediction/app/assets/.env*)",
+      "Bash(find /Users/sandythomas/development/Basketball_Prediction/app -name *.env* -o -name .env*)",
+      "Bash(curl -s \"https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=20260318\")",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); e=d[''''events''''][0]; print\\(''''ESPN date field:'''', e[''''date'''']\\); print\\(''''ESPN status:'''', e[''''status''''][''''type''''][''''description'''']\\)\")",
+      "Bash(find /Users/sandythomas/development/Basketball_Prediction/app/lib -type f -name *.dart)",
+      "Read(//Users/sandythomas/development/Basketball_Prediction/**)"
+    ]
+  }
+}

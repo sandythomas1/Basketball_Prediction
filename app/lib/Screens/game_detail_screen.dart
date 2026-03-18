@@ -103,6 +103,11 @@ class GameDetailScreen extends ConsumerWidget {
           children: [
             // Matchup Header
             _MatchupHeader(game: game),
+            // Box Score (live / finished games only)
+            if (game.hasBoxScore) ...[
+              const SizedBox(height: 16),
+              _BoxScoreCard(game: game),
+            ],
             const SizedBox(height: 24),
             // Signal AI Chat Widget (replaces static narrative)
             AIChatWidget(game: game),
@@ -1056,6 +1061,208 @@ class _FactorRow extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Box Score Card
+// ---------------------------------------------------------------------------
+
+class _BoxScoreCard extends StatelessWidget {
+  final Game game;
+  const _BoxScoreCard({required this.game});
+
+  @override
+  Widget build(BuildContext context) {
+    final labels = game.quarterLabels;
+    final homeQ = game.homeQuarters ?? [];
+    final awayQ = game.awayQuarters ?? [];
+    final homeTotal = int.tryParse(game.homeScore) ?? 0;
+    final awayTotal = int.tryParse(game.awayScore) ?? 0;
+    final homeWon = homeTotal > awayTotal;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: context.bgCard,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'BOX SCORE',
+            style: GoogleFonts.spaceMono(
+              fontSize: 11,
+              fontWeight: FontWeight.w400,
+              color: context.textMuted,
+              letterSpacing: 1.5,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Table(
+            columnWidths: {
+              0: const FlexColumnWidth(2.2),
+              for (int i = 0; i < labels.length; i++)
+                i + 1: const FlexColumnWidth(1),
+              labels.length + 1: const FlexColumnWidth(1.2),
+            },
+            children: [
+              TableRow(children: [
+                _cell(context, '', isHeader: true),
+                ...labels.map((l) => _cell(context, l, isHeader: true)),
+                _cell(context, 'T', isHeader: true),
+              ]),
+              TableRow(children: [
+                _teamCell(context, game.homeTeam, bold: homeWon),
+                ...List.generate(labels.length, (i) {
+                  final val = i < homeQ.length ? homeQ[i].toString() : '-';
+                  return _cell(context, val, bold: homeWon);
+                }),
+                _cell(context, homeTotal.toString(), bold: homeWon, accent: homeWon),
+              ]),
+              TableRow(children: [
+                _teamCell(context, game.awayTeam, bold: !homeWon),
+                ...List.generate(labels.length, (i) {
+                  final val = i < awayQ.length ? awayQ[i].toString() : '-';
+                  return _cell(context, val, bold: !homeWon);
+                }),
+                _cell(context, awayTotal.toString(), bold: !homeWon, accent: !homeWon),
+              ]),
+            ],
+          ),
+          if (game.leaders != null && game.leaders!.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            Text(
+              'GAME LEADERS',
+              style: GoogleFonts.spaceMono(
+                fontSize: 10,
+                fontWeight: FontWeight.w400,
+                color: context.textMuted,
+                letterSpacing: 1.5,
+              ),
+            ),
+            const SizedBox(height: 8),
+            ...game.leaders!.map((l) => _leaderRow(context, l)),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _cell(BuildContext context, String text,
+      {bool isHeader = false, bool bold = false, bool accent = false}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Text(
+        text,
+        textAlign: TextAlign.center,
+        style: GoogleFonts.spaceMono(
+          fontSize: 12,
+          fontWeight: isHeader || bold ? FontWeight.w600 : FontWeight.w400,
+          color: isHeader
+              ? context.textMuted
+              : accent
+                  ? AppColors.accentGreen
+                  : context.textPrimary,
+        ),
+      ),
+    );
+  }
+
+  Widget _teamCell(BuildContext context, String teamName, {bool bold = false}) {
+    final abbr = getEspnAbbreviation(teamName).toUpperCase();
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          TeamLogo(teamName: teamName, size: 18, borderRadius: 4),
+          const SizedBox(width: 6),
+          Text(
+            abbr,
+            style: GoogleFonts.spaceMono(
+              fontSize: 12,
+              fontWeight: bold ? FontWeight.w700 : FontWeight.w400,
+              color: context.textPrimary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _leaderRow(BuildContext context, GameLeader leader) {
+    IconData icon;
+    String label;
+    switch (leader.category) {
+      case 'points':
+        icon = Icons.sports_basketball;
+        label = 'PTS';
+        break;
+      case 'rebounds':
+        icon = Icons.swap_vert;
+        label = 'REB';
+        break;
+      case 'assists':
+        icon = Icons.handshake_outlined;
+        label = 'AST';
+        break;
+      default:
+        icon = Icons.star_outline;
+        label = leader.category.toUpperCase();
+    }
+    final teamName = leader.isHome ? game.homeTeam : game.awayTeam;
+    final abbr = getEspnAbbreviation(teamName).toUpperCase();
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          Container(
+            width: 28,
+            height: 28,
+            decoration: BoxDecoration(
+              color: context.bgSecondary,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, size: 14, color: context.textMuted),
+          ),
+          const SizedBox(width: 10),
+          SizedBox(
+            width: 36,
+            child: Text(
+              label,
+              style: GoogleFonts.spaceMono(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: context.textMuted,
+              ),
+            ),
+          ),
+          const SizedBox(width: 4),
+          Expanded(
+            child: Text(
+              '${leader.playerName} ($abbr)',
+              style: GoogleFonts.dmSans(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: context.textPrimary,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Text(
+            leader.displayValue,
+            style: GoogleFonts.spaceMono(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: context.textSecondary,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
