@@ -39,9 +39,9 @@ gcloud run deploy nba-predictions-api \
   --platform managed \
   --allow-unauthenticated \
   --set-env-vars "${SERVICE_ENV_VARS}" \
-  --cpu 0.25 \
+  --cpu 1 \
   --memory 512Mi \
-  --min-instances 1 \
+  --min-instances 0 \
   --max-instances 2
 
 SERVICE_URL="$(gcloud run services describe nba-predictions-api \

@@ -18,16 +18,7 @@ COPY models/ models/
 
 # Startup helper: if models are absent at run time (e.g. local dev without
 # models checked in), attempt a download from GCS.
-COPY <<'EOF' /app/entrypoint.sh
-#!/bin/sh
-set -e
-if [ ! -f models/xgb_v3_with_injuries.json ] && [ -n "$MODEL_BUCKET" ]; then
-  echo "Downloading models from gs://$MODEL_BUCKET/models/ ..."
-  gsutil -m cp "gs://$MODEL_BUCKET/models/*" models/ 2>/dev/null || true
-fi
-exec "$@"
-EOF
-RUN chmod +x /app/entrypoint.sh
+RUN printf '#!/bin/sh\nset -e\nif [ ! -f models/xgb_v3_with_injuries.json ] && [ -n "$MODEL_BUCKET" ]; then\n  echo "Downloading models from gs://$MODEL_BUCKET/models/ ..."\n  gsutil -m cp "gs://$MODEL_BUCKET/models/*" models/ 2>/dev/null || true\nfi\nexec "$@"\n' > /app/entrypoint.sh && chmod +x /app/entrypoint.sh
 
 ENV PORT=8080
 

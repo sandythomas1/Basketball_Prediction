@@ -10,16 +10,7 @@ COPY models/ models/
 COPY state/ state/
 COPY data/ data/
 
-COPY <<'EOF' /app/entrypoint.sh
-#!/bin/sh
-set -e
-if [ ! -f models/xgb_v3_with_injuries.json ] && [ -n "$MODEL_BUCKET" ]; then
-  echo "Downloading models from gs://$MODEL_BUCKET/models/ ..."
-  gsutil -m cp "gs://$MODEL_BUCKET/models/*" models/ 2>/dev/null || true
-fi
-exec "$@"
-EOF
-RUN chmod +x /app/entrypoint.sh
+RUN printf '#!/bin/sh\nset -e\nif [ ! -f models/xgb_v3_with_injuries.json ] && [ -n "$MODEL_BUCKET" ]; then\n  echo "Downloading models from gs://$MODEL_BUCKET/models/ ..."\n  gsutil -m cp "gs://$MODEL_BUCKET/models/*" models/ 2>/dev/null || true\nfi\nexec "$@"\n' > /app/entrypoint.sh && chmod +x /app/entrypoint.sh
 
 ENTRYPOINT ["/app/entrypoint.sh"]
 CMD ["python", "src/jobs/daily_cloud_run_job.py"]

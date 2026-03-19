@@ -45,24 +45,32 @@ class TestModelLoading:
         features[2] = 100   # elo_diff
         features[3] = 0.6   # elo_prob
 
-        prob = p.predict(features)
+        result = p.predict(features)
+        prob = result["prob_home_win"]
         assert 0.0 <= prob <= 1.0
 
     def test_batch_predict(self):
         from core.predictor import Predictor
+        from core.feature_builder import FeatureBuilder
+        from core import EloTracker, StatsTracker, StateManager
+        from pathlib import Path
+
         p = Predictor(
             MODEL_PATH,
             CALIBRATOR_PATH if CALIBRATOR_PATH.exists() else None,
         )
+        state_dir = Path(__file__).parent.parent / "state"
+        state_manager = StateManager(state_dir)
+        if not state_manager.exists():
+            pytest.skip("State files required for batch predict test")
+        elo_tracker, stats_tracker = state_manager.load()
+        feature_builder = FeatureBuilder(elo_tracker, stats_tracker)
 
-        batch = np.zeros((5, 31))
-        for i in range(5):
-            batch[i, 0] = 1500 + i * 20
-            batch[i, 1] = 1500 - i * 20
-            batch[i, 2] = i * 40
-            batch[i, 3] = 0.5 + i * 0.05
-
-        probs = p.predict_batch(batch)
-        assert len(probs) == 5
-        for prob in probs:
-            assert 0.0 <= prob <= 1.0
+        games = [
+            {"home_id": 1610612737, "away_id": 1610612738, "game_date": "2026-03-16"},
+            {"home_id": 1610612738, "away_id": 1610612737, "game_date": "2026-03-16"},
+        ]
+        results = p.predict_batch(games, feature_builder)
+        assert len(results) == 2
+        for r in results:
+            assert 0.0 <= r["prob_home_win"] <= 1.0

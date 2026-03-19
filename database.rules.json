@@ -125,6 +125,7 @@
     "forums": {
       "general": {
         "messages": {
+          ".indexOn": ["timestamp"],
           ".read": "auth != null",
           "$messageId": {
             ".write": "auth != null && (!data.exists() || data.child('senderId').val() == auth.uid)",
@@ -158,6 +159,7 @@
           ".validate": "$gameId.length >= 1 && $gameId.length <= 100 && $gameId.matches(/^[a-zA-Z0-9_-]+$/)",
           
           "messages": {
+            ".indexOn": ["timestamp"],
             ".read": "auth != null",
             "$messageId": {
               ".write": "auth != null && (!data.exists() || data.child('senderId').val() == auth.uid)",

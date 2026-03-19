@@ -96,13 +96,19 @@ def client():
     """Yield a TestClient wired to the FastAPI app with mocked dependencies."""
     mock_svc = _mock_prediction_service()
 
-    with patch("src.api.dependencies.get_prediction_service", return_value=mock_svc), \
-         patch("src.api.dependencies.get_trackers", return_value=(MagicMock(), MagicMock())), \
-         patch("core.state_sync.download_state_from_gcs", return_value=0):
+    from fastapi.testclient import TestClient
+    from src.api.dependencies import get_prediction_service
+    from src.api.main import app
 
-        from fastapi.testclient import TestClient
-        from src.api.main import app
-        yield TestClient(app)
+    def override_get_prediction_service():
+        return mock_svc
+
+    app.dependency_overrides[get_prediction_service] = override_get_prediction_service
+    try:
+        with patch("core.state_sync.download_state_from_gcs", return_value=0):
+            yield TestClient(app)
+    finally:
+        app.dependency_overrides.clear()
 
 
 # ---------------------------------------------------------------------------

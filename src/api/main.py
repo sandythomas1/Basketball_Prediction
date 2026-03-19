@@ -126,10 +126,10 @@ app.include_router(games.router)
 # =============================================================================
 
 @app.get("/", tags=["root"])
-@limiter.limit("30/minute")
-async def root(request):  # request param required for rate limiting
+async def root():
     """
     API root - basic info and links.
+    (No rate limit; info-only endpoint.)
     """
     return {
         "name": settings.api_title,
