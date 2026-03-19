@@ -28,6 +28,11 @@ class AppConfig {
   static String get revenueCatAndroidApiKey =>
       dotenv.env['REVENUECAT_ANDROID_KEY'] ?? '';
 
+  /// RevenueCat public iOS API key.
+  /// Loaded from .env file (REVENUECAT_APPLE_KEY).
+  static String get revenueCatAppleApiKey =>
+      dotenv.env['REVENUECAT_APPLE_KEY'] ?? '';
+
   /// RevenueCat entitlement identifier that represents the Pro tier.
   static const String rcProEntitlement = 'pro';
 

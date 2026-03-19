@@ -200,12 +200,14 @@ class GamesNotifier extends AsyncNotifier<GamesState> {
     final timeStr = g['game_time'] as String? ?? '';
     final status = g['status'] as String? ?? 'Scheduled';
 
-    final gameDateTime = DateTime.tryParse('${dateStr}T$timeStr')?.toLocal();
+    // Append Z to force UTC interpretation — backend returns bare UTC strings.
+    final parsedUtc = DateTime.tryParse('${dateStr}T${timeStr}Z');
+    final gameDateTime = parsedUtc != null ? _toPst(parsedUtc) : null;
     final formattedDate = gameDateTime != null
         ? '${_getMonthName(gameDateTime.month)} ${gameDateTime.day}'
         : dateStr;
     final formattedTime = gameDateTime != null
-        ? '${_formatHour(gameDateTime.hour)}:${gameDateTime.minute.toString().padLeft(2, '0')} ${gameDateTime.hour >= 12 ? 'PM' : 'AM'}'
+        ? '${_formatHour(gameDateTime.hour)}:${gameDateTime.minute.toString().padLeft(2, '0')} ${gameDateTime.hour >= 12 ? 'PM' : 'AM'} PT'
         : timeStr;
 
     final raw = '${homeTeam}_vs_${awayTeam}_$dateStr'.toLowerCase();
@@ -334,12 +336,13 @@ class GamesNotifier extends AsyncNotifier<GamesState> {
 
     // Parse date and time
     final dateStr = event['date'] as String? ?? '';
-    final gameDateTime = DateTime.tryParse(dateStr)?.toLocal();
+    final parsedUtc = DateTime.tryParse(dateStr)?.toUtc();
+    final gameDateTime = parsedUtc != null ? _toPst(parsedUtc) : null;
     final formattedDate = gameDateTime != null
         ? '${_getMonthName(gameDateTime.month)} ${gameDateTime.day}'
         : 'TBD';
     final formattedTime = gameDateTime != null
-        ? '${_formatHour(gameDateTime.hour)}:${gameDateTime.minute.toString().padLeft(2, '0')} ${gameDateTime.hour >= 12 ? 'PM' : 'AM'}'
+        ? '${_formatHour(gameDateTime.hour)}:${gameDateTime.minute.toString().padLeft(2, '0')} ${gameDateTime.hour >= 12 ? 'PM' : 'AM'} PT'
         : 'TBD';
 
     // Get game status
@@ -561,6 +564,25 @@ class GamesNotifier extends AsyncNotifier<GamesState> {
     final api = apiTeam.toLowerCase().trim();
     final espn = espnTeam.toLowerCase().trim();
     return api == espn || api.contains(espn) || espn.contains(api);
+  }
+
+  /// Converts a UTC [DateTime] to PST (UTC-8) or PDT (UTC-7) based on US DST.
+  DateTime _toPst(DateTime utc) {
+    return utc.subtract(Duration(hours: _isPdt(utc) ? 7 : 8));
+  }
+
+  /// Returns true when US daylight saving time (PDT, UTC-7) is active.
+  bool _isPdt(DateTime utc) {
+    final year = utc.year;
+    final marchFirst = DateTime.utc(year, 3, 1);
+    final dstStart = marchFirst.add(
+      Duration(days: (7 - (marchFirst.weekday % 7)) % 7 + 7),
+    );
+    final novFirst = DateTime.utc(year, 11, 1);
+    final dstEnd = novFirst.add(
+      Duration(days: (7 - (novFirst.weekday % 7)) % 7),
+    );
+    return utc.isAfter(dstStart) && utc.isBefore(dstEnd);
   }
 
   String _getMonthName(int month) {

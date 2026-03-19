@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
@@ -29,6 +31,7 @@ class SubscriptionService {
   SubscriptionService._();
 
   bool _initialized = false;
+  bool _configured = false;
 
   // ── Initialization ──────────────────────────────────────────────────────────
 
@@ -36,12 +39,15 @@ class SubscriptionService {
   /// no-ops once initialised.
   Future<void> initialize() async {
     if (_initialized) return;
+    _initialized = true; // prevent re-entry regardless of outcome
 
-    final apiKey = AppConfig.revenueCatAndroidApiKey;
+    final apiKey = Platform.isIOS
+        ? AppConfig.revenueCatAppleApiKey
+        : AppConfig.revenueCatAndroidApiKey;
     if (apiKey.isEmpty) {
       debugPrint(
         '⚠️ RevenueCat API key is not set. '
-        'Add REVENUECAT_ANDROID_KEY to your .env file. '
+        'Add REVENUECAT_APPLE_KEY (iOS) or REVENUECAT_ANDROID_KEY (Android) to your .env file. '
         'Subscriptions will be unavailable.',
       );
       return; // Skip RC initialisation — the app can still run without it.
@@ -50,6 +56,7 @@ class SubscriptionService {
     await Purchases.setLogLevel(LogLevel.info);
     final config = PurchasesConfiguration(apiKey);
     await Purchases.configure(config);
+    _configured = true;
 
     // If a Firebase user is already signed in, identify them in RevenueCat so
     // that subscription state is tied to their UID across devices.
@@ -92,6 +99,7 @@ class SubscriptionService {
   /// Returns `true` if the current user has an active "pro" entitlement.
   Future<bool> isProActive() async {
     if (!_initialized) await initialize();
+    if (!_configured) return false;
     try {
       final info = await Purchases.getCustomerInfo();
       return info.entitlements.active
@@ -104,6 +112,7 @@ class SubscriptionService {
   /// Fetch the latest [CustomerInfo] from RevenueCat.
   Future<CustomerInfo?> getCustomerInfo() async {
     if (!_initialized) await initialize();
+    if (!_configured) return null;
     try {
       return await Purchases.getCustomerInfo();
     } catch (_) {
@@ -117,6 +126,7 @@ class SubscriptionService {
   /// Returns `null` on network / configuration errors.
   Future<Offerings?> getOfferings() async {
     if (!_initialized) await initialize();
+    if (!_configured) return null;
     try {
       return await Purchases.getOfferings();
     } catch (_) {
@@ -163,9 +173,7 @@ class SubscriptionService {
   Future<SubscriptionResult> purchasePackage(Package package) async {
     if (!_initialized) await initialize();
     try {
-      // In v9+, purchasePackage returns a wrapper object (PurchaseResult)
-      // which contains the resulting CustomerInfo.
-      final result = await Purchases.purchasePackage(package);
+      final result = await Purchases.purchase(PurchaseParams.package(package));
       final info = result.customerInfo;
       final isPro = info.entitlements.active
           .containsKey(AppConfig.rcProEntitlement);
