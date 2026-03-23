@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../Providers/games_provider.dart';
+import '../Providers/playoff_provider.dart';
 import '../theme/app_theme.dart';
 import 'today_games_screen.dart';
 import 'live_games_screen.dart';
 import 'finished_games_screen.dart';
+import 'playoff_games_today_screen.dart';
+import 'playoff_bracket_screen.dart';
 
 /// Main navigation shell with bottom navigation bar
 class MainNavigation extends ConsumerStatefulWidget {
@@ -20,17 +23,27 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
 
   @override
   Widget build(BuildContext context) {
-    // Watch hasLiveGames for the badge
     final hasLiveGames = ref.watch(hasLiveGamesProvider);
+    final playoffsActive = ref.watch(playoffsActiveProvider);
+
+    // Kick off the bracket/status fetch so playoffsActiveProvider gets set.
+    ref.watch(playoffBracketProvider);
+
+    // Build the tab screens list dynamically based on playoff status.
+    final screens = [
+      const TodayGamesScreen(),
+      const LiveGamesScreen(),
+      const FinishedGamesScreen(),
+      if (playoffsActive) const PlayoffGamesTodayScreen(),
+    ];
+
+    // Clamp index in case playoffs tab appears/disappears mid-session.
+    final safeIndex = _currentIndex.clamp(0, screens.length - 1);
 
     return Scaffold(
       body: IndexedStack(
-        index: _currentIndex,
-        children: const [
-          TodayGamesScreen(),
-          LiveGamesScreen(),
-          FinishedGamesScreen(),
-        ],
+        index: safeIndex,
+        children: screens,
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
@@ -52,14 +65,14 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
                   icon: Icons.article_outlined,
                   activeIcon: Icons.article,
                   label: 'Today',
-                  isSelected: _currentIndex == 0,
+                  isSelected: safeIndex == 0,
                   onTap: () => setState(() => _currentIndex = 0),
                 ),
                 _NavItem(
                   icon: Icons.check_circle_outline,
                   activeIcon: Icons.check_circle,
                   label: 'Live',
-                  isSelected: _currentIndex == 1,
+                  isSelected: safeIndex == 1,
                   showBadge: hasLiveGames,
                   onTap: () => setState(() => _currentIndex = 1),
                 ),
@@ -67,9 +80,17 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
                   icon: Icons.history_outlined,
                   activeIcon: Icons.history,
                   label: 'Finished',
-                  isSelected: _currentIndex == 2,
+                  isSelected: safeIndex == 2,
                   onTap: () => setState(() => _currentIndex = 2),
                 ),
+                if (playoffsActive)
+                  _NavItem(
+                    icon: Icons.emoji_events_outlined,
+                    activeIcon: Icons.emoji_events,
+                    label: 'Playoffs',
+                    isSelected: safeIndex == 3,
+                    onTap: () => setState(() => _currentIndex = 3),
+                  ),
               ],
             ),
           ),

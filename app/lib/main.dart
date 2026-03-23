@@ -9,6 +9,8 @@ import 'Services/subscription_service.dart';
 import 'Widgets/auth_gate.dart';
 import 'Providers/theme_provider.dart';
 import 'theme/app_theme.dart';
+import 'Screens/playoff_series_detail_screen.dart';
+import 'Screens/playoff_bracket_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -73,6 +75,20 @@ class MyApp extends ConsumerWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
       home: const AuthGate(),
+      onGenerateRoute: (settings) {
+        switch (settings.name) {
+          case '/playoff/series':
+            final seriesId = settings.arguments as String;
+            return MaterialPageRoute(
+              builder: (_) => PlayoffSeriesDetailScreen(seriesId: seriesId),
+            );
+          case '/playoff/bracket':
+            return MaterialPageRoute(
+              builder: (_) => const PlayoffBracketScreen(),
+            );
+        }
+        return null;
+      },
     );
   }
 }
