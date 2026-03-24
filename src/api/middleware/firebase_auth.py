@@ -26,12 +26,17 @@ def _ensure_firebase():
         return
 
     if not firebase_admin._apps:
+        options = {}
+        db_url = os.getenv("FIREBASE_DATABASE_URL")
+        if db_url:
+            options["databaseURL"] = db_url
+
         cred_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
         if cred_path:
             cred = credentials.Certificate(cred_path)
-            firebase_admin.initialize_app(cred)
+            firebase_admin.initialize_app(cred, options)
         else:
-            firebase_admin.initialize_app()
+            firebase_admin.initialize_app(options=options)
     _firebase_initialized = True
 
 

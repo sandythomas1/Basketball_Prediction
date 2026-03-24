@@ -25,7 +25,7 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
 from .config import get_settings
-from .routes import predictions, games, health, playoff_predictions
+from .routes import predictions, games, health, playoff_predictions, chat
 from .middleware import RateLimiter, SecurityHeadersMiddleware
 
 
@@ -120,6 +120,7 @@ app.include_router(health.router)
 app.include_router(predictions.router)
 app.include_router(games.router)
 app.include_router(playoff_predictions.router)
+app.include_router(chat.router)
 
 
 # =============================================================================

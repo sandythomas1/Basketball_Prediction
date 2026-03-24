@@ -224,9 +224,10 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
       updated[updated.length - 1] =
           ChatMessage(text: fullResponse, isUser: false, isLoading: false);
 
-      // Decrement remaining optimistically
-      final newUsed = state.chatsUsedToday + 1;
-      final newRemaining = max(0, state.dailyLimit - newUsed);
+      // Use server-reported usage counts (authoritative); fall back to +1 if unavailable.
+      final serverUsage = _service.lastUsageInfo;
+      final newUsed = serverUsage?.chatsUsedToday ?? (state.chatsUsedToday + 1);
+      final newRemaining = serverUsage?.chatsRemaining ?? max(0, state.dailyLimit - newUsed);
 
       state = state.copyWith(
         messages: updated,

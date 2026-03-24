@@ -25,7 +25,12 @@
       "Bash(curl -s \"https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=20260318\")",
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); e=d[''''events''''][0]; print\\(''''ESPN date field:'''', e[''''date'''']\\); print\\(''''ESPN status:'''', e[''''status''''][''''type''''][''''description'''']\\)\")",
       "Bash(find /Users/sandythomas/development/Basketball_Prediction/app/lib -type f -name *.dart)",
-      "Read(//Users/sandythomas/development/Basketball_Prediction/**)"
+      "Read(//Users/sandythomas/development/Basketball_Prediction/**)",
+      "Bash(git push:*)",
+      "Bash(dart analyze:*)",
+      "Bash(python3 -c \"import ast; ast.parse\\(open\\(''src/api/routes/chat.py''\\).read\\(\\)\\); print\\(''Python syntax OK''\\)\")",
+      "Bash(python3 -c \"import ast; ast.parse\\(open\\(''/Users/sandythomas/development/Basketball_Prediction/src/api/routes/chat.py''\\).read\\(\\)\\); print\\(''Python syntax OK''\\)\")",
+      "Bash(python3 -c \"import ast; ast.parse\\(open\\(''/Users/sandythomas/development/Basketball_Prediction/src/api/routes/chat.py''\\).read\\(\\)\\); print\\(''OK''\\)\")"
     ]
   }
 }
