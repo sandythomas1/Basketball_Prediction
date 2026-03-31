@@ -342,11 +342,14 @@ class _GameCard extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        '${game.date} • ${game.time}',
-                        style: GoogleFonts.spaceMono(
-                          fontSize: 12,
-                          color: context.textSecondary,
+                      Flexible(
+                        child: Text(
+                          '${game.date} • ${game.time}',
+                          style: GoogleFonts.spaceMono(
+                            fontSize: 12,
+                            color: context.textSecondary,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       Row(

@@ -30,7 +30,16 @@
       "Bash(dart analyze:*)",
       "Bash(python3 -c \"import ast; ast.parse\\(open\\(''src/api/routes/chat.py''\\).read\\(\\)\\); print\\(''Python syntax OK''\\)\")",
       "Bash(python3 -c \"import ast; ast.parse\\(open\\(''/Users/sandythomas/development/Basketball_Prediction/src/api/routes/chat.py''\\).read\\(\\)\\); print\\(''Python syntax OK''\\)\")",
-      "Bash(python3 -c \"import ast; ast.parse\\(open\\(''/Users/sandythomas/development/Basketball_Prediction/src/api/routes/chat.py''\\).read\\(\\)\\); print\\(''OK''\\)\")"
+      "Bash(python3 -c \"import ast; ast.parse\\(open\\(''/Users/sandythomas/development/Basketball_Prediction/src/api/routes/chat.py''\\).read\\(\\)\\); print\\(''OK''\\)\")",
+      "Bash(ls -la /Users/sandythomas/development/Basketball_Prediction/*.py)",
+      "Bash(xargs ls:*)",
+      "Bash(python3 -c \"import sys; sys.path.insert\\(0, ''src''\\); from core import StateManager; sm = StateManager\\(\\); print\\(''State exists:'', sm.exists\\(\\)\\); meta = sm.get_metadata\\(\\); print\\(''Last processed:'', meta.get\\(''last_processed_date''\\)\\)\")",
+      "Bash(python3 src/update_state.py --date 2026-03-29 --dry-run)",
+      "Bash(python3 -c \"import sys; sys.path.insert\\(0, ''src''\\); from core import StateManager; sm = StateManager\\(\\); print\\(sm.get_metadata\\(\\)\\)\")",
+      "Bash(python3 -c \"import sys; sys.path.insert\\(0, ''src''\\); from api.main import app; print\\(''API imports OK''\\)\")",
+      "Bash(pip3 show:*)",
+      "Bash(pip3 install:*)",
+      "Bash(python3 -c \":*)"
     ]
   }
 }

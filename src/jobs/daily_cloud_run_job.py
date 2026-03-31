@@ -47,9 +47,12 @@ def main() -> None:
     api_base_url = os.getenv("API_BASE_URL", "").rstrip("/")
     if api_base_url:
         reload_url = f"{api_base_url}/state/reload"
-        response = requests.post(reload_url, timeout=20)
-        response.raise_for_status()
-        print(f"Triggered API state reload via {reload_url}.")
+        try:
+            response = requests.post(reload_url, timeout=20)
+            response.raise_for_status()
+            print(f"Triggered API state reload via {reload_url}.")
+        except Exception as e:
+            print(f"Warning: API state reload failed ({reload_url}): {e}")
 
     _run(
         [

@@ -14,7 +14,7 @@ import 'Screens/playoff_bracket_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+ 
   // Load environment variables from .env file
   // This must happen before any code tries to access AppConfig.revenueCatAndroidApiKey
   try {
