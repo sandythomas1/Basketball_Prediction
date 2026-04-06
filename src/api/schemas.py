@@ -31,8 +31,10 @@ class PredictGameRequest(BaseModel):
 
 
 class PredictBatchRequest(BaseModel):
-    """Request to predict multiple games."""
-    games: List[PredictGameRequest] = Field(..., description="List of games to predict")
+    """Request to predict multiple games (max 15 per request)."""
+    games: List[PredictGameRequest] = Field(
+        ..., description="List of games to predict", max_length=15
+    )
 
 
 # =============================================================================

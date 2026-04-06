@@ -36,7 +36,8 @@ async def get_espn_scoreboard(
     try:
         games = service.espn_client.get_games()
     except Exception as e:
-        raise HTTPException(status_code=502, detail=f"ESPN fetch failed: {e}")
+        print(f"ESPN scoreboard fetch error: {e}")
+        raise HTTPException(status_code=502, detail="Failed to fetch scoreboard from ESPN. Please try again later.")
 
     return EspnScoreboardResponse(
         date=date.today().isoformat(),
@@ -180,9 +181,10 @@ async def get_games_by_date(
     try:
         games = service.espn_client.get_games(parsed_date)
     except Exception as e:
+        print(f"ESPN fetch error: {e}")
         raise HTTPException(
             status_code=502,
-            detail=f"Failed to fetch games from ESPN: {str(e)}"
+            detail="Failed to fetch games from ESPN. Please try again later."
         )
     
     return GamesListResponse(
@@ -215,9 +217,10 @@ async def get_games_with_predictions_by_date(
     try:
         games = service.espn_client.get_games(parsed_date)
     except Exception as e:
+        print(f"ESPN fetch error: {e}")
         raise HTTPException(
             status_code=502,
-            detail=f"Failed to fetch games from ESPN: {str(e)}"
+            detail="Failed to fetch games from ESPN. Please try again later."
         )
     
     games_with_preds = [build_game_with_prediction(g, service) for g in games]

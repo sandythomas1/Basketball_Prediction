@@ -133,13 +133,16 @@ async def root():
     API root - basic info and links.
     (No rate limit; info-only endpoint.)
     """
-    return {
+    response = {
         "name": settings.api_title,
         "version": settings.api_version,
-        "environment": settings.environment,
-        "docs": "/docs" if settings.should_show_docs else None,
         "health": "/health",
-        "endpoints": {
+    }
+    # Only expose detailed endpoint map and environment in development
+    if not settings.is_production:
+        response["environment"] = settings.environment
+        response["docs"] = "/docs" if settings.should_show_docs else None
+        response["endpoints"] = {
             "predictions": {
                 "today": "/predict/today",
                 "by_date": "/predict/{date}",
@@ -156,8 +159,8 @@ async def root():
                 "state_info": "/state/info",
                 "teams": "/teams",
             },
-        },
-    }
+        }
+    return response
 
 
 # =============================================================================

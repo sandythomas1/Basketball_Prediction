@@ -85,18 +85,20 @@ async def verify_firebase_token(
             token=decoded,
         )
     except firebase_admin.exceptions.FirebaseError as exc:
+        print(f"Firebase auth error: {exc}")
         if required:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=f"Invalid token: {exc}",
+                detail="Invalid or expired token",
                 headers={"WWW-Authenticate": "Bearer"},
             )
         return None
     except Exception as exc:
+        print(f"Token verification error: {exc}")
         if required:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=f"Token verification failed: {exc}",
+                detail="Token verification failed",
                 headers={"WWW-Authenticate": "Bearer"},
             )
         return None

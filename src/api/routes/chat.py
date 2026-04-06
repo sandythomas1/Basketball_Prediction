@@ -17,7 +17,7 @@ from google.genai import types as genai_types
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import StreamingResponse
 from firebase_admin import db as rtdb
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from ..middleware import FirebaseUser, verify_firebase_token
 from ..middleware.firebase_auth import _ensure_firebase
@@ -26,6 +26,9 @@ from ..middleware.firebase_auth import _ensure_firebase
 
 DAILY_FREE_CHAT_LIMIT = 3
 GEMINI_MODEL = "gemini-2.0-flash"
+MAX_MESSAGE_LENGTH = 2000
+MAX_CONVERSATION_HISTORY = 20
+MAX_HISTORY_CONTENT_LENGTH = 5000
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -34,7 +37,7 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 
 class ConversationMessage(BaseModel):
     role: str   # "user" or "model"
-    content: str
+    content: str = Field(..., max_length=MAX_HISTORY_CONTENT_LENGTH)
 
 
 class GameContext(BaseModel):
@@ -58,8 +61,10 @@ class GameContext(BaseModel):
 
 
 class ChatMessageRequest(BaseModel):
-    message: str
-    conversation_history: List[ConversationMessage] = []
+    message: str = Field(..., min_length=1, max_length=MAX_MESSAGE_LENGTH)
+    conversation_history: List[ConversationMessage] = Field(
+        default=[], max_length=MAX_CONVERSATION_HISTORY
+    )
     game_context: Optional[GameContext] = None
 
 
@@ -91,10 +96,21 @@ def _check_and_increment_usage(uid: str, limit: int) -> tuple[int, int]:
     today = _today_utc()
     ref = rtdb.reference(f"usage/{uid}/{today}")
 
-    # Read current count
-    current = ref.get() or 0
+    # Use a single transaction for atomic check-and-increment (no TOCTOU race)
+    exceeded = False
 
-    if current >= limit:
+    def _check_and_inc(current_val: Any) -> Any:
+        nonlocal exceeded
+        current = current_val or 0
+        if current >= limit:
+            exceeded = True
+            return current  # abort: return unchanged value
+        return current + 1
+
+    ref.transaction(_check_and_inc)
+
+    if exceeded:
+        current = ref.get() or 0
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail={
@@ -106,12 +122,7 @@ def _check_and_increment_usage(uid: str, limit: int) -> tuple[int, int]:
             },
         )
 
-    # Increment atomically via transaction
-    def _increment(current_val: Any) -> Any:
-        return (current_val or 0) + 1
-
-    ref.transaction(_increment)
-    new_count = current + 1
+    new_count = ref.get() or 1
     remaining = max(0, limit - new_count)
     return new_count, remaining
 
@@ -258,7 +269,8 @@ async def _stream_gemini(
                 payload = json.dumps({"text": chunk.text})
                 yield f"data: {payload}\n\n"
     except Exception as e:
-        error_payload = json.dumps({"error": str(e)})
+        print(f"Gemini streaming error: {e}")
+        error_payload = json.dumps({"error": "An error occurred generating the response. Please try again."})
         yield f"data: {error_payload}\n\n"
 
     # Final done event with usage counts
@@ -290,7 +302,7 @@ async def chat_message(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    if not request.message or not request.message.strip():
+    if not request.message.strip():
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="message is required",

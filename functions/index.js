@@ -651,28 +651,46 @@ exports.chatWithAgent = functions
   // ── Daily chat rate limit ──────────────────────────────────────────────────
   const uid   = context.auth.uid;
   const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD (UTC)
+
+  // Check if user is a Pro subscriber (matches Python backend logic)
+  let dailyLimit = DAILY_FREE_CHAT_LIMIT;
+  try {
+    const tierSnap = await db.ref(`users/${uid}/subscription/tier`).once('value');
+    if (tierSnap.val() === 'pro') {
+      dailyLimit = 9999; // Unlimited for Pro users
+    }
+  } catch (_) {
+    // Default to free limit if lookup fails
+  }
+
   const usageRef = db.ref(`usage/${uid}/${today}`);
 
-  // Read current count
-  const usageSnap   = await usageRef.once('value');
-  const currentCount = (usageSnap.val() || 0);
+  // Atomic check-and-increment via transaction (no TOCTOU race)
+  let exceeded = false;
+  await usageRef.transaction((current) => {
+    const count = current || 0;
+    if (count >= dailyLimit) {
+      exceeded = true;
+      return count; // abort: return unchanged
+    }
+    return count + 1;
+  });
 
-  if (currentCount >= DAILY_FREE_CHAT_LIMIT) {
+  if (exceeded) {
+    const currentCount = (await usageRef.once('value')).val() || 0;
     throw new functions.https.HttpsError(
       'resource-exhausted',
-      `You've used all ${DAILY_FREE_CHAT_LIMIT} free AI chats for today. Upgrade to Pro for unlimited access.`,
+      `You've used all ${dailyLimit} free AI chats for today. Upgrade to Pro for unlimited access.`,
       {
         chatsUsedToday: currentCount,
         chatsRemaining: 0,
-        limit: DAILY_FREE_CHAT_LIMIT,
+        limit: dailyLimit,
       }
     );
   }
 
-  // Increment atomically (create or increment)
-  await usageRef.transaction((current) => (current || 0) + 1);
-  const newCount       = currentCount + 1;
-  const chatsRemaining = DAILY_FREE_CHAT_LIMIT - newCount;
+  const newCount       = (await usageRef.once('value')).val() || 1;
+  const chatsRemaining = Math.max(0, dailyLimit - newCount);
   // ── End rate limit ──────────────────────────────────────────────────────────
 
   const finalSessionId = sessionId || `user-${uid}-${Date.now()}`;
@@ -798,31 +816,51 @@ exports.cleanupOldForumMessages = functions
   .onRun(async (_context) => {
     const cutoffTime = Date.now() - (24 * 60 * 60 * 1000);
     console.log(`Forum cleanup: deleting messages older than ${new Date(cutoffTime).toISOString()}`);
-    
-    const messagesRef = db.ref('forums/general/messages');
-    
-    try {
-      const snapshot = await messagesRef
+
+    let totalDeleted = 0;
+
+    /**
+     * Delete old messages from a single forum messages ref.
+     */
+    async function cleanupRef(ref, label) {
+      const snapshot = await ref
         .orderByChild('timestamp')
         .endAt(cutoffTime)
         .once('value');
-      
-      if (!snapshot.exists()) {
-        console.log('No old messages to delete.');
-        return null;
-      }
-      
+
+      if (!snapshot.exists()) return 0;
+
       const updates = {};
-      let deleteCount = 0;
+      let count = 0;
       snapshot.forEach((child) => {
         updates[child.key] = null;
-        deleteCount++;
+        count++;
       });
-      
-      await messagesRef.update(updates);
-      console.log(`Deleted ${deleteCount} old forum messages.`);
+
+      await ref.update(updates);
+      console.log(`  ${label}: deleted ${count} messages`);
+      return count;
+    }
+
+    try {
+      // 1. Clean general forum
+      totalDeleted += await cleanupRef(db.ref('forums/general/messages'), 'forums/general');
+
+      // 2. Clean all game-specific forums
+      const gamesSnap = await db.ref('forums/games').once('value');
+      if (gamesSnap.exists()) {
+        const gameIds = Object.keys(gamesSnap.val() || {});
+        for (const gameId of gameIds) {
+          totalDeleted += await cleanupRef(
+            db.ref(`forums/games/${gameId}/messages`),
+            `forums/games/${gameId}`
+          );
+        }
+      }
+
+      console.log(`Forum cleanup complete: deleted ${totalDeleted} total messages.`);
       return null;
-      
+
     } catch (error) {
       console.error('Error cleaning up forum messages:', error);
       throw error;

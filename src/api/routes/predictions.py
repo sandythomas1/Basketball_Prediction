@@ -134,9 +134,10 @@ async def predict_date(
     try:
         games = service.espn_client.get_scheduled_games(parsed_date)
     except Exception as e:
+        print(f"ESPN fetch error for predictions: {e}")
         raise HTTPException(
             status_code=502,
-            detail=f"Failed to fetch games from ESPN: {str(e)}"
+            detail="Failed to fetch games from ESPN. Please try again later."
         )
     
     # Generate predictions
