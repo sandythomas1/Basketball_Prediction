@@ -1,54 +1,45 @@
 {
   "permissions": {
     "allow": [
-      "Bash(find /Users/sandythomas/development/Basketball_Prediction -type f -name Makefile -o -name Dockerfile -o -name docker-compose.yml -o -name *.sh -o -name .github -type d)",
+      "Bash(git push:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git status:*)",
+
       "Bash(gcloud config:*)",
       "Bash(gcloud storage:*)",
       "Bash(gcloud run:*)",
-      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); envs=d[''''spec''''][''''template''''][''''spec''''][''''containers''''][0].get\\(''''env'''',[]\\); [print\\(e[''''name''''],''''='''',e.get\\(''''value'''',''''''''\\)\\) for e in envs]\")",
-      "Bash(grep -rn \"today\\\\|date\\\\|timezone\\\\|PST\\\\|UTC\" /Users/sandythomas/development/Basketball_Prediction/src/api/ --include=*.py -l)",
-      "Bash(find /Users/sandythomas/development/Basketball_Prediction/src -name *.py)",
-      "Bash(flutter analyze:*)",
-      "Bash(PROJECT_ID=nba-predictions-29e45 STATE_BUCKET=nba-prediction-data-metadata SKIP_TESTS=true ./scripts/deploy_backend_mac.sh)",
-      "Bash(PROJECT_ID=nba-predictions-29e45 STATE_BUCKET=nba-prediction-data-metadata ./scripts/deploy_cloud_run.sh)",
-      "Bash(chmod +x scripts/deploy_cloud_run.sh)",
-      "Bash(PROJECT_ID=nba-predictions-29e45 STATE_BUCKET=nba-prediction-data-metadata bash scripts/deploy_cloud_run.sh)",
-      "Bash(npm run:*)",
-      "Bash(npm install:*)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://nba-predictions-api-vnwwurr52q-uw.a.run.app/health)",
-      "Bash(pod install:*)",
+
       "Bash(flutter run:*)",
       "Bash(flutter build:*)",
-      "Bash(ls /Users/sandythomas/development/Basketball_Prediction/app/.env*)",
-      "Bash(ls /Users/sandythomas/development/Basketball_Prediction/app/assets/.env*)",
-      "Bash(find /Users/sandythomas/development/Basketball_Prediction/app -name *.env* -o -name .env*)",
-      "Bash(curl -s \"https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=20260318\")",
-      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); e=d[''''events''''][0]; print\\(''''ESPN date field:'''', e[''''date'''']\\); print\\(''''ESPN status:'''', e[''''status''''][''''type''''][''''description'''']\\)\")",
-      "Bash(find /Users/sandythomas/development/Basketball_Prediction/app/lib -type f -name *.dart)",
-      "Read(//Users/sandythomas/development/Basketball_Prediction/**)",
-<<<<<<< Updated upstream
-      "Bash(git push:*)",
+      "Bash(flutter analyze:*)",
       "Bash(dart analyze:*)",
-      "Bash(python3 -c \"import ast; ast.parse\\(open\\(''src/api/routes/chat.py''\\).read\\(\\)\\); print\\(''Python syntax OK''\\)\")",
-      "Bash(python3 -c \"import ast; ast.parse\\(open\\(''/Users/sandythomas/development/Basketball_Prediction/src/api/routes/chat.py''\\).read\\(\\)\\); print\\(''Python syntax OK''\\)\")",
-      "Bash(python3 -c \"import ast; ast.parse\\(open\\(''/Users/sandythomas/development/Basketball_Prediction/src/api/routes/chat.py''\\).read\\(\\)\\); print\\(''OK''\\)\")",
-      "Bash(ls -la /Users/sandythomas/development/Basketball_Prediction/*.py)",
-      "Bash(xargs ls:*)",
-      "Bash(python3 -c \"import sys; sys.path.insert\\(0, ''src''\\); from core import StateManager; sm = StateManager\\(\\); print\\(''State exists:'', sm.exists\\(\\)\\); meta = sm.get_metadata\\(\\); print\\(''Last processed:'', meta.get\\(''last_processed_date''\\)\\)\")",
-      "Bash(python3 src/update_state.py --date 2026-03-29 --dry-run)",
-      "Bash(python3 -c \"import sys; sys.path.insert\\(0, ''src''\\); from core import StateManager; sm = StateManager\\(\\); print\\(sm.get_metadata\\(\\)\\)\")",
-      "Bash(python3 -c \"import sys; sys.path.insert\\(0, ''src''\\); from api.main import app; print\\(''API imports OK''\\)\")",
+
+      "Bash(npm run:*)",
+      "Bash(npm install:*)",
+
       "Bash(pip3 show:*)",
       "Bash(pip3 install:*)",
-      "Bash(python3 -c \":*)"
-=======
-      "Bash(find /c/Users/sandy/Desktop/dev/Basketball_Prediction -name *.rules.json -o -name *database.rules*)",
-      "Bash(find c:UserssandyDesktopdevBasketball_Predictionfunctionssrc -type f -name *.ts)",
-      "Bash(find c:UserssandyDesktopdevBasketball_Predictionappios -type f \\\\\\(-name *.swift -o -name *.plist -o -name *.xcconfig \\\\\\))",
-      "Bash(find c:UserssandyDesktopdevBasketball_Prediction -maxdepth 3 -type f \\\\\\(-name *.rules -o -name *firebase* -o -name *.json \\\\\\))",
-      "Bash(find c:UserssandyDesktopdevBasketball_Predictionappandroid -name AndroidManifest.xml -o -name build.gradle -o -name *.properties)",
-      "Bash(find c:UserssandyDesktopdevBasketball_Prediction -maxdepth 3 -name *.py -type f)"
->>>>>>> Stashed changes
+      "Bash(pod install:*)",
+
+      "Bash(find /c/Users/sandy/Desktop/dev/Basketball_Prediction -type f -name Makefile -o -name Dockerfile -o -name docker-compose.yml -o -name *.sh)",
+      "Bash(find /c/Users/sandy/Desktop/dev/Basketball_Prediction/app/lib -type f -name *.dart)",
+      "Bash(find /c/Users/sandy/Desktop/dev/Basketball_Prediction/src -name *.py)",
+      "Bash(find /c/Users/sandy/Desktop/dev/Basketball_Prediction -maxdepth 3 -name *.py -type f)",
+      "Bash(find /c/Users/sandy/Desktop/dev/Basketball_Prediction -maxdepth 3 -type f -name *.rules -o -name *firebase* -o -name *.json)",
+      "Bash(find /c/Users/sandy/Desktop/dev/Basketball_Prediction/app/android -name AndroidManifest.xml -o -name build.gradle -o -name *.properties)",
+      "Bash(find /c/Users/sandy/Desktop/dev/Basketball_Prediction/app/ios -type f -name *.swift -o -name *.plist -o -name *.xcconfig)",
+      "Bash(find /c/Users/sandy/Desktop/dev/Basketball_Prediction/functions/src -type f -name *.ts)",
+
+      "Read(/c/Users/sandy/Desktop/dev/Basketball_Prediction/**)",
+
+      "Bash(PROJECT_ID=nba-predictions-29e45 STATE_BUCKET=nba-prediction-data-metadata SKIP_TESTS=true ./scripts/deploy_backend_mac.sh)",
+      "Bash(PROJECT_ID=nba-predictions-29e45 STATE_BUCKET=nba-prediction-data-metadata ./scripts/deploy_cloud_run.sh)",
+      "Bash(PROJECT_ID=nba-predictions-29e45 STATE_BUCKET=nba-prediction-data-metadata bash scripts/deploy_cloud_run.sh)",
+      "Bash(chmod +x scripts/deploy_cloud_run.sh)",
+
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://nba-predictions-api-vnwwurr52q-uw.a.run.app/health)",
+      "Bash(xargs ls:*)"
     ]
   }
 }
