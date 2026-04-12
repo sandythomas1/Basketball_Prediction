@@ -1,0 +1,17 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY src/ src/
+COPY models/ models/
+COPY state/ state/
+COPY data/ data/
+
+RUN printf '#!/bin/sh\nset -e\nif [ ! -f models/xgb_v3_with_injuries.json ] && [ -n "$MODEL_BUCKET" ]; then\n  echo "Downloading models from gs://$MODEL_BUCKET/models/ ..."\n  gsutil -m cp "gs://$MODEL_BUCKET/models/*" models/ 2>/dev/null || true\nfi\nexec "$@"\n' > /app/entrypoint.sh && chmod +x /app/entrypoint.sh
+
+ENTRYPOINT ["/app/entrypoint.sh"]
+CMD ["python", "src/jobs/daily_cloud_run_job.py"]
+

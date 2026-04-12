@@ -1,0 +1,20 @@
+steps:
+  - name: python:3.11-slim
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        pip install -q -r requirements.txt
+        python -m pytest test/ -v --tb=short
+
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -f
+      - Dockerfile.job
+      - -t
+      - ${_IMAGE}
+      - .
+
+images:
+  - ${_IMAGE}

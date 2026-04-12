@@ -1,0 +1,27 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code and model/state assets
+COPY src/ src/
+COPY state/ state/
+COPY data/ data/
+
+# Models may be vendored locally or downloaded from GCS at build time.
+# The Cloud Build pipeline runs `gsutil cp` before `docker build`, so the
+# directory should always exist.  The COPY will fail-fast if it is missing,
+# which is the desired behaviour — never deploy without a model.
+COPY models/ models/
+
+# Startup helper: if models are absent at run time (e.g. local dev without
+# models checked in), attempt a download from GCS.
+RUN printf '#!/bin/sh\nset -e\nif [ ! -f models/xgb_v3_with_injuries.json ] && [ -n "$MODEL_BUCKET" ]; then\n  echo "Downloading models from gs://$MODEL_BUCKET/models/ ..."\n  gsutil -m cp "gs://$MODEL_BUCKET/models/*" models/ 2>/dev/null || true\nfi\nexec "$@"\n' > /app/entrypoint.sh && chmod +x /app/entrypoint.sh
+
+ENV PORT=8080
+
+ENTRYPOINT ["/app/entrypoint.sh"]
+CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8080"]
+
