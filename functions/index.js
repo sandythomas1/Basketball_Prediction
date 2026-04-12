@@ -22,7 +22,7 @@ const storage = new Storage();
 // Constants
 // =============================================================================
 
-const DAILY_FREE_CHAT_LIMIT = 3;
+const FREE_CHAT_LIMIT = 3;
 
 // =============================================================================
 // Configuration
@@ -648,6 +648,7 @@ exports.chatWithAgent = functions
     );
   }
 
+<<<<<<< Updated upstream
   // ── Daily chat rate limit ──────────────────────────────────────────────────
   const uid   = context.auth.uid;
   const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD (UTC)
@@ -681,16 +682,41 @@ exports.chatWithAgent = functions
     throw new functions.https.HttpsError(
       'resource-exhausted',
       `You've used all ${dailyLimit} free AI chats for today. Upgrade to Pro for unlimited access.`,
+=======
+  // ── Lifetime chat rate limit ───────────────────────────────────────────────
+  const uid      = context.auth.uid;
+  const usageRef = db.ref(`usage/${uid}/total`);
+
+  // Read current count
+  const usageSnap    = await usageRef.once('value');
+  const currentCount = (usageSnap.val() || 0);
+
+  if (currentCount >= FREE_CHAT_LIMIT) {
+    throw new functions.https.HttpsError(
+      'resource-exhausted',
+      `You've used all ${FREE_CHAT_LIMIT} free AI chats. Upgrade to Pro for unlimited access.`,
+>>>>>>> Stashed changes
       {
-        chatsUsedToday: currentCount,
+        chatsUsed: currentCount,
         chatsRemaining: 0,
+<<<<<<< Updated upstream
         limit: dailyLimit,
+=======
+        limit: FREE_CHAT_LIMIT,
+>>>>>>> Stashed changes
       }
     );
   }
 
+<<<<<<< Updated upstream
   const newCount       = (await usageRef.once('value')).val() || 1;
   const chatsRemaining = Math.max(0, dailyLimit - newCount);
+=======
+  // Increment atomically (create or increment)
+  await usageRef.transaction((current) => (current || 0) + 1);
+  const newCount       = currentCount + 1;
+  const chatsRemaining = FREE_CHAT_LIMIT - newCount;
+>>>>>>> Stashed changes
   // ── End rate limit ──────────────────────────────────────────────────────────
 
   const finalSessionId = sessionId || `user-${uid}-${Date.now()}`;
@@ -790,9 +816,9 @@ ${message}`;
       response: agentResponse || 'I could not generate a response. Please try again.',
       sessionId: finalSessionId,
       confidence: response.queryResult.intentDetectionConfidence,
-      chatsUsedToday: newCount,
+      chatsUsed: newCount,
       chatsRemaining,
-      limit: DAILY_FREE_CHAT_LIMIT,
+      limit: FREE_CHAT_LIMIT,
     };
 
   } catch (error) {

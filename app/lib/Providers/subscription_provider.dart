@@ -59,7 +59,7 @@ final subscriptionTierProvider = Provider<String>((ref) {
 
 /// Daily AI-chat limit based on the user's subscription tier.
 ///
-/// Free → 3 chats/day, Pro → effectively unlimited (9999).
+/// Free → 3 chats total (lifetime), Pro → effectively unlimited (9999).
 final dailyChatLimitProvider = Provider<int>((ref) {
   final isPro = ref.watch(isProProvider);
   return isPro ? 9999 : 3;

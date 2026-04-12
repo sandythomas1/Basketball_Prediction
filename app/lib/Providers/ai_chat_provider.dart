@@ -8,7 +8,7 @@ import 'subscription_provider.dart';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-/// Free-tier daily AI-chat limit. Keep in sync with the Cloud Function.
+/// Free-tier lifetime AI-chat limit. Keep in sync with the Cloud Function.
 const int _freeDailyLimit = 3;
 
 // ── Chat message model ────────────────────────────────────────────────────────
@@ -137,15 +137,12 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
     );
   }
 
-  /// Build a Firebase RTDB ref for today's usage counter for the current user.
+  /// Build a Firebase RTDB ref for the lifetime usage counter for the current user.
   /// Returns `null` when no user is signed in.
   DatabaseReference? _usageRef() {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return null;
-    final today = DateTime.now();
-    final dateKey =
-        '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
-    return FirebaseDatabase.instance.ref('usage/$uid/$dateKey');
+    return FirebaseDatabase.instance.ref('usage/$uid/total');
   }
 
   /// Fetch today's chat count from Firebase Realtime Database and update state.
@@ -183,8 +180,8 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
     // Optimistic check — block at the UI layer before even calling the API
     if (state.isRateLimited) {
       _appendSystemMessage(
-        "You've used all $limit free AI chats for today. "
-        "Come back tomorrow or upgrade to Pro for unlimited access. 🔓",
+        "You've used all $limit free AI chats. "
+        "Upgrade to Pro for unlimited access. 🔓",
       );
       return;
     }
@@ -244,8 +241,8 @@ class AIChatNotifier extends StateNotifier<AIChatState> {
           msg.toLowerCase().contains('exhausted')) {
         final updated = [...state.messages];
         updated[updated.length - 1] = ChatMessage(
-          text: "You've used all ${state.dailyLimit} free AI chats for today. "
-              "Come back tomorrow or upgrade to Pro for unlimited access. 🔓",
+          text: "You've used all ${state.dailyLimit} free AI chats. "
+              "Upgrade to Pro for unlimited access. 🔓",
           isUser: false,
           isLoading: false,
         );

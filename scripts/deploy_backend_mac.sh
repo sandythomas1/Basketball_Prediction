@@ -146,6 +146,33 @@ gcloud builds submit \
 
 log_success "API image built and pushed"
 
+log_step "Configuring Secret Manager for sensitive keys"
+
+# Ensure the Cloud Run SA can read secrets
+CR_SA="$(gcloud run services describe nba-predictions-api \
+  --project "${PROJECT_ID}" --region "${REGION}" \
+  --format='value(spec.template.spec.serviceAccountName)' 2>/dev/null || \
+  echo "${PROJECT_ID}@appspot.gserviceaccount.com")"
+
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
+  --member="serviceAccount:${CR_SA}" \
+  --role="roles/secretmanager.secretAccessor" \
+  --condition=None --quiet 2>/dev/null || true
+
+# Create ODDS_API_KEY secret if it doesn't exist
+if ! gcloud secrets describe odds-api-key --project "${PROJECT_ID}" &>/dev/null; then
+  if [[ -n "${ODDS_API_KEY:-}" ]]; then
+    echo -n "${ODDS_API_KEY}" | gcloud secrets create odds-api-key \
+      --project "${PROJECT_ID}" --data-file=-
+    log_success "Created secret: odds-api-key"
+  else
+    log_warn "ODDS_API_KEY env var not set — create the secret manually:"
+    log_warn "  echo -n 'your-key' | gcloud secrets create odds-api-key --project ${PROJECT_ID} --data-file=-"
+  fi
+else
+  log_success "Secret odds-api-key already exists"
+fi
+
 log_step "Deploying Cloud Run service: nba-predictions-api"
 
 gcloud run deploy nba-predictions-api \
@@ -155,6 +182,7 @@ gcloud run deploy nba-predictions-api \
   --platform managed \
   --allow-unauthenticated \
   --set-env-vars "${SERVICE_ENV_VARS}" \
+  --set-secrets "ODDS_API_KEY=odds-api-key:latest" \
   --cpu 0.25 \
   --memory 512Mi \
   --min-instances 1 \

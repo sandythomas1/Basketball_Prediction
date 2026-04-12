@@ -92,7 +92,7 @@ class _AIChatWidgetState extends ConsumerState<AIChatWidget> {
                     const SizedBox(height: 4),
                     Text(
                       chatState.isRateLimited
-                          ? 'Daily limit reached'
+                          ? 'Chat limit reached'
                           : 'Tap to chat about this matchup',
                       style: GoogleFonts.dmSans(
                         fontSize: 13,
@@ -436,7 +436,7 @@ class _SignalFullScreenChatState extends ConsumerState<_SignalFullScreenChat> {
                   size: 18, color: AppColors.accentPurple),
               const SizedBox(width: 8),
               Text(
-                "You've used all 3 free chats today",
+                "You've used all 3 free chats",
                 style: GoogleFonts.dmSans(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,

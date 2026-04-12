@@ -26,6 +26,7 @@
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); e=d[''''events''''][0]; print\\(''''ESPN date field:'''', e[''''date'''']\\); print\\(''''ESPN status:'''', e[''''status''''][''''type''''][''''description'''']\\)\")",
       "Bash(find /Users/sandythomas/development/Basketball_Prediction/app/lib -type f -name *.dart)",
       "Read(//Users/sandythomas/development/Basketball_Prediction/**)",
+<<<<<<< Updated upstream
       "Bash(git push:*)",
       "Bash(dart analyze:*)",
       "Bash(python3 -c \"import ast; ast.parse\\(open\\(''src/api/routes/chat.py''\\).read\\(\\)\\); print\\(''Python syntax OK''\\)\")",
@@ -40,6 +41,14 @@
       "Bash(pip3 show:*)",
       "Bash(pip3 install:*)",
       "Bash(python3 -c \":*)"
+=======
+      "Bash(find /c/Users/sandy/Desktop/dev/Basketball_Prediction -name *.rules.json -o -name *database.rules*)",
+      "Bash(find c:UserssandyDesktopdevBasketball_Predictionfunctionssrc -type f -name *.ts)",
+      "Bash(find c:UserssandyDesktopdevBasketball_Predictionappios -type f \\\\\\(-name *.swift -o -name *.plist -o -name *.xcconfig \\\\\\))",
+      "Bash(find c:UserssandyDesktopdevBasketball_Prediction -maxdepth 3 -type f \\\\\\(-name *.rules -o -name *firebase* -o -name *.json \\\\\\))",
+      "Bash(find c:UserssandyDesktopdevBasketball_Predictionappandroid -name AndroidManifest.xml -o -name build.gradle -o -name *.properties)",
+      "Bash(find c:UserssandyDesktopdevBasketball_Prediction -maxdepth 3 -name *.py -type f)"
+>>>>>>> Stashed changes
     ]
   }
 }

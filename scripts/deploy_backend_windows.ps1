@@ -161,6 +161,35 @@ gcloud builds submit `
 if ($LASTEXITCODE -ne 0) { Write-Err "Cloud Build failed for API image"; exit 1 }
 Write-Ok "API image built and pushed"
 
+Write-Step "Configuring Secret Manager for sensitive keys"
+
+# Grant Cloud Run SA access to secrets
+$CrSa = (gcloud run services describe nba-predictions-api `
+  --project $ProjectId --region $Region `
+  --format="value(spec.template.spec.serviceAccountName)" 2>$null)
+if (-not $CrSa) { $CrSa = "$ProjectId@appspot.gserviceaccount.com" }
+
+gcloud projects add-iam-policy-binding $ProjectId `
+  --member="serviceAccount:$CrSa" `
+  --role="roles/secretmanager.secretAccessor" `
+  --condition=None --quiet 2>$null
+
+# Create ODDS_API_KEY secret if it doesn't exist
+$SecretExists = $null
+$null = gcloud secrets describe odds-api-key --project $ProjectId 2>&1
+if ($LASTEXITCODE -ne 0) {
+    $OddsKey = $env:ODDS_API_KEY
+    if ($OddsKey) {
+        $OddsKey | gcloud secrets create odds-api-key --project $ProjectId --data-file=- 2>&1
+        Write-Ok "Created secret: odds-api-key"
+    } else {
+        Write-Warn "ODDS_API_KEY env var not set - create the secret manually:"
+        Write-Warn "  `$env:ODDS_API_KEY | gcloud secrets create odds-api-key --project $ProjectId --data-file=-"
+    }
+} else {
+    Write-Ok "Secret odds-api-key already exists"
+}
+
 Write-Step "Deploying Cloud Run service: nba-predictions-api"
 
 gcloud run deploy nba-predictions-api `
@@ -170,6 +199,7 @@ gcloud run deploy nba-predictions-api `
   --platform managed `
   --allow-unauthenticated `
   --set-env-vars $ServiceEnvVars `
+  --set-secrets "ODDS_API_KEY=odds-api-key:latest" `
   --cpu 0.25 `
   --memory 512Mi `
   --min-instances 1 `
