@@ -124,18 +124,22 @@ def main():
     print(f"  Loaded {stats_tracker}")
     print(f"  Loaded {series_tracker}")
 
-    # Fetch completed playoff games from ESPN
-    print(f"\nFetching playoff games for {target_date} from ESPN...")
+    # Fetch completed games (play-in and playoff) from ESPN
+    print(f"\nFetching games for {target_date} from ESPN...")
     try:
         completed_games = espn_client.get_completed_playoff_games(target_date)
+        completed_play_in = espn_client.get_completed_play_in_games(target_date)
     except Exception as e:
         print(f"Error fetching games: {e}")
         return
 
     print(f"  Completed playoff games: {len(completed_games)}")
+    print(f"  Completed play-in games: {len(completed_play_in)}")
 
-    if not completed_games:
-        print("\nNo completed playoff games to process.")
+    all_completed = completed_play_in + completed_games
+
+    if not all_completed:
+        print("\nNo completed playoff or play-in games to process.")
         return
 
     # Dry run mode
@@ -143,72 +147,136 @@ def main():
         print("\n" + "-" * 60)
         print("DRY RUN - No changes will be made")
         print("-" * 60)
-        for game in completed_games:
+        for game in all_completed:
             winner = game.home_team if game.home_score > game.away_score else game.away_team
-            print(f"\n  {game.away_team} @ {game.home_team}: {game.away_score}-{game.home_score}")
+            label = "[PLAY-IN]" if game.is_play_in else f"[Game {game.game_number}]"
+            print(f"\n  {label} {game.away_team} @ {game.home_team}: {game.away_score}-{game.home_score}")
             print(f"    Winner: {winner}")
-            if game.series_id:
-                print(f"    Series: {game.series_id} (Game {game.game_number})")
-        print(f"\nWould process {len(completed_games)} playoff games")
+        print(f"\nWould process {len(all_completed)} games")
         return
 
-    # Process games
-    print("\nProcessing playoff games...")
+    # Process play-in games first
+    play_in_processed = 0
+    if completed_play_in:
+        print("\nProcessing play-in games...")
+        for game in completed_play_in:
+            if game.home_team_id is None or game.away_team_id is None:
+                print(f"  ⚠ Skipping {game.away_team} @ {game.home_team}: Could not map team IDs")
+                continue
+
+            home_id = game.home_team_id
+            away_id = game.away_team_id
+            home_won = game.home_score > game.away_score
+            winner = game.home_team if home_won else game.away_team
+
+            # Update Elo (K=30 for play-in, same high stakes as playoffs)
+            elo_change_home, elo_change_away = update_playoff_elo(
+                elo_tracker, home_id, away_id, home_won
+            )
+
+            # Update rolling stats
+            stats_tracker.record_game(
+                team_id=home_id,
+                pf=game.home_score,
+                pa=game.away_score,
+                won=home_won,
+                game_date=game.game_date,
+            )
+            stats_tracker.record_game(
+                team_id=away_id,
+                pf=game.away_score,
+                pa=game.home_score,
+                won=not home_won,
+                game_date=game.game_date,
+            )
+
+            # Record in play-in matchup tracker
+            conference = game.conference or "Unknown"
+            matchup = series_tracker.get_or_create_play_in_matchup(
+                team1_id=home_id,
+                team2_id=away_id,
+                team1_name=game.home_team,
+                team2_name=game.away_team,
+                conference=conference,
+            )
+            matchup.record_result(
+                game_date=game.game_date,
+                home_score=game.home_score,
+                away_score=game.away_score,
+                home_team_id=home_id,
+                away_team_id=away_id,
+            )
+
+            print(
+                f"  ✓ [PLAY-IN] {game.away_team} @ {game.home_team}: "
+                f"{game.away_score}-{game.home_score} (W: {winner}) | "
+                f"Elo: {elo_change_home:+.1f}/{elo_change_away:+.1f}"
+            )
+            play_in_processed += 1
+
+        # Mark current round as play_in if no bracket games yet
+        if not series_tracker.series:
+            series_tracker.current_round = "play_in"
+
+    # Process regular playoff games
     processed_count = 0
+    if completed_games:
+        print("\nProcessing playoff games...")
+        for game in completed_games:
+            if game.home_team_id is None or game.away_team_id is None:
+                print(f"  ⚠ Skipping {game.away_team} @ {game.home_team}: Could not map team IDs")
+                continue
 
-    for game in completed_games:
-        if game.home_team_id is None or game.away_team_id is None:
-            print(f"  ⚠ Skipping {game.away_team} @ {game.home_team}: Could not map team IDs")
-            continue
+            home_id = game.home_team_id
+            away_id = game.away_team_id
+            home_won = game.home_score > game.away_score
+            winner = game.home_team if home_won else game.away_team
 
-        home_id = game.home_team_id
-        away_id = game.away_team_id
-        home_won = game.home_score > game.away_score
-        winner = game.home_team if home_won else game.away_team
+            # Update playoff Elo (K=30)
+            elo_change_home, elo_change_away = update_playoff_elo(
+                elo_tracker, home_id, away_id, home_won
+            )
 
-        # Update playoff Elo (K=30)
-        elo_change_home, elo_change_away = update_playoff_elo(
-            elo_tracker, home_id, away_id, home_won
-        )
+            # Update rolling stats
+            stats_tracker.record_game(
+                team_id=home_id,
+                pf=game.home_score,
+                pa=game.away_score,
+                won=home_won,
+                game_date=game.game_date,
+            )
+            stats_tracker.record_game(
+                team_id=away_id,
+                pf=game.away_score,
+                pa=game.home_score,
+                won=not home_won,
+                game_date=game.game_date,
+            )
 
-        # Update rolling stats (playoff games flow into the shared rolling window)
-        stats_tracker.record_game(
-            team_id=home_id,
-            pf=game.home_score,
-            pa=game.away_score,
-            won=home_won,
-            game_date=game.game_date,
-        )
-        stats_tracker.record_game(
-            team_id=away_id,
-            pf=game.away_score,
-            pa=game.home_score,
-            won=not home_won,
-            game_date=game.game_date,
-        )
-
-        # Update series tracker
-        if game.series_id:
-            series = series_tracker.get_series(game.series_id)
-            if series:
-                series.record_game(
-                    game_date=game.game_date,
-                    home_score=game.home_score,
-                    away_score=game.away_score,
-                    home_team_id=home_id,
-                    away_team_id=away_id,
-                )
-                print(
-                    f"  ✓ {game.away_team} @ {game.home_team}: {game.away_score}-{game.home_score} "
-                    f"(W: {winner}) | Series: {series.higher_seed_wins}-{series.lower_seed_wins} | "
-                    f"Elo: {elo_change_home:+.1f}/{elo_change_away:+.1f}"
-                )
+            # Update series tracker
+            if game.series_id:
+                series = series_tracker.get_series(game.series_id)
+                if series:
+                    series.record_game(
+                        game_date=game.game_date,
+                        home_score=game.home_score,
+                        away_score=game.away_score,
+                        home_team_id=home_id,
+                        away_team_id=away_id,
+                    )
+                    print(
+                        f"  ✓ {game.away_team} @ {game.home_team}: {game.away_score}-{game.home_score} "
+                        f"(W: {winner}) | Series: {series.higher_seed_wins}-{series.lower_seed_wins} | "
+                        f"Elo: {elo_change_home:+.1f}/{elo_change_away:+.1f}"
+                    )
+                else:
+                    print(f"  ✓ {game.away_team} @ {game.home_team}: {game.away_score}-{game.home_score} (series not tracked)")
             else:
-                print(f"  ✓ {game.away_team} @ {game.home_team}: {game.away_score}-{game.home_score} (series not tracked)")
-        else:
-            print(f"  ✓ {game.away_team} @ {game.home_team}: {game.away_score}-{game.home_score} (no series ID)")
+                print(f"  ✓ {game.away_team} @ {game.home_team}: {game.away_score}-{game.home_score} (no series ID)")
 
-        processed_count += 1
+            processed_count += 1
+
+    processed_count += play_in_processed
 
     if processed_count == 0:
         print("\nNo playoff games were processed.")

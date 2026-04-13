@@ -211,6 +211,7 @@ class PlayoffGame {
   final String? seriesId;
   final String? roundName;
   final String? conference;
+  final bool isPlayIn;
   final String gameDate;
   final String? gameTime;
   final int gameNumber;
@@ -227,6 +228,7 @@ class PlayoffGame {
     this.seriesId,
     this.roundName,
     this.conference,
+    this.isPlayIn = false,
     required this.gameDate,
     this.gameTime,
     required this.gameNumber,
@@ -242,20 +244,22 @@ class PlayoffGame {
 
   /// The series context badge label, e.g. "Game 5 · BOS leads 3-1"
   String get seriesLabel {
+    if (isPlayIn) return prediction?.seriesContext ?? 'Play-In';
     final ctx = prediction?.seriesContext ?? 'Game $gameNumber';
     return 'Game $gameNumber · $ctx';
   }
 
-  /// Whether this is an elimination game for either team.
+  /// Whether this is an elimination game for either team (not applicable for play-in).
   bool get isEliminationGame {
+    if (isPlayIn) return false;
     return homeSeriesWins == 3 || awaySeriesWins == 3;
   }
 
   /// Whether this is a closeout opportunity for the home team.
-  bool get isHomeCloseout => homeSeriesWins == 3;
+  bool get isHomeCloseout => !isPlayIn && homeSeriesWins == 3;
 
   /// Whether this is a closeout opportunity for the away team.
-  bool get isAwayCloseout => awaySeriesWins == 3;
+  bool get isAwayCloseout => !isPlayIn && awaySeriesWins == 3;
 
   factory PlayoffGame.fromJson(Map<String, dynamic> json) {
     final predData = json['prediction'] as Map<String, dynamic>?;
@@ -263,6 +267,7 @@ class PlayoffGame {
       seriesId: json['series_id'] as String?,
       roundName: json['round_name'] as String?,
       conference: json['conference'] as String?,
+      isPlayIn: json['is_play_in'] as bool? ?? false,
       gameDate: json['game_date'] as String? ?? '',
       gameTime: json['game_time'] as String?,
       gameNumber: json['game_number'] as int? ?? 1,

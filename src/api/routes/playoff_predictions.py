@@ -23,6 +23,7 @@ from ..playoff_schemas import (
     SeriesGameResult,
     PlayoffStatusResponse,
     PlayoffStateReloadResponse,
+    PlayInMatchupInfo,
 )
 from ..dependencies import get_prediction_service, PredictionService
 from ..middleware import verify_firebase_token, FirebaseUser
@@ -33,7 +34,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from core.playoff_state_manager import PlayoffStateManager
-from core.playoff_series_tracker import PlayoffSeriesTracker, PlayoffSeries
+from core.playoff_series_tracker import PlayoffSeriesTracker, PlayoffSeries, PlayInMatchup
 from core.playoff_feature_builder import PlayoffFeatureBuilder, compute_series_win_probability
 from core.playoff_espn_client import PlayoffESPNClient
 
@@ -210,18 +211,22 @@ def _build_playoff_prediction(
 
 @router.get("/status", response_model=PlayoffStatusResponse)
 async def playoff_status():
-    """Returns whether playoffs are currently active and the current round."""
+    """Returns whether playoffs or play-in are currently active."""
     pm = _get_playoff_state_manager()
     if not pm.exists():
         return PlayoffStatusResponse(
             playoffs_active=False,
+            play_in_active=False,
             current_round=None,
             season=2026,
         )
     metadata = pm.get_metadata()
+    current_round = metadata.get("current_round")
+    play_in_active = current_round == "play_in"
     return PlayoffStatusResponse(
         playoffs_active=True,
-        current_round=metadata.get("current_round"),
+        play_in_active=play_in_active,
+        current_round=current_round,
         season=metadata.get("season", 2026),
         last_updated=metadata.get("last_updated"),
     )
@@ -254,6 +259,26 @@ async def get_bracket(
         else:
             finals_series = info
 
+    # Build play-in matchup info list
+    play_in_infos = [
+        PlayInMatchupInfo(
+            matchup_id=m.matchup_id,
+            conference=m.conference,
+            team1_id=m.team1_id,
+            team2_id=m.team2_id,
+            team1_name=m.team1_name,
+            team2_name=m.team2_name,
+            game_date=m.game_date,
+            home_team_id=m.home_team_id,
+            team1_score=m.team1_score,
+            team2_score=m.team2_score,
+            winner_id=m.winner_id,
+            status=m.status,
+            context=m.get_context_string(),
+        )
+        for m in series_tracker.get_all_play_in_matchups()
+    ]
+
     return PlayoffBracketResponse(
         season=series_tracker.season,
         current_round=series_tracker.current_round,
@@ -262,6 +287,8 @@ async def get_bracket(
         west=west_series,
         finals=finals_series,
         playoffs_active=True,
+        play_in_active=series_tracker.play_in_active,
+        play_in=play_in_infos,
     )
 
 
@@ -393,10 +420,12 @@ async def predict_playoff_date(
             detail=f"Invalid date format: {game_date}. Use YYYY-MM-DD."
         )
 
-    # Fetch playoff games
+    # Fetch play-in and playoff games
     try:
         espn_client = PlayoffESPNClient(service.team_mapper)
-        games = espn_client.get_scheduled_playoff_games(parsed_date)
+        play_in_games = espn_client.get_scheduled_play_in_games(parsed_date)
+        playoff_games = espn_client.get_scheduled_playoff_games(parsed_date)
+        games = play_in_games + playoff_games
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Failed to fetch games from ESPN: {e}")
 
@@ -408,7 +437,38 @@ async def predict_playoff_date(
         if game.home_team_id is None or game.away_team_id is None:
             continue
 
-        # Determine series context
+        is_play_in = getattr(game, "is_play_in", False)
+
+        # Play-in: no series wins or best-of-7 context
+        if is_play_in:
+            home_short = game.home_team.split()[-1]
+            away_short = game.away_team.split()[-1]
+            series_context = f"{away_short} @ {home_short} — Play-In"
+            try:
+                pred = _build_playoff_prediction(
+                    service=service,
+                    playoff_svc=playoff_svc,
+                    home_id=game.home_team_id,
+                    away_id=game.away_team_id,
+                    home_name=game.home_team,
+                    away_name=game.away_team,
+                    game_date=game.game_date,
+                    game_time=game.game_time,
+                    home_series_wins=0,
+                    away_series_wins=0,
+                    game_number=1,
+                    series_context=series_context,
+                )
+                pred.series_id = game.series_id
+                pred.round_name = "play_in"
+                pred.conference = game.conference
+                pred.is_play_in = True
+                predictions.append(pred)
+            except Exception as e:
+                print(f"Warning: Failed to build play-in prediction for {game}: {e}")
+            continue
+
+        # Regular playoff game: look up series context
         home_series_wins = 0
         away_series_wins = 0
         game_number = game.game_number or 1

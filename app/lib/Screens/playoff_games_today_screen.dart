@@ -233,7 +233,10 @@ class _SeriesBadge extends StatelessWidget {
 
     Color badgeColor;
     String badgeLabel;
-    if (isElimination && !isCloseout) {
+    if (game.isPlayIn) {
+      badgeColor = const Color(0xFF7C3AED); // purple for play-in
+      badgeLabel = 'Play-In';
+    } else if (isElimination && !isCloseout) {
       badgeColor = AppColors.liveRed;
       badgeLabel = 'Elimination Game';
     } else if (isCloseout) {

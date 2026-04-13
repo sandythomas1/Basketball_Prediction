@@ -256,6 +256,125 @@ class PlayoffSeries:
         )
 
 
+class PlayInMatchup:
+    """
+    Represents a single play-in tournament game between two teams.
+
+    Play-in games are single-elimination (best-of-1), not best-of-7 series.
+    The matchup_id is stable across the session and derived from team IDs.
+    """
+
+    def __init__(
+        self,
+        matchup_id: str,
+        conference: str,
+        team1_id: int,
+        team2_id: int,
+        team1_name: str,
+        team2_name: str,
+        game_date: Optional[str] = None,
+        home_team_id: Optional[int] = None,
+        team1_score: Optional[int] = None,
+        team2_score: Optional[int] = None,
+        winner_id: Optional[int] = None,
+        status: str = "upcoming",
+    ):
+        self.matchup_id = matchup_id
+        self.conference = conference      # "East" | "West"
+        self.team1_id = team1_id
+        self.team2_id = team2_id
+        self.team1_name = team1_name
+        self.team2_name = team2_name
+        self.game_date = game_date
+        self.home_team_id = home_team_id  # Which team hosts
+        self.team1_score = team1_score
+        self.team2_score = team2_score
+        self.winner_id = winner_id
+        self.status = status              # "upcoming" | "final"
+
+    @property
+    def is_final(self) -> bool:
+        return self.status == "final"
+
+    @property
+    def away_team_id(self) -> Optional[int]:
+        if self.home_team_id is None:
+            return None
+        return self.team2_id if self.home_team_id == self.team1_id else self.team1_id
+
+    def get_context_string(self) -> str:
+        t1 = self.team1_name.split()[-1]
+        t2 = self.team2_name.split()[-1]
+        if self.is_final and self.winner_id:
+            winner = t1 if self.winner_id == self.team1_id else t2
+            loser_score = self.team2_score if self.winner_id == self.team1_id else self.team1_score
+            winner_score = self.team1_score if self.winner_id == self.team1_id else self.team2_score
+            return f"{winner} wins {winner_score}-{loser_score}"
+        return f"{t1} vs {t2} — Play-In"
+
+    def record_result(
+        self,
+        game_date: str,
+        home_score: int,
+        away_score: int,
+        home_team_id: int,
+        away_team_id: int,
+    ) -> None:
+        """Record the result of this play-in game."""
+        self.game_date = game_date
+        self.home_team_id = home_team_id
+        winner_id = home_team_id if home_score > away_score else away_team_id
+        self.winner_id = winner_id
+        self.status = "final"
+
+        # Store scores aligned to team1/team2
+        if home_team_id == self.team1_id:
+            self.team1_score = home_score
+            self.team2_score = away_score
+        else:
+            self.team1_score = away_score
+            self.team2_score = home_score
+
+    def to_dict(self) -> dict:
+        return {
+            "matchup_id": self.matchup_id,
+            "conference": self.conference,
+            "team1_id": self.team1_id,
+            "team2_id": self.team2_id,
+            "team1_name": self.team1_name,
+            "team2_name": self.team2_name,
+            "game_date": self.game_date,
+            "home_team_id": self.home_team_id,
+            "team1_score": self.team1_score,
+            "team2_score": self.team2_score,
+            "winner_id": self.winner_id,
+            "status": self.status,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "PlayInMatchup":
+        return cls(
+            matchup_id=data["matchup_id"],
+            conference=data["conference"],
+            team1_id=data["team1_id"],
+            team2_id=data["team2_id"],
+            team1_name=data["team1_name"],
+            team2_name=data["team2_name"],
+            game_date=data.get("game_date"),
+            home_team_id=data.get("home_team_id"),
+            team1_score=data.get("team1_score"),
+            team2_score=data.get("team2_score"),
+            winner_id=data.get("winner_id"),
+            status=data.get("status", "upcoming"),
+        )
+
+    def __repr__(self) -> str:
+        return (
+            f"PlayInMatchup({self.matchup_id}: "
+            f"{self.team1_name} vs {self.team2_name}, {self.status})"
+        )
+
+
 class PlayoffSeriesTracker:
     """
     Tracks all active playoff series for a given season.
@@ -270,11 +389,13 @@ class PlayoffSeriesTracker:
         series: Optional[Dict[str, PlayoffSeries]] = None,
         current_round: str = "first_round",
         playoffs_start_date: Optional[str] = None,
+        play_in_matchups: Optional[Dict[str, "PlayInMatchup"]] = None,
     ):
         self.season = season
         self.series: Dict[str, PlayoffSeries] = series or {}
         self.current_round = current_round
         self.playoffs_start_date = playoffs_start_date
+        self.play_in_matchups: Dict[str, PlayInMatchup] = play_in_matchups or {}
 
     def add_series(self, series: PlayoffSeries) -> None:
         """Add or replace a series by series_id."""
@@ -316,12 +437,54 @@ class PlayoffSeriesTracker:
         """Return all series."""
         return list(self.series.values())
 
+    # ------------------------------------------------------------------
+    # Play-In methods
+    # ------------------------------------------------------------------
+
+    def get_or_create_play_in_matchup(
+        self,
+        team1_id: int,
+        team2_id: int,
+        team1_name: str,
+        team2_name: str,
+        conference: str,
+    ) -> PlayInMatchup:
+        """Return an existing play-in matchup for this team pair or create one."""
+        key = tuple(sorted([team1_id, team2_id]))
+        matchup_id = f"play_in_{key[0]}_{key[1]}"
+        if matchup_id not in self.play_in_matchups:
+            self.play_in_matchups[matchup_id] = PlayInMatchup(
+                matchup_id=matchup_id,
+                conference=conference,
+                team1_id=team1_id,
+                team2_id=team2_id,
+                team1_name=team1_name,
+                team2_name=team2_name,
+            )
+        return self.play_in_matchups[matchup_id]
+
+    def get_play_in_matchup(self, team1_id: int, team2_id: int) -> Optional[PlayInMatchup]:
+        """Find a play-in matchup for these two teams."""
+        key = tuple(sorted([team1_id, team2_id]))
+        matchup_id = f"play_in_{key[0]}_{key[1]}"
+        return self.play_in_matchups.get(matchup_id)
+
+    def get_all_play_in_matchups(self) -> List[PlayInMatchup]:
+        """Return all play-in matchups."""
+        return list(self.play_in_matchups.values())
+
+    @property
+    def play_in_active(self) -> bool:
+        """True if any play-in matchups have been recorded."""
+        return bool(self.play_in_matchups)
+
     def to_dict(self) -> dict:
         return {
             "season": self.season,
             "current_round": self.current_round,
             "playoffs_start_date": self.playoffs_start_date,
             "series": {sid: s.to_dict() for sid, s in self.series.items()},
+            "play_in_matchups": {mid: m.to_dict() for mid, m in self.play_in_matchups.items()},
         }
 
     @classmethod
@@ -330,11 +493,16 @@ class PlayoffSeriesTracker:
             sid: PlayoffSeries.from_dict(sdata)
             for sid, sdata in data.get("series", {}).items()
         }
+        play_in_matchups = {
+            mid: PlayInMatchup.from_dict(mdata)
+            for mid, mdata in data.get("play_in_matchups", {}).items()
+        }
         return cls(
             season=data["season"],
             series=series,
             current_round=data.get("current_round", "first_round"),
             playoffs_start_date=data.get("playoffs_start_date"),
+            play_in_matchups=play_in_matchups,
         )
 
     def save(self, path: Path) -> None:
@@ -352,4 +520,8 @@ class PlayoffSeriesTracker:
 
     def __repr__(self) -> str:
         n_active = len(self.get_active_series())
-        return f"PlayoffSeriesTracker(season={self.season}, active_series={n_active})"
+        n_play_in = len(self.play_in_matchups)
+        return (
+            f"PlayoffSeriesTracker(season={self.season}, "
+            f"active_series={n_active}, play_in_matchups={n_play_in})"
+        )

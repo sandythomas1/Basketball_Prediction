@@ -103,15 +103,17 @@ def main():
         odds_client = OddsClient(team_mapper=team_mapper)
         print(f"  ✓ {odds_client}")
 
-    # Fetch playoff games from ESPN
-    print(f"\nFetching playoff games for {target_date}...")
+    # Fetch play-in and playoff games from ESPN
+    print(f"\nFetching games for {target_date}...")
     try:
-        games = espn_client.get_scheduled_playoff_games(target_date)
+        play_in_games = espn_client.get_scheduled_play_in_games(target_date)
+        playoff_games = espn_client.get_scheduled_playoff_games(target_date)
+        games = play_in_games + playoff_games
     except Exception as e:
         print(f"Error fetching games: {e}")
         return
 
-    print(f"  Found {len(games)} playoff games to predict")
+    print(f"  Found {len(play_in_games)} play-in game(s) and {len(playoff_games)} playoff game(s)")
 
     if not games:
         print("\nNo upcoming playoff games found for this date.")
@@ -149,6 +151,8 @@ def main():
     print("\nGenerating playoff predictions...")
     predictions = []
 
+    from core.feature_builder import FEATURE_COLS
+
     for game in games:
         if game.home_team_id is None or game.away_team_id is None:
             print(f"  ⚠ Skipping {game.away_team} @ {game.home_team}: Could not map team IDs")
@@ -156,28 +160,35 @@ def main():
 
         home_id = game.home_team_id
         away_id = game.away_team_id
+        is_play_in = getattr(game, "is_play_in", False)
 
-        # Determine series context
+        # Determine series context — play-in games have no series wins tracking
         home_series_wins = 0
         away_series_wins = 0
-        game_number = game.game_number or 1
-        series_context = f"Game {game_number}"
+        game_number = 1
         series_id = game.series_id
-        round_name = game.round_name
+        round_name = game.round_name or ("play_in" if is_play_in else None)
 
-        if series_tracker:
-            series = series_tracker.get_series_for_teams(home_id, away_id)
-            if series:
-                series_id = series.series_id
-                round_name = series.round_name
-                series_context = series.get_series_context_string()
-                if home_id == series.higher_seed_id:
-                    home_series_wins = series.higher_seed_wins
-                    away_series_wins = series.lower_seed_wins
-                else:
-                    home_series_wins = series.lower_seed_wins
-                    away_series_wins = series.higher_seed_wins
-                game_number = series.next_game_number
+        if is_play_in:
+            series_context = "Play-In Tournament"
+            home_short = game.home_team.split()[-1]
+            away_short = game.away_team.split()[-1]
+            series_context = f"{away_short} @ {home_short} — Play-In"
+        else:
+            series_context = "Game 1"
+            if series_tracker:
+                series = series_tracker.get_series_for_teams(home_id, away_id)
+                if series:
+                    series_id = series.series_id
+                    round_name = series.round_name
+                    series_context = series.get_series_context_string()
+                    if home_id == series.higher_seed_id:
+                        home_series_wins = series.higher_seed_wins
+                        away_series_wins = series.lower_seed_wins
+                    else:
+                        home_series_wins = series.lower_seed_wins
+                        away_series_wins = series.higher_seed_wins
+                    game_number = series.next_game_number
 
         # Get odds
         ml_home, ml_away = None, None
@@ -186,7 +197,7 @@ def main():
             if key in odds_dict:
                 ml_home, ml_away = odds_dict[key]
 
-        # Build features with series pressure adjustment
+        # Build features — no series pressure for play-in (it's a single game)
         features = feature_builder.build_features(
             home_id, away_id, target_date.isoformat(),
             ml_home=ml_home, ml_away=ml_away,
@@ -200,12 +211,15 @@ def main():
             ml_home=ml_home, ml_away=ml_away,
         )
 
-        # Compute series win probability
-        series_win_prob_home, series_win_prob_away = compute_series_win_probability(
-            result["prob_home_win"], home_series_wins, away_series_wins
-        )
+        # Series win probability only meaningful for best-of-7
+        if is_play_in:
+            series_win_prob_home = result["prob_home_win"]
+            series_win_prob_away = result["prob_away_win"]
+        else:
+            series_win_prob_home, series_win_prob_away = compute_series_win_probability(
+                result["prob_home_win"], home_series_wins, away_series_wins
+            )
 
-        from core.feature_builder import FEATURE_COLS
         features_dict = dict(zip(FEATURE_COLS, features))
 
         pred_entry = {
@@ -213,6 +227,7 @@ def main():
             "round_name": round_name,
             "conference": game.conference,
             "game_number": game_number,
+            "is_play_in": is_play_in,
             "game_date": game.game_date,
             "game_time": game.game_time,
             "home_team": game.home_team,
@@ -248,10 +263,10 @@ def main():
         # Print summary
         favored = game.home_team if result["prob_home_win"] > 0.5 else game.away_team
         prob = max(result["prob_home_win"], result["prob_away_win"])
+        label = "[PLAY-IN]" if is_play_in else f"[Game {game_number}]"
         print(
-            f"  Game {game_number}: {game.away_team} @ {game.home_team} → "
-            f"{favored} {prob:.0%} ({result['confidence_tier']}) | "
-            f"Series win: H {series_win_prob_home:.0%} / A {series_win_prob_away:.0%}"
+            f"  {label} {game.away_team} @ {game.home_team} → "
+            f"{favored} {prob:.0%} ({result['confidence_tier']})"
         )
 
     # Write output
@@ -260,6 +275,7 @@ def main():
             "date": target_date.isoformat(),
             "generated_at": datetime.now().isoformat(),
             "round": series_tracker.current_round,
+            "play_in_active": series_tracker.play_in_active or bool(play_in_games),
             "count": len(predictions),
             "games": predictions,
         }

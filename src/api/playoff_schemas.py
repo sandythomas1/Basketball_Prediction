@@ -107,6 +107,7 @@ class PlayoffGameWithPrediction(BaseModel):
     series_id: Optional[str] = None
     round_name: Optional[str] = None
     conference: Optional[str] = None
+    is_play_in: bool = False
     game_date: str
     game_time: Optional[str] = None
     game_number: int
@@ -133,6 +134,8 @@ class PlayoffBracketResponse(BaseModel):
     west: List[SeriesInfo]
     finals: Optional[SeriesInfo] = None
     playoffs_active: bool = True
+    play_in_active: bool = False
+    play_in: List["PlayInMatchupInfo"] = []
 
 
 class PlayoffPredictionsListResponse(BaseModel):
@@ -148,9 +151,27 @@ class PlayoffPredictionsListResponse(BaseModel):
 # Status Models
 # =============================================================================
 
+class PlayInMatchupInfo(BaseModel):
+    """Summary of a single play-in tournament matchup."""
+    matchup_id: str
+    conference: str
+    team1_id: int
+    team2_id: int
+    team1_name: str
+    team2_name: str
+    game_date: Optional[str] = None
+    home_team_id: Optional[int] = None
+    team1_score: Optional[int] = None
+    team2_score: Optional[int] = None
+    winner_id: Optional[int] = None
+    status: str  # "upcoming" | "final"
+    context: str
+
+
 class PlayoffStatusResponse(BaseModel):
     """Whether playoffs are currently active."""
     playoffs_active: bool
+    play_in_active: bool = False
     current_round: Optional[str] = None
     season: int
     last_updated: Optional[str] = None
