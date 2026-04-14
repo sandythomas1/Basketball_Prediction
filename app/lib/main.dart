@@ -14,6 +14,7 @@ import 'Providers/theme_provider.dart';
 import 'theme/app_theme.dart';
 import 'Screens/playoff_series_detail_screen.dart';
 import 'Screens/playoff_bracket_screen.dart';
+import 'Screens/recruit_radar_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -112,6 +113,10 @@ class MyApp extends ConsumerWidget {
           case '/playoff/bracket':
             return MaterialPageRoute(
               builder: (_) => const PlayoffBracketScreen(),
+            );
+          case '/recruit-radar':
+            return MaterialPageRoute(
+              builder: (_) => const RecruitRadarScreen(),
             );
         }
         return null;

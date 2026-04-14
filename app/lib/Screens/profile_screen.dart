@@ -258,7 +258,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.accentOrange.withOpacity(0.2),
+                      color: AppColors.accentOrange.withValues(alpha: 0.2),
                       blurRadius: 20,
                       offset: const Offset(0, 8),
                     ),
@@ -307,7 +307,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.accentOrange.withOpacity(0.3),
+                        color: AppColors.accentOrange.withValues(alpha: 0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
