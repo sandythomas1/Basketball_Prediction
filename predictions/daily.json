@@ -1,24 +1,24 @@
 {
-  "generated_at": "2026-04-22T10:17:06.233111",
-  "count": 2,
+  "generated_at": "2026-04-23T10:18:30.205501",
+  "count": 3,
   "games": [
     {
-      "game_date": "2026-04-22",
+      "game_date": "2026-04-23",
       "game_time": "23:00",
-      "home_team": "Detroit Pistons",
-      "away_team": "Orlando Magic",
-      "home_team_id": 1610612765,
-      "away_team_id": 1610612753,
+      "home_team": "Atlanta Hawks",
+      "away_team": "New York Knicks",
+      "home_team_id": 1610612737,
+      "away_team_id": 1610612752,
       "prediction": {
-        "home_win_prob": 0.724,
-        "away_win_prob": 0.276,
-        "confidence": "Moderate Favorite",
-        "favored": "home"
+        "home_win_prob": 0.453,
+        "away_win_prob": 0.547,
+        "confidence": "Toss-Up",
+        "favored": "away"
       },
       "context": {
-        "home_elo": 1608.6,
-        "away_elo": 1465.7,
-        "home_recent_wins": 0.7,
+        "home_elo": 1417.1,
+        "away_elo": 1552.6,
+        "home_recent_wins": 0.5,
         "away_recent_wins": 0.4,
         "home_rest_days": 14,
         "away_rest_days": 14,
@@ -27,23 +27,47 @@
       }
     },
     {
-      "game_date": "2026-04-23",
-      "game_time": "01:30",
-      "home_team": "Oklahoma City Thunder",
-      "away_team": "Phoenix Suns",
-      "home_team_id": 1610612760,
-      "away_team_id": 1610612756,
+      "game_date": "2026-04-24",
+      "game_time": "00:00",
+      "home_team": "Toronto Raptors",
+      "away_team": "Cleveland Cavaliers",
+      "home_team_id": 1610612761,
+      "away_team_id": 1610612739,
       "prediction": {
-        "home_win_prob": 0.687,
-        "away_win_prob": 0.313,
-        "confidence": "Moderate Favorite",
+        "home_win_prob": 0.601,
+        "away_win_prob": 0.399,
+        "confidence": "Lean Favorite",
         "favored": "home"
       },
       "context": {
-        "home_elo": 1681.7,
-        "away_elo": 1511.5,
+        "home_elo": 1465.0,
+        "away_elo": 1546.7,
         "home_recent_wins": 0.7,
-        "away_recent_wins": 0.6,
+        "away_recent_wins": 0.7,
+        "home_rest_days": 14,
+        "away_rest_days": 14,
+        "home_b2b": false,
+        "away_b2b": false
+      }
+    },
+    {
+      "game_date": "2026-04-24",
+      "game_time": "01:30",
+      "home_team": "Minnesota Timberwolves",
+      "away_team": "Denver Nuggets",
+      "home_team_id": 1610612750,
+      "away_team_id": 1610612743,
+      "prediction": {
+        "home_win_prob": 0.597,
+        "away_win_prob": 0.403,
+        "confidence": "Lean Favorite",
+        "favored": "home"
+      },
+      "context": {
+        "home_elo": 1555.8,
+        "away_elo": 1579.1,
+        "home_recent_wins": 0.5,
+        "away_recent_wins": 0.8,
         "home_rest_days": 14,
         "away_rest_days": 14,
         "home_b2b": false,
