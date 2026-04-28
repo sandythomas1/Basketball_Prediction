@@ -100,25 +100,30 @@ class TeamInjuryReport:
 
 class InjuryClient:
     """
-    Client for fetching NBA injury data from ESPN.
+    Client for fetching injury data from ESPN.
     """
     
-    BASE_URL = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba"
+    BASE_TEMPLATE = "https://site.api.espn.com/apis/site/v2/sports/basketball/{slug}"
     TIMEOUT = 10  # seconds
     
-    def __init__(self, team_mapper: Optional[TeamMapper] = None):
+    def __init__(self, team_mapper: Optional[TeamMapper] = None, league_slug: str = "nba"):
         """
         Initialize injury client.
         
         Args:
             team_mapper: TeamMapper for converting ESPN names to NBA IDs
+            league_slug: The league slug for the ESPN API
         """
         self.team_mapper = team_mapper or TeamMapper()
+        self.league_slug = league_slug
         self._session = requests.Session()
         self._session.headers.update({
             "Accept": "application/json",
             "User-Agent": "NBA-Predictor/1.0",
         })
+    
+    def _url(self, endpoint: str) -> str:
+        return f"{self.BASE_TEMPLATE.format(slug=self.league_slug)}/{endpoint}"
     
     def get_all_injuries(self, debug: bool = False) -> Dict[int, TeamInjuryReport]:
         """
@@ -130,7 +135,7 @@ class InjuryClient:
         Returns:
             Dictionary mapping team_id to TeamInjuryReport
         """
-        url = f"{self.BASE_URL}/injuries"
+        url = self._url("injuries")
         
         try:
             response = self._session.get(url, timeout=self.TIMEOUT)

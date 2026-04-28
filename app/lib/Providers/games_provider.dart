@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../Models/game.dart';
 import '../Services/cache_service.dart';
 import 'api_service.dart';
+import 'league_provider.dart';
 
 /// State class to hold games data with metadata
 class GamesState {
@@ -90,6 +91,7 @@ class GamesNotifier extends AsyncNotifier<GamesState> {
   /// 3. If everything fails, load from local cache.
   Future<GamesState> _fetchGames() async {
     final apiService = ref.read(apiServiceProvider);
+    final league = ref.read(leagueProvider);
     final previousGamesById = {
       for (final game in state.valueOrNull?.games ?? <Game>[]) game.id: game,
     };
@@ -98,7 +100,7 @@ class GamesNotifier extends AsyncNotifier<GamesState> {
     // that the backend schema doesn't include.
     Map<String, dynamic>? espnRaw;
     try {
-      espnRaw = await apiService.fetchEspnScoreboard();
+      espnRaw = await apiService.fetchEspnScoreboard(league);
     } catch (e) {
       debugPrint('ESPN scoreboard fetch failed: $e');
     }
@@ -114,7 +116,7 @@ class GamesNotifier extends AsyncNotifier<GamesState> {
     }
 
     // --- Attempt 1: Combined backend endpoint ---
-    final combined = await apiService.fetchGamesWithPredictions();
+    final combined = await apiService.fetchGamesWithPredictions(league);
     if (combined != null) {
       final gamesList = combined['games'] as List<dynamic>? ?? [];
       debugPrint('Fetched ${gamesList.length} games+predictions from backend');
@@ -128,7 +130,7 @@ class GamesNotifier extends AsyncNotifier<GamesState> {
     // --- Attempt 2: ESPN direct + separate predictions ---
     if (espnRaw != null) {
       try {
-        final predictionsData = await apiService.fetchPredictions();
+        final predictionsData = await apiService.fetchPredictions(league);
         final events = espnRaw['events'] as List<dynamic>? ?? [];
         final predictionsList =
             predictionsData?['games'] as List<dynamic>? ?? [];

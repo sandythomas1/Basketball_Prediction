@@ -69,8 +69,7 @@ class OddsClient:
         ml_home, ml_away = client.get_odds_for_game(home_team_id, away_team_id)
     """
 
-    BASE_URL = "https://api.the-odds-api.com/v4/sports/basketball_nba/odds"
-    SPORT_KEY = "basketball_nba"
+    BASE_URL = "https://api.the-odds-api.com/v4/sports/{sport}/odds"
     MARKET = "h2h"  # Moneyline
     
     # Rate limiting: minimum seconds between API calls
@@ -89,6 +88,7 @@ class OddsClient:
         self, 
         api_key: Optional[str] = None,
         team_mapper: Optional[TeamMapper] = None,
+        sport_key: str = "basketball_nba",
     ):
         """
         Initialize OddsClient.
@@ -96,9 +96,11 @@ class OddsClient:
         Args:
             api_key: The Odds API key. If None, reads from ODDS_API_KEY env var.
             team_mapper: TeamMapper for converting names to NBA IDs.
+            sport_key: The sport key for The Odds API.
         """
         self.api_key = api_key or os.environ.get("ODDS_API_KEY", "")
         self.team_mapper = team_mapper or TeamMapper()
+        self.sport_key = sport_key
         
         self._session = requests.Session()
         self._session.headers.update({
@@ -163,8 +165,10 @@ class OddsClient:
                 "oddsFormat": "american",
             }
 
+            url = self.BASE_URL.format(sport=self.sport_key)
+
             response = self._session.get(
-                self.BASE_URL,
+                url,
                 params=params,
                 timeout=15,
             )

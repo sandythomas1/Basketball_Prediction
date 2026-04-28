@@ -5,6 +5,7 @@ import '../Models/game.dart';
 import '../Providers/games_provider.dart';
 import '../Widgets/team_logo.dart';
 import '../theme/app_theme.dart';
+import '../Providers/league_provider.dart';
 
 class LiveGamesScreen extends ConsumerWidget {
   const LiveGamesScreen({super.key});
@@ -31,6 +32,36 @@ class LiveGamesScreen extends ConsumerWidget {
         ),
         centerTitle: false,
         actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            decoration: BoxDecoration(
+              color: context.bgCard,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: ref.watch(leagueProvider),
+                icon: Icon(Icons.keyboard_arrow_down, color: context.textSecondary, size: 20),
+                dropdownColor: context.bgCard,
+                style: GoogleFonts.dmSans(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: context.textPrimary,
+                ),
+                onChanged: (String? newValue) {
+                  if (newValue != null && newValue != ref.read(leagueProvider)) {
+                    ref.read(leagueProvider.notifier).state = newValue;
+                    ref.read(gamesProvider.notifier).refresh();
+                  }
+                },
+                items: const [
+                  DropdownMenuItem(value: 'nba', child: Text('NBA')),
+                  DropdownMenuItem(value: 'wnba', child: Text('WNBA')),
+                ],
+              ),
+            ),
+          ),
           Container(
             margin: const EdgeInsets.only(right: 8),
             decoration: BoxDecoration(

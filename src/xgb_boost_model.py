@@ -1,32 +1,15 @@
 import pandas as pd
 import joblib
 from pathlib import Path
+import argparse
+import sys
 from sklearn.metrics import log_loss, accuracy_score, roc_auc_score
 from sklearn.linear_model import LogisticRegression
 from xgboost import XGBClassifier
 
-# ==========================
-# Paths
-# ==========================
-FEATURES_PATH = Path(
-    "/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/data/processed/features_with_injuries.csv"
-)
-
-GAMES_PATH = Path(
-    "/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/data/processed/games_with_elo_rest.csv"
-)
-
-MODEL_OUT_PATH = Path(
-    "/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/models/xgb_v3_with_injuries.json"
-)
-
-CALIBRATOR_OUT_PATH = Path(
-    "/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/models/calibrator_v3.pkl"
-)
-
-PREDS_OUT_PATH = Path(
-    "/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/data/processed/model_predictions.csv"
-)
+# Add core path to import LeagueConfig
+sys.path.insert(0, str(Path(__file__).parent))
+from core.league_config import NBA_CONFIG, WNBA_CONFIG, CBB_CONFIG
 
 # ==========================
 # Feature columns
@@ -59,12 +42,20 @@ TARGET_COL = "home_win"
 # ==========================
 # Helpers
 # ==========================
-def split_by_season(df):
-    df = df[df["season_id"] >= 22004].copy()
-
-    train = df[(df["season_id"] >= 22004) & (df["season_id"] <= 22018)]
-    val   = df[(df["season_id"] >= 22019) & (df["season_id"] <= 22020)]
-    test  = df[df["season_id"] >= 22022]
+def split_by_season(df, league="nba"):
+    if league == "wnba":
+        train = df[df["season_id"] <= 22023]
+        val   = df[df["season_id"] == 22024]
+        test  = df[df["season_id"] >= 22025]
+    elif league == "cbb":
+        train = df[df["season_id"] <= 22023]
+        val   = df[df["season_id"] == 22024]
+        test  = df[df["season_id"] >= 22025]
+    else:
+        df = df[df["season_id"] >= 22004].copy()
+        train = df[(df["season_id"] >= 22004) & (df["season_id"] <= 22018)]
+        val   = df[(df["season_id"] >= 22019) & (df["season_id"] <= 22020)]
+        test  = df[df["season_id"] >= 22022]
 
     return train, val, test
 
@@ -85,13 +76,36 @@ def eval_split(name, y_true, p_pred):
 # Main
 # ==========================
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--league", default="nba", choices=["nba", "wnba", "cbb"])
+    args = parser.parse_args()
+    
+    if args.league == "wnba":
+        features_path = Path(__file__).parent.parent / "data" / "processed" / "wnba_features_with_injuries.csv"
+        games_path = Path(__file__).parent.parent / "data" / "processed" / "wnba_games_with_elo_rest.csv"
+        model_out_path = Path(__file__).parent.parent / "models" / "xgb_wnba_v1.json"
+        calibrator_out_path = Path(__file__).parent.parent / "models" / "calibrator_wnba_v1.pkl"
+        preds_out_path = Path(__file__).parent.parent / "data" / "processed" / "wnba_model_predictions.csv"
+    elif args.league == "cbb":
+        features_path = Path(__file__).parent.parent / "data" / "processed" / "cbb_features_with_injuries.csv"
+        games_path = Path(__file__).parent.parent / "data" / "processed" / "cbb_games_with_elo_rest.csv"
+        model_out_path = Path(__file__).parent.parent / "models" / "xgb_cbb_v1.json"
+        calibrator_out_path = Path(__file__).parent.parent / "models" / "calibrator_cbb_v1.pkl"
+        preds_out_path = Path(__file__).parent.parent / "data" / "processed" / "cbb_model_predictions.csv"
+    else:
+        features_path = Path(__file__).parent.parent / "data" / "processed" / "features_with_injuries.csv"
+        games_path = Path(__file__).parent.parent / "data" / "processed" / "games_with_elo_rest.csv"
+        model_out_path = Path(__file__).parent.parent / "models" / "xgb_v3_with_injuries.json"
+        calibrator_out_path = Path(__file__).parent.parent / "models" / "calibrator_v3.pkl"
+        preds_out_path = Path(__file__).parent.parent / "data" / "processed" / "model_predictions.csv"
+
     # ----------------------
     # Load features
     # ----------------------
-    df = pd.read_csv(FEATURES_PATH, parse_dates=["game_date"])
+    df = pd.read_csv(features_path, parse_dates=["game_date"])
     df["season_id"] = df["season_id"].astype(int)
 
-    train, val, test = split_by_season(df)
+    train, val, test = split_by_season(df, league=args.league)
 
     print("Split sizes:", {
         "train": len(train),
@@ -153,9 +167,9 @@ def main():
     # ----------------------
     # Save calibrator
     # ----------------------
-    CALIBRATOR_OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    joblib.dump(calibrator, CALIBRATOR_OUT_PATH)
-    print(f"\nSaved calibrator to: {CALIBRATOR_OUT_PATH}")
+    calibrator_out_path.parent.mkdir(parents=True, exist_ok=True)
+    joblib.dump(calibrator, calibrator_out_path)
+    print(f"\nSaved calibrator to: {calibrator_out_path}")
 
     # ----------------------
     # Evaluation
@@ -186,15 +200,19 @@ def main():
     # ----------------------
     # Save model
     # ----------------------
-    MODEL_OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    model.get_booster().save_model(str(MODEL_OUT_PATH))
-    print(f"\nSaved model to: {MODEL_OUT_PATH}")
+    model_out_path.parent.mkdir(parents=True, exist_ok=True)
+    model.get_booster().save_model(str(model_out_path))
+    print(f"\nSaved model to: {model_out_path}")
 
     # ----------------------
     # EXPORT DEPLOYABLE PREDICTIONS
     # ----------------------
-    games = pd.read_csv(GAMES_PATH, parse_dates=["game_date"])
-    games_test = games[games["season_id"] >= 22022].copy()
+    games = pd.read_csv(games_path, parse_dates=["game_date"])
+    
+    if args.league == "wnba" or args.league == "cbb":
+        games_test = games[games["season_id"] >= 22025].copy()
+    else:
+        games_test = games[games["season_id"] >= 22022].copy()
 
     assert len(games_test) == len(p_test_cal), "Prediction length mismatch!"
 
@@ -204,10 +222,10 @@ def main():
 
     pred_out["model_prob_home"] = p_test_cal
 
-    PREDS_OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    pred_out.to_csv(PREDS_OUT_PATH, index=False)
+    preds_out_path.parent.mkdir(parents=True, exist_ok=True)
+    pred_out.to_csv(preds_out_path, index=False)
 
-    print(f"\nSaved model predictions to: {PREDS_OUT_PATH}")
+    print(f"\nSaved model predictions to: {preds_out_path}")
     print(pred_out.head())
 
 

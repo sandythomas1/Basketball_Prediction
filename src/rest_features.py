@@ -1,8 +1,11 @@
 import pandas as pd
 from pathlib import Path
+import argparse
+import sys
 
-IN_PATH  = Path("/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/data/processed/games_with_elo.csv")
-OUT_PATH = Path("/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/data/processed/games_with_elo_rest.csv")
+# Add core path to import LeagueConfig
+sys.path.insert(0, str(Path(__file__).parent))
+from core.league_config import NBA_CONFIG, WNBA_CONFIG, CBB_CONFIG
 
 def make_team_schedule_rows(games: pd.DataFrame) -> pd.DataFrame:
     # Create 2 rows per game so we can compute "days since last game" per team
@@ -29,7 +32,21 @@ def compute_rest_days(team_rows: pd.DataFrame) -> pd.DataFrame:
     return team_rows
 
 def main():
-    games = pd.read_csv(IN_PATH, parse_dates=["game_date"])
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--league", default="nba", choices=["nba", "wnba", "cbb"])
+    args = parser.parse_args()
+    
+    if args.league == "wnba":
+        in_path = Path(__file__).parent.parent / "data" / "processed" / "wnba_games_with_elo.csv"
+        out_path = Path(__file__).parent.parent / "data" / "processed" / "wnba_games_with_elo_rest.csv"
+    elif args.league == "cbb":
+        in_path = Path(__file__).parent.parent / "data" / "processed" / "cbb_games_with_elo.csv"
+        out_path = Path(__file__).parent.parent / "data" / "processed" / "cbb_games_with_elo_rest.csv"
+    else:
+        in_path = Path(__file__).parent.parent / "data" / "processed" / "games_with_elo.csv"
+        out_path = Path(__file__).parent.parent / "data" / "processed" / "games_with_elo_rest.csv"
+
+    games = pd.read_csv(in_path, parse_dates=["game_date"])
     games["season_id"] = games["season_id"].astype(int)
 
     team_rows = make_team_schedule_rows(games)
@@ -58,10 +75,10 @@ def main():
     out["away_b2b"] = (out["away_rest_days"] == 1).astype(int)
     out["rest_diff"] = out["home_rest_days"] - out["away_rest_days"]
 
-    OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    out.to_csv(OUT_PATH, index=False)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out.to_csv(out_path, index=False)
 
-    print("Saved:", OUT_PATH)
+    print("Saved:", out_path)
     print("Shape:", out.shape)
     print(out[["game_date","season_id","team_id_home","team_id_away","home_rest_days","away_rest_days","home_b2b","away_b2b","rest_diff"]].head())
 

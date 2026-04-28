@@ -15,6 +15,7 @@ import '../Screens/forums_discussions_screen.dart';
 import '../Screens/user_search_screen.dart';
 import '../Providers/theme_provider.dart';
 import '../Providers/subscription_provider.dart';
+import '../Providers/league_provider.dart';
 import 'subscription_screen.dart';
 
 /// Screen showing all of today's games with prediction access
@@ -47,6 +48,36 @@ class TodayGamesScreen extends ConsumerWidget {
         ),
         centerTitle: true,
         actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            decoration: BoxDecoration(
+              color: context.bgCard,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: ref.watch(leagueProvider),
+                icon: Icon(Icons.keyboard_arrow_down, color: context.textSecondary, size: 20),
+                dropdownColor: context.bgCard,
+                style: GoogleFonts.dmSans(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: context.textPrimary,
+                ),
+                onChanged: (String? newValue) {
+                  if (newValue != null && newValue != ref.read(leagueProvider)) {
+                    ref.read(leagueProvider.notifier).state = newValue;
+                    ref.read(gamesProvider.notifier).refresh();
+                  }
+                },
+                items: const [
+                  DropdownMenuItem(value: 'nba', child: Text('NBA')),
+                  DropdownMenuItem(value: 'wnba', child: Text('WNBA')),
+                ],
+              ),
+            ),
+          ),
           Container(
             margin: const EdgeInsets.only(right: 8),
             decoration: BoxDecoration(

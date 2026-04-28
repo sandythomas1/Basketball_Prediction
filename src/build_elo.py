@@ -12,8 +12,12 @@ Eaway_new = Eaway - K * (0 - Phome)
 '''
 import pandas as pd 
 from pathlib import Path
+import argparse
+import sys
 
-Base_games = Path("/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/data/processed/games_with_labels.csv")
+# Add core path to import LeagueConfig
+sys.path.insert(0, str(Path(__file__).parent))
+from core.league_config import NBA_CONFIG, WNBA_CONFIG, CBB_CONFIG
 
 def initilaze_elo(teams):
     #starting every team at 1500 elo 
@@ -37,7 +41,24 @@ def update_elo(Ehome, Eaway, home_win, k=20):
     return Ehome_new, Eaway_new, Phome
 
 def main():
-    df = pd.read_csv(Base_games, parse_dates=['game_date'])
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--league", default="nba", choices=["nba", "wnba", "cbb"])
+    args = parser.parse_args()
+    
+    if args.league == "wnba":
+        config = WNBA_CONFIG
+        base_games = Path(__file__).parent.parent / "data" / "processed" / "wnba_games_with_labels.csv"
+        out_path = Path(__file__).parent.parent / "data" / "processed" / "wnba_games_with_elo.csv"
+    elif args.league == "cbb":
+        config = CBB_CONFIG
+        base_games = Path(__file__).parent.parent / "data" / "processed" / "cbb_games_with_labels.csv"
+        out_path = Path(__file__).parent.parent / "data" / "processed" / "cbb_games_with_elo.csv"
+    else:
+        config = NBA_CONFIG
+        base_games = Path(__file__).parent.parent / "data" / "processed" / "games_with_labels.csv"
+        out_path = Path(__file__).parent.parent / "data" / "processed" / "games_with_elo.csv"
+
+    df = pd.read_csv(base_games, parse_dates=['game_date'])
 
     #chronological order
     df = df.sort_values('game_date').reset_index(drop=True)
@@ -76,7 +97,7 @@ def main():
         df.at[i, 'elo_away'] = Eaway
 
         #update elo after game
-        Ehome_new, Eaway_new, Phome = update_elo(Ehome, Eaway, row['home_win'])
+        Ehome_new, Eaway_new, Phome = update_elo(Ehome, Eaway, row['home_win'], k=config.k_factor)
 
         df.at[i, 'elo_prob'] = Phome
 
@@ -84,7 +105,6 @@ def main():
         elo[away] = Eaway_new
 
     #save
-    out_path = Path("/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/data/processed/games_with_elo.csv")
     out_path.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(out_path, index=False)
     print(f"Saved elo data to {out_path}")

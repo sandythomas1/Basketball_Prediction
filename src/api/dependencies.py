@@ -24,6 +24,7 @@ from core import (
     OddsClient,
 )
 from core.injury_client import InjuryClient
+from core.league_config import NBA_CONFIG, WNBA_CONFIG, LeagueConfig
 
 
 # =============================================================================
@@ -79,15 +80,14 @@ def get_injury_client() -> InjuryClient:
     return InjuryClient(team_mapper=get_team_mapper())
 
 
-def get_trackers() -> Tuple[EloTracker, StatsTracker]:
+def get_trackers(state_manager: StateManager) -> Tuple[EloTracker, StatsTracker]:
     """
     Load Elo and Stats trackers from state.
     
     Not cached - always loads fresh from disk.
     """
-    state_manager = get_state_manager()
     if not state_manager.exists():
-        raise RuntimeError("State files not found. Run bootstrap_state.py first.")
+        raise RuntimeError("State files not found.")
     return state_manager.load()
 
 
@@ -118,13 +118,13 @@ class PredictionService:
     Combines all necessary components.
     """
     
-    def __init__(self):
-        self.team_mapper = get_team_mapper()
-        self.state_manager = get_state_manager()
-        self.espn_client = get_espn_client()
-        self.odds_client = get_odds_client()
-        self.injury_client = get_injury_client()  # NEW: Injury data
-        self._base_predictor = get_predictor()  # Base predictor without confidence scorer
+    def __init__(self, config: LeagueConfig = NBA_CONFIG):
+        self.config = config
+        self.team_mapper = TeamMapper(lookup_path=get_project_root() / config.team_lookup_csv) if config.team_lookup_csv else TeamMapper()
+        self.state_manager = StateManager(get_project_root() / config.state_dir)
+        self.espn_client = ESPNClient(self.team_mapper, league_slug=config.espn_slug)
+        self.odds_client = OddsClient(team_mapper=self.team_mapper, sport_key=config.odds_sport_key)
+        self.injury_client = InjuryClient(team_mapper=self.team_mapper, league_slug=config.espn_slug)  # NEW: Injury data
         self._predictor_with_confidence = None
         self._elo_tracker = None
         self._stats_tracker = None
@@ -135,7 +135,7 @@ class PredictionService:
     def _ensure_trackers(self):
         """Ensure trackers are loaded."""
         if self._elo_tracker is None or self._stats_tracker is None:
-            self._elo_tracker, self._stats_tracker = get_trackers()
+            self._elo_tracker, self._stats_tracker = get_trackers(self.state_manager)
             
             # Create feature builder with injury support
             self._feature_builder = FeatureBuilder(
@@ -146,9 +146,9 @@ class PredictionService:
             self._confidence_scorer = ConfidenceScorer(self._stats_tracker)
             
             # Create predictor with confidence scorer
-            models_dir = get_models_dir()
-            model_path = models_dir / "xgb_v3_with_injuries.json"
-            calibrator_path = models_dir / "calibrator_v3.pkl"
+            models_dir = get_project_root() / "models"
+            model_path = models_dir / self.config.model_filename
+            calibrator_path = models_dir / self.config.calibrator_filename
             
             self._predictor_with_confidence = Predictor(
                 model_path,
@@ -213,14 +213,25 @@ class PredictionService:
         self._ensure_trackers()
 
 
-# Singleton prediction service
-_prediction_service = None
+# Singleton prediction service cache
+_prediction_services = {}
 
+def get_nba_prediction_service() -> PredictionService:
+    if "nba" not in _prediction_services:
+        _prediction_services["nba"] = PredictionService(config=NBA_CONFIG)
+    return _prediction_services["nba"]
 
-def get_prediction_service() -> PredictionService:
-    """Get singleton PredictionService instance."""
-    global _prediction_service
-    if _prediction_service is None:
-        _prediction_service = PredictionService()
-    return _prediction_service
+def get_wnba_prediction_service() -> PredictionService:
+    if "wnba" not in _prediction_services:
+        _prediction_services["wnba"] = PredictionService(config=WNBA_CONFIG)
+    return _prediction_services["wnba"]
+
+from fastapi import Request
+from typing import Optional
+
+def get_prediction_service(request: Optional[Request] = None) -> PredictionService:
+    """Get PredictionService instance dynamically based on the request URL."""
+    if request and request.url.path.startswith("/wnba/"):
+        return get_wnba_prediction_service()
+    return get_nba_prediction_service()
 

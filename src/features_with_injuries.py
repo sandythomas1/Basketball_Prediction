@@ -14,13 +14,12 @@ Output: data/processed/features_with_injuries.csv  (31 features)
 
 import pandas as pd
 from pathlib import Path
+import argparse
+import sys
 
-# ==========================
-# Paths
-# ==========================
-IN_PATH   = Path("/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/data/processed/games_with_elo_rest.csv")
-ODDS_PATH = Path("/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/data/processed/odds_with_team_ids.csv")
-OUT_PATH  = Path("/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/data/processed/features_with_injuries.csv")
+# Add core path to import LeagueConfig
+sys.path.insert(0, str(Path(__file__).parent))
+from core.league_config import NBA_CONFIG, WNBA_CONFIG, CBB_CONFIG
 
 # rolling window (same as features_3.py)
 N = 10
@@ -122,7 +121,24 @@ def merge_back(df, tg):
 # ==========================
 
 def main():
-    df = pd.read_csv(IN_PATH, parse_dates=["game_date"])
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--league", default="nba", choices=["nba", "wnba", "cbb"])
+    args = parser.parse_args()
+    
+    if args.league == "wnba":
+        in_path = Path(__file__).parent.parent / "data" / "processed" / "wnba_games_with_elo_rest.csv"
+        odds_path = Path(__file__).parent.parent / "data" / "processed" / "wnba_odds_with_team_ids.csv"
+        out_path = Path(__file__).parent.parent / "data" / "processed" / "wnba_features_with_injuries.csv"
+    elif args.league == "cbb":
+        in_path = Path(__file__).parent.parent / "data" / "processed" / "cbb_games_with_elo_rest.csv"
+        odds_path = Path(__file__).parent.parent / "data" / "processed" / "cbb_odds_with_team_ids.csv"
+        out_path = Path(__file__).parent.parent / "data" / "processed" / "cbb_features_with_injuries.csv"
+    else:
+        in_path = Path(__file__).parent.parent / "data" / "processed" / "games_with_elo_rest.csv"
+        odds_path = Path(__file__).parent.parent / "data" / "processed" / "odds_with_team_ids.csv"
+        out_path = Path(__file__).parent.parent / "data" / "processed" / "features_with_injuries.csv"
+
+    df = pd.read_csv(in_path, parse_dates=["game_date"])
     df["season_id"] = df["season_id"].astype(int)
 
     # Elo diff
@@ -144,8 +160,8 @@ def main():
     # =========================================================================
     print("\nMerging betting odds...")
 
-    if ODDS_PATH.exists():
-        odds = pd.read_csv(ODDS_PATH, parse_dates=["date"])
+    if odds_path.exists():
+        odds = pd.read_csv(odds_path, parse_dates=["date"])
         odds = odds.rename(columns={"date": "game_date"})
 
         odds["market_prob_home"] = odds["moneyline_home"].apply(moneyline_to_prob)
@@ -170,7 +186,7 @@ def main():
         feat["market_prob_home"] = feat["market_prob_home"].fillna(0.5)
         feat["market_prob_away"] = feat["market_prob_away"].fillna(0.5)
     else:
-        print(f"  Warning: Odds file not found at {ODDS_PATH}")
+        print(f"  Warning: Odds file not found at {odds_path}")
         print("  Using neutral 0.5 for all market probabilities")
         feat["market_prob_home"] = 0.5
         feat["market_prob_away"] = 0.5
@@ -221,10 +237,10 @@ def main():
 
     model_df = feat[["game_date", "season_id"] + feature_cols + ["home_win"]].copy()
 
-    OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    model_df.to_csv(OUT_PATH, index=False)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    model_df.to_csv(out_path, index=False)
 
-    print(f"\nSaved: {OUT_PATH}")
+    print(f"\nSaved: {out_path}")
     print(f"Shape: {model_df.shape}")
     print(f"\nFeature columns ({len(feature_cols)} total):")
     for i, col in enumerate(feature_cols, 1):

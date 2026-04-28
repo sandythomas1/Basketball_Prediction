@@ -19,7 +19,7 @@ from pathlib import Path
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
@@ -116,11 +116,18 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 # Routes
 # =============================================================================
 
+# NBA Routes (Default)
 app.include_router(health.router)
 app.include_router(predictions.router)
 app.include_router(games.router)
 app.include_router(playoff_predictions.router)
 app.include_router(chat.router)
+
+# WNBA Routes
+wnba_router = APIRouter(prefix="/wnba")
+wnba_router.include_router(predictions.router)
+wnba_router.include_router(games.router)
+app.include_router(wnba_router)
 
 
 # =============================================================================
@@ -172,7 +179,7 @@ async def startup_event():
     """
     Initialize components on startup.
     """
-    from .dependencies import get_prediction_service
+    from .dependencies import get_prediction_service, get_wnba_prediction_service
     from core.state_sync import download_state_from_gcs
 
     state_dir = Path(__file__).parent.parent.parent / "state"
@@ -190,9 +197,14 @@ async def startup_event():
         print(f"☁ Synced {synced_files} state file(s) from GCS")
     
     try:
-        service = get_prediction_service()
-        print(f"✓ Loaded predictor: {service.predictor}")
-        print(f"✓ Loaded state: {service.elo_tracker}")
+        service = get_prediction_service() # pre-warm NBA
+        print(f"✓ Loaded NBA predictor: {service.predictor}")
+        print(f"✓ Loaded NBA state: {service.elo_tracker}")
+        
+        wnba_service = get_wnba_prediction_service() # pre-warm WNBA
+        print(f"✓ Loaded WNBA predictor: {wnba_service.predictor}")
+        print(f"✓ Loaded WNBA state: {wnba_service.elo_tracker}")
+        
         print("✓ API ready to serve predictions")
     except Exception as e:
         print(f"⚠ Warning: Could not load prediction service: {e}")

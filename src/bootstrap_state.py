@@ -13,19 +13,12 @@ import pandas as pd
 from pathlib import Path
 from collections import deque
 
-# ==========================
-# Paths
-# ==========================
-GAMES_PATH = Path(
-    "/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/data/processed/games_with_elo_rest.csv"
-)
+import argparse
+import sys
 
-STATE_DIR = Path(
-    "/mnt/c/Users/sandy/Desktop/dev/Basketball_Prediction/state"
-)
-
-ELO_STATE_PATH = STATE_DIR / "elo.json"
-STATS_STATE_PATH = STATE_DIR / "stats.json"
+# Add core path to import LeagueConfig
+sys.path.insert(0, str(Path(__file__).parent))
+from core.league_config import NBA_CONFIG, WNBA_CONFIG, CBB_CONFIG
 
 # ==========================
 # Elo constants (from build_elo.py)
@@ -134,8 +127,28 @@ def compute_team_stats(games: pd.DataFrame, window: int = 10) -> dict[int, list[
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--league", default="nba", choices=["nba", "wnba", "cbb"])
+    args = parser.parse_args()
+    
+    if args.league == "wnba":
+        config = WNBA_CONFIG
+        games_path = Path(__file__).parent.parent / "data" / "processed" / "wnba_games_with_elo_rest.csv"
+        state_dir = Path(__file__).parent.parent / config.state_dir
+    elif args.league == "cbb":
+        config = CBB_CONFIG
+        games_path = Path(__file__).parent.parent / "data" / "processed" / "cbb_games_with_elo_rest.csv"
+        state_dir = Path(__file__).parent.parent / config.state_dir
+    else:
+        config = NBA_CONFIG
+        games_path = Path(__file__).parent.parent / "data" / "processed" / "games_with_elo_rest.csv"
+        state_dir = Path(__file__).parent.parent / config.state_dir
+
+    elo_state_path = state_dir / "elo.json"
+    stats_state_path = state_dir / "stats.json"
+
     print("Loading games data...")
-    games = pd.read_csv(GAMES_PATH, parse_dates=["game_date"])
+    games = pd.read_csv(games_path, parse_dates=["game_date"])
     games["season_id"] = games["season_id"].astype(int)
     
     print(f"Total games: {len(games)}")
@@ -167,19 +180,19 @@ def main():
     
     # Save state
     print("\nSaving state files...")
-    STATE_DIR.mkdir(parents=True, exist_ok=True)
+    state_dir.mkdir(parents=True, exist_ok=True)
     
     # Elo state (convert int keys to strings for JSON)
     elo_json = {str(k): v for k, v in elo_state.items()}
-    with open(ELO_STATE_PATH, "w", encoding="utf-8") as f:
+    with open(elo_state_path, "w", encoding="utf-8") as f:
         json.dump(elo_json, f, indent=2)
-    print(f"  Saved Elo state to: {ELO_STATE_PATH}")
+    print(f"  Saved Elo state to: {elo_state_path}")
     
     # Stats state (convert int keys to strings for JSON)
     stats_json = {str(k): v for k, v in stats_state.items()}
-    with open(STATS_STATE_PATH, "w", encoding="utf-8") as f:
+    with open(stats_state_path, "w", encoding="utf-8") as f:
         json.dump(stats_json, f, indent=2)
-    print(f"  Saved stats state to: {STATS_STATE_PATH}")
+    print(f"  Saved stats state to: {stats_state_path}")
     
     print("\nBootstrap complete!")
 

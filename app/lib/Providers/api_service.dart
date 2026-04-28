@@ -76,8 +76,9 @@ class ApiService {
   ///
   /// Falls back to null if the backend is unreachable so the caller can
   /// degrade to the ESPN-direct path.
-  Future<Map<String, dynamic>?> fetchGamesWithPredictions() async {
-    final url = '$fastApiBaseUrl/games/${_getPstDateIso()}/with-predictions';
+  Future<Map<String, dynamic>?> fetchGamesWithPredictions(String league) async {
+    final prefix = league == 'nba' ? '' : '/$league';
+    final url = '$fastApiBaseUrl$prefix/games/${_getPstDateIso()}/with-predictions';
     if (AppConfig.enableDebugLogging) {
       debugPrint('Fetching games+predictions from: $url');
     }
@@ -113,13 +114,14 @@ class ApiService {
   }
 
   /// Fetch today's games from ESPN API (fallback when backend is down).
-  Future<Map<String, dynamic>> fetchEspnScoreboard() async {
+  Future<Map<String, dynamic>> fetchEspnScoreboard(String league) async {
     final dateParam = _getPstDateCompact();
+    final leaguePath = league == 'nba' ? 'nba' : league;
 
     try {
       final response = await http
           .get(
-            Uri.parse('$espnBaseUrl/scoreboard?dates=$dateParam'),
+            Uri.parse('$espnBaseUrl/$leaguePath/scoreboard?dates=$dateParam'),
             headers: {
               'Accept': 'application/json',
               'User-Agent': 'Signal-Sports/2.0',
@@ -159,8 +161,9 @@ class ApiService {
   }
 
   /// Fetch predictions from FastAPI backend (fallback path).
-  Future<Map<String, dynamic>?> fetchPredictions() async {
-    final url = '$fastApiBaseUrl/predict/today';
+  Future<Map<String, dynamic>?> fetchPredictions(String league) async {
+    final prefix = league == 'nba' ? '' : '/$league';
+    final url = '$fastApiBaseUrl$prefix/predict/today';
     if (AppConfig.enableDebugLogging) {
       debugPrint('Fetching predictions from: $url');
     }

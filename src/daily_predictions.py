@@ -43,6 +43,13 @@ def parse_args():
         description="Generate predictions for NBA games."
     )
     parser.add_argument(
+        "--league",
+        type=str,
+        default="nba",
+        choices=["nba", "wnba", "cbb"],
+        help="League to predict (nba, wnba, cbb). Default: nba",
+    )
+    parser.add_argument(
         "--date",
         type=str,
         default=None,
@@ -104,22 +111,31 @@ def main():
     else:
         target_date = date.today()
 
+    from core.league_config import NBA_CONFIG, WNBA_CONFIG, CBB_CONFIG
+
+    if args.league == "wnba":
+        config = WNBA_CONFIG
+    elif args.league == "cbb":
+        config = CBB_CONFIG
+    else:
+        config = NBA_CONFIG
+
     # Setup paths
     project_root = Path(__file__).parent.parent
-    state_dir = Path(args.state_dir) if args.state_dir else project_root / "state"
-    model_path = Path(args.model_path) if args.model_path else project_root / "models" / "xgb_v3_with_injuries.json"
-    calibrator_path = Path(args.calibrator_path) if args.calibrator_path else project_root / "models" / "calibrator_v3.pkl"
+    state_dir = Path(args.state_dir) if args.state_dir else project_root / config.state_dir
+    model_path = Path(args.model_path) if args.model_path else project_root / config.model_path
+    calibrator_path = Path(args.calibrator_path) if args.calibrator_path else project_root / config.calibrator_path
 
     print(f"{'=' * 70}")
-    print(f"NBA Game Predictions - {target_date}")
+    print(f"{config.league_name} Game Predictions - {target_date}")
     print(f"{'=' * 70}")
 
     # Initialize components
     print("\nLoading components...")
     
     state_manager = StateManager(state_dir)
-    team_mapper = TeamMapper()
-    espn_client = ESPNClient(team_mapper)
+    team_mapper = TeamMapper(lookup_path=project_root / config.team_lookup_csv) if config.team_lookup_csv else TeamMapper()
+    espn_client = ESPNClient(team_mapper, league_slug=config.espn_slug)
 
     # Load state
     if not state_manager.exists():
@@ -143,8 +159,8 @@ def main():
 
     # Initialize injury client (unless disabled)
     injury_client = None
-    if not args.no_injury_adjustments:
-        injury_client = InjuryClient(team_mapper)
+    if not args.no_injury_adjustments and config.injury_source != "none":
+        injury_client = InjuryClient(team_mapper, league_slug=config.espn_slug)
         print(f"  ✓ {injury_client} (Elo adjustments enabled)")
     
     # Create feature builder with injury support
@@ -157,8 +173,8 @@ def main():
     # Initialize odds client (unless disabled)
     odds_client = None
     odds_dict = {}
-    if not args.no_odds:
-        odds_client = OddsClient(team_mapper=team_mapper)
+    if not args.no_odds and config.odds_sport_key:
+        odds_client = OddsClient(team_mapper=team_mapper, sport_key=config.odds_sport_key)
         print(f"  ✓ {odds_client}")
 
     # Fetch games from ESPN

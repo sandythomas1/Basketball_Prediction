@@ -53,15 +53,15 @@ class GameResult:
 
 class ESPNClient:
     """
-    Client for fetching NBA game data from ESPN's public API.
+    Client for fetching game data from ESPN's public API.
     
-    Uses the same endpoint as the Flutter app.
+    Uses the same endpoint structure across multiple leagues.
     """
 
-    BASE_URL = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard"
+    BASE_TEMPLATE = "https://site.api.espn.com/apis/site/v2/sports/basketball/{slug}/{endpoint}"
     TIMEOUT = 10  # seconds
 
-    def __init__(self, team_mapper: Optional[TeamMapper] = None):
+    def __init__(self, team_mapper: Optional[TeamMapper] = None, league_slug: str = "nba"):
         """
         Initialize ESPN client.
 
@@ -70,11 +70,15 @@ class ESPNClient:
                         If None, a new one will be created.
         """
         self.team_mapper = team_mapper or TeamMapper()
+        self.league_slug = league_slug
         self._session = requests.Session()
         self._session.headers.update({
             "Accept": "application/json",
             "User-Agent": "NBA-Predictor/1.0",
         })
+
+    def _url(self, endpoint: str) -> str:
+        return self.BASE_TEMPLATE.format(slug=self.league_slug, endpoint=endpoint)
 
     def get_scoreboard(self, game_date: Optional[str | date] = None) -> dict:
         """
@@ -97,7 +101,7 @@ class ESPNClient:
             params["dates"] = game_date
 
         response = self._session.get(
-            self.BASE_URL,
+            self._url("scoreboard"),
             params=params,
             timeout=self.TIMEOUT,
         )
