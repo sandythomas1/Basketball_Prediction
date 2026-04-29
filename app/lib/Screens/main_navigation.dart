@@ -9,6 +9,8 @@ import 'live_games_screen.dart';
 import 'finished_games_screen.dart';
 import 'playoff_games_today_screen.dart';
 import 'playoff_bracket_screen.dart';
+import 'bracket_simulator_screen.dart';
+import 'offseason_hub_screen.dart';
 
 /// Main navigation shell with bottom navigation bar
 class MainNavigation extends ConsumerStatefulWidget {
@@ -34,7 +36,9 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
       const TodayGamesScreen(),
       const LiveGamesScreen(),
       const FinishedGamesScreen(),
+      const OffseasonHubScreen(),
       if (playoffsActive) const PlayoffGamesTodayScreen(),
+      const BracketSimulatorScreen(),
     ];
 
     // Clamp index in case playoffs tab appears/disappears mid-session.
@@ -83,14 +87,28 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
                   isSelected: safeIndex == 2,
                   onTap: () => setState(() => _currentIndex = 2),
                 ),
+                _NavItem(
+                  icon: Icons.beach_access_outlined,
+                  activeIcon: Icons.beach_access,
+                  label: 'Offseason',
+                  isSelected: safeIndex == 3,
+                  onTap: () => setState(() => _currentIndex = 3),
+                ),
                 if (playoffsActive)
                   _NavItem(
                     icon: Icons.emoji_events_outlined,
                     activeIcon: Icons.emoji_events,
                     label: 'Playoffs',
-                    isSelected: safeIndex == 3,
-                    onTap: () => setState(() => _currentIndex = 3),
+                    isSelected: safeIndex == 4,
+                    onTap: () => setState(() => _currentIndex = 4),
                   ),
+                _NavItem(
+                  icon: Icons.account_tree_outlined,
+                  activeIcon: Icons.account_tree,
+                  label: 'Madness',
+                  isSelected: safeIndex == (playoffsActive ? 5 : 4),
+                  onTap: () => setState(() => _currentIndex = (playoffsActive ? 5 : 4)),
+                ),
               ],
             ),
           ),

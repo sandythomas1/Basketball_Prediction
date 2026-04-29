@@ -24,7 +24,7 @@ from core import (
     OddsClient,
 )
 from core.injury_client import InjuryClient
-from core.league_config import NBA_CONFIG, WNBA_CONFIG, LeagueConfig
+from core.league_config import NBA_CONFIG, WNBA_CONFIG, CBB_CONFIG, LeagueConfig
 
 
 # =============================================================================
@@ -124,7 +124,7 @@ class PredictionService:
         self.state_manager = StateManager(get_project_root() / config.state_dir)
         self.espn_client = ESPNClient(self.team_mapper, league_slug=config.espn_slug)
         self.odds_client = OddsClient(team_mapper=self.team_mapper, sport_key=config.odds_sport_key)
-        self.injury_client = InjuryClient(team_mapper=self.team_mapper, league_slug=config.espn_slug)  # NEW: Injury data
+        self.injury_client = None if config.injury_source == "none" else InjuryClient(team_mapper=self.team_mapper, league_slug=config.espn_slug)
         self._predictor_with_confidence = None
         self._elo_tracker = None
         self._stats_tracker = None
@@ -146,9 +146,8 @@ class PredictionService:
             self._confidence_scorer = ConfidenceScorer(self._stats_tracker)
             
             # Create predictor with confidence scorer
-            models_dir = get_project_root() / "models"
-            model_path = models_dir / self.config.model_filename
-            calibrator_path = models_dir / self.config.calibrator_filename
+            model_path = get_project_root() / self.config.model_path
+            calibrator_path = get_project_root() / self.config.calibrator_path
             
             self._predictor_with_confidence = Predictor(
                 model_path,
@@ -226,12 +225,18 @@ def get_wnba_prediction_service() -> PredictionService:
         _prediction_services["wnba"] = PredictionService(config=WNBA_CONFIG)
     return _prediction_services["wnba"]
 
-from fastapi import Request
-from typing import Optional
+def get_cbb_prediction_service() -> PredictionService:
+    if "cbb" not in _prediction_services:
+        _prediction_services["cbb"] = PredictionService(config=CBB_CONFIG)
+    return _prediction_services["cbb"]
 
-def get_prediction_service(request: Optional[Request] = None) -> PredictionService:
+from fastapi import Request
+
+def get_prediction_service(request: Request) -> PredictionService:
     """Get PredictionService instance dynamically based on the request URL."""
     if request and request.url.path.startswith("/wnba/"):
         return get_wnba_prediction_service()
+    if request and request.url.path.startswith("/cbb/"):
+        return get_cbb_prediction_service()
     return get_nba_prediction_service()
 

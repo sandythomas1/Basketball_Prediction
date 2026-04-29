@@ -25,7 +25,7 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
 from .config import get_settings
-from .routes import predictions, games, health, playoff_predictions, chat
+from .routes import predictions, games, health, playoff_predictions, chat, bracket, offseason
 from .middleware import RateLimiter, SecurityHeadersMiddleware
 
 
@@ -122,12 +122,20 @@ app.include_router(predictions.router)
 app.include_router(games.router)
 app.include_router(playoff_predictions.router)
 app.include_router(chat.router)
+app.include_router(offseason.router)
 
 # WNBA Routes
 wnba_router = APIRouter(prefix="/wnba")
 wnba_router.include_router(predictions.router)
 wnba_router.include_router(games.router)
 app.include_router(wnba_router)
+
+# CBB Routes
+cbb_router = APIRouter(prefix="/cbb")
+cbb_router.include_router(predictions.router)
+cbb_router.include_router(games.router)
+cbb_router.include_router(bracket.router)
+app.include_router(cbb_router)
 
 
 # =============================================================================
@@ -179,7 +187,7 @@ async def startup_event():
     """
     Initialize components on startup.
     """
-    from .dependencies import get_prediction_service, get_wnba_prediction_service
+    from .dependencies import get_prediction_service, get_nba_prediction_service, get_wnba_prediction_service, get_cbb_prediction_service
     from core.state_sync import download_state_from_gcs
 
     state_dir = Path(__file__).parent.parent.parent / "state"
@@ -197,13 +205,17 @@ async def startup_event():
         print(f"☁ Synced {synced_files} state file(s) from GCS")
     
     try:
-        service = get_prediction_service() # pre-warm NBA
+        service = get_nba_prediction_service() # pre-warm NBA
         print(f"✓ Loaded NBA predictor: {service.predictor}")
         print(f"✓ Loaded NBA state: {service.elo_tracker}")
         
         wnba_service = get_wnba_prediction_service() # pre-warm WNBA
         print(f"✓ Loaded WNBA predictor: {wnba_service.predictor}")
         print(f"✓ Loaded WNBA state: {wnba_service.elo_tracker}")
+        
+        cbb_service = get_cbb_prediction_service() # pre-warm CBB
+        print(f"✓ Loaded CBB predictor: {cbb_service.predictor}")
+        print(f"✓ Loaded CBB state: {cbb_service.elo_tracker}")
         
         print("✓ API ready to serve predictions")
     except Exception as e:

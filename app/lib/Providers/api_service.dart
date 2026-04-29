@@ -196,6 +196,96 @@ class ApiService {
       return null;
     }
   }
+
+  /// Simulate a March Madness bracket using the CBB model
+  Future<Map<String, dynamic>?> simulateBracket(List<int> teamIds, {int iterations = 1000}) async {
+    final url = '$fastApiBaseUrl/cbb/bracket/simulate';
+    if (AppConfig.enableDebugLogging) {
+      debugPrint('Simulating bracket at: $url');
+    }
+
+    try {
+      final headers = await _authHeaders();
+      headers['Content-Type'] = 'application/json';
+      
+      final body = json.encode({
+        'team_ids': teamIds,
+        'iterations': iterations,
+      });
+
+      final response = await http
+          .post(Uri.parse(url), headers: headers, body: body)
+          .timeout(
+            Duration(seconds: AppConfig.apiLongTimeoutSeconds),
+            onTimeout: () => throw ApiException(
+              'Simulation API timed out',
+              statusCode: 408,
+              isTimeout: true,
+            ),
+          );
+
+      if (AppConfig.enableDebugLogging) {
+        debugPrint('Simulation API response: ${response.statusCode}');
+      }
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body) as Map<String, dynamic>;
+      } else {
+        debugPrint('Simulation error: ${response.body}');
+      }
+      return null;
+    } catch (e) {
+      if (AppConfig.enableDebugLogging) {
+        debugPrint('Failed to simulate bracket: $e');
+      }
+      return null;
+    }
+  }
+
+  /// Fetch offseason news
+  Future<Map<String, dynamic>?> fetchOffseasonNews() async {
+    final url = '$fastApiBaseUrl/nba/offseason/news';
+    return _fetchGet(url, 'Offseason News');
+  }
+
+  /// Fetch draft prospects
+  Future<Map<String, dynamic>?> fetchDraftProspects() async {
+    final url = '$fastApiBaseUrl/nba/offseason/draft';
+    return _fetchGet(url, 'Draft Prospects');
+  }
+
+  /// Fetch free agents
+  Future<Map<String, dynamic>?> fetchFreeAgents() async {
+    final url = '$fastApiBaseUrl/nba/offseason/free-agents';
+    return _fetchGet(url, 'Free Agents');
+  }
+
+  /// Helper for simple GET requests
+  Future<Map<String, dynamic>?> _fetchGet(String url, String name) async {
+    try {
+      final headers = await _authHeaders();
+      final response = await http
+          .get(Uri.parse(url), headers: headers)
+          .timeout(
+            Duration(seconds: AppConfig.apiTimeoutSeconds),
+            onTimeout: () => throw ApiException(
+              '$name API timed out',
+              statusCode: 408,
+              isTimeout: true,
+            ),
+          );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body) as Map<String, dynamic>;
+      }
+      return null;
+    } catch (e) {
+      if (AppConfig.enableDebugLogging) {
+        debugPrint('Failed to fetch $name: $e');
+      }
+      return null;
+    }
+  }
 }
 
 /// Custom exception for API errors.
