@@ -589,15 +589,6 @@ class _AppDrawer extends ConsumerWidget {
                   }
                 ),
                 const Divider(height: 1),
-                _DrawerItem(
-                  icon: Icons.radar,
-                  label: 'Recruit Radar',
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.pushNamed(context, '/recruit-radar');
-                  },
-                ),
-                const Divider(height: 1),
                 _DrawerSubscriptionItem(
                   onTap: () {
                     Navigator.pop(context);
