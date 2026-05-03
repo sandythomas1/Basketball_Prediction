@@ -6,6 +6,7 @@ import '../Providers/games_provider.dart';
 import '../Widgets/team_logo.dart';
 import '../theme/app_theme.dart';
 import '../Providers/league_provider.dart';
+import 'game_detail_screen.dart';
 
 class FinishedGamesScreen extends ConsumerWidget {
   const FinishedGamesScreen({super.key});
@@ -206,7 +207,7 @@ class FinishedGamesScreen extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: context.textMuted.withOpacity(0.1),
+              color: context.textMuted.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
@@ -246,107 +247,108 @@ class _FinishedGameCardState extends State<_FinishedGameCard> {
     final awayScore = int.tryParse(game.awayScore) ?? 0;
     final homeWon = homeScore > awayScore;
 
-    return GestureDetector(
-      onTap: game.hasBoxScore
-          ? () => setState(() => _expanded = !_expanded)
-          : null,
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-        decoration: BoxDecoration(
-          color: context.bgCard,
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      decoration: BoxDecoration(
+        color: context.bgCard,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => GameDetailScreen(game: game)),
+          ),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: context.borderColor),
-        ),
-        child: Column(
-          children: [
-            // Top section: scores
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  _TeamScoreRow(
-                    team: game.homeTeam,
-                    score: game.homeScore,
-                    isWinner: homeWon,
-                    isAway: false,
-                  ),
-                  const SizedBox(height: 10),
-                  _TeamScoreRow(
-                    team: game.awayTeam,
-                    score: game.awayScore,
-                    isWinner: !homeWon && awayScore != homeScore,
-                    isAway: true,
-                  ),
-                  const SizedBox(height: 12),
-                  // Footer
-                  Container(
-                    padding: const EdgeInsets.only(top: 12),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        top: BorderSide(color: context.borderColor),
-                      ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    _TeamScoreRow(
+                      team: game.homeTeam,
+                      score: game.homeScore,
+                      isWinner: homeWon,
+                      isAway: false,
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          game.date,
-                          style: GoogleFonts.spaceMono(
-                            fontSize: 12,
-                            color: context.textSecondary,
+                    const SizedBox(height: 10),
+                    _TeamScoreRow(
+                      team: game.awayTeam,
+                      score: game.awayScore,
+                      isWinner: !homeWon && awayScore != homeScore,
+                      isAway: true,
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.only(top: 12),
+                      decoration: BoxDecoration(
+                        border: Border(top: BorderSide(color: context.borderColor)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            game.date,
+                            style: GoogleFonts.spaceMono(
+                              fontSize: 12,
+                              color: context.textSecondary,
+                            ),
                           ),
-                        ),
-                        Row(
-                          children: [
-                            if (game.hasBoxScore) ...[
-                              Icon(
-                                _expanded
-                                    ? Icons.expand_less
-                                    : Icons.expand_more,
-                                size: 18,
-                                color: context.textMuted,
-                              ),
-                              const SizedBox(width: 8),
-                            ],
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: context.textMuted.withOpacity(0.15),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                'FINAL',
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: context.textSecondary,
-                                  letterSpacing: 0.5,
+                          Row(
+                            children: [
+                              if (game.hasBoxScore) ...[
+                                GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onTap: () => setState(() => _expanded = !_expanded),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(right: 8),
+                                    child: Icon(
+                                      _expanded ? Icons.expand_less : Icons.expand_more,
+                                      size: 18,
+                                      color: context.textMuted,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: context.textMuted.withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  'FINAL',
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: context.textSecondary,
+                                    letterSpacing: 0.5,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-
-            // Expandable boxscore
-            AnimatedCrossFade(
-              firstChild: const SizedBox.shrink(),
-              secondChild: game.hasBoxScore
-                  ? _BoxScoreSection(game: game)
-                  : const SizedBox.shrink(),
-              crossFadeState:
-                  _expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-              duration: const Duration(milliseconds: 250),
-            ),
-          ],
+              AnimatedCrossFade(
+                firstChild: const SizedBox.shrink(),
+                secondChild: game.hasBoxScore
+                    ? _BoxScoreSection(game: game)
+                    : const SizedBox.shrink(),
+                crossFadeState: _expanded
+                    ? CrossFadeState.showSecond
+                    : CrossFadeState.showFirst,
+                duration: const Duration(milliseconds: 250),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -626,7 +628,7 @@ class _TeamScoreRow extends StatelessWidget {
           teamName: team,
           size: 32,
           backgroundColor: isWinner
-              ? AppColors.accentGreen.withOpacity(0.1)
+              ? AppColors.accentGreen.withValues(alpha: 0.1)
               : context.bgSecondary,
         ),
         const SizedBox(width: 10),

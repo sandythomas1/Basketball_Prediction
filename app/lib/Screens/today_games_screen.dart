@@ -50,19 +50,21 @@ class TodayGamesScreen extends ConsumerWidget {
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 8),
-            padding: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
             decoration: BoxDecoration(
               color: context.bgCard,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: context.borderColor, width: 1.5),
             ),
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
                 value: ref.watch(leagueProvider),
-                icon: Icon(Icons.keyboard_arrow_down, color: context.textSecondary, size: 20),
+                icon: Icon(Icons.keyboard_arrow_down, color: context.textSecondary, size: 18),
                 dropdownColor: context.bgCard,
+                borderRadius: BorderRadius.circular(12),
                 style: GoogleFonts.dmSans(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
                   color: context.textPrimary,
                 ),
                 onChanged: (String? newValue) {

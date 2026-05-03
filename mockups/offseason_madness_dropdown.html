@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Signal Sports – Offseason · Madness · Dropdown Mockups</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Space+Mono:wght@400;700&display=swap');
+
+  /* ─── Design tokens ─────────────────────────────────────────── */
+  :root {
+    --bg-primary:    #0d1117;
+    --bg-secondary:  #161b22;
+    --bg-card:       #21262d;
+    --bg-card-alt:   #2d333b;
+    --text-primary:  #f0f6fc;
+    --text-secondary:#8b949e;
+    --text-muted:    #6e7681;
+    --border:        #30363d;
+    --accent-orange: #e07b2a;
+    --accent-teal:   #00d4cc;
+    --accent-green:  #3fb950;
+    --accent-blue:   #58a6ff;
+    --accent-red:    #f85149;
+    --accent-amber:  #d29922;
+    --accent-purple: #bc8cff;
+    --shadow-card:   0 4px 20px rgba(0,0,0,.45);
+  }
+
+  [data-theme="light"] {
+    --bg-primary:    #f6f8fa;
+    --bg-secondary:  #ffffff;
+    --bg-card:       #ffffff;
+    --bg-card-alt:   #f0f3f6;
+    --text-primary:  #1f2328;
+    --text-secondary:#636c76;
+    --text-muted:    #9198a1;
+    --border:        #d0d7de;
+    --shadow-card:   0 2px 12px rgba(0,0,0,.10);
+  }
+
+  /* System preference fallback */
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg-primary:    #f6f8fa;
+      --bg-secondary:  #ffffff;
+      --bg-card:       #ffffff;
+      --bg-card-alt:   #f0f3f6;
+      --text-primary:  #1f2328;
+      --text-secondary:#636c76;
+      --text-muted:    #9198a1;
+      --border:        #d0d7de;
+      --shadow-card:   0 2px 12px rgba(0,0,0,.10);
+    }
+  }
+
+  /* ─── Reset ─────────────────────────────────────────────────── */
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+  /* ─── Page shell ─────────────────────────────────────────────── */
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    transition: background .25s, color .25s;
+  }
+
+  /* ─── Mockup switcher (outside phone) ───────────────────────── */
+  .page-header {
+    text-align: center;
+    padding: 28px 16px 0;
+  }
+  .page-header h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -.3px;
+  }
+  .page-header p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+
+  .switcher {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px;
+    flex-wrap: wrap;
+  }
+  .switch-btn {
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: var(--bg-card);
+    border: 1.5px solid var(--border);
+    transition: all .2s;
+  }
+  .switch-btn.active {
+    background: var(--accent-teal);
+    color: #fff;
+    border-color: var(--accent-teal);
+  }
+
+  .theme-toggle {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 4px;
+  }
+  .theme-toggle button {
+    padding: 6px 16px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    border: 1.5px solid var(--border);
+    transition: all .2s;
+  }
+  .theme-toggle button:hover { border-color: var(--accent-teal); color: var(--accent-teal); }
+
+  /* ─── Phone frame ────────────────────────────────────────────── */
+  .frame-wrap {
+    display: flex;
+    justify-content: center;
+    padding: 16px 16px 40px;
+  }
+  .phone {
+    width: 375px;
+    min-height: 720px;
+    background: var(--bg-primary);
+    border-radius: 40px;
+    overflow: hidden;
+    border: 2px solid var(--border);
+    box-shadow: 0 24px 80px rgba(0,0,0,.35);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    transition: background .25s;
+  }
+
+  /* ─── Status bar ─────────────────────────────────────────────── */
+  .status-bar {
+    height: 44px;
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border);
+  }
+  .status-icons { display: flex; gap: 6px; align-items: center; }
+
+  /* ─── App bar ────────────────────────────────────────────────── */
+  .app-bar {
+    height: 56px;
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .app-bar-title {
+    font-size: 18px;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--accent-orange), var(--accent-amber));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    flex: 1;
+    letter-spacing: -.2px;
+  }
+  .app-bar-action {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-secondary);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    font-size: 16px;
+  }
+
+  /* ─── Screen content ─────────────────────────────────────────── */
+  .screen { display: none; flex: 1; flex-direction: column; }
+  .screen.active { display: flex; }
+
+  /* ─── Bottom nav ─────────────────────────────────────────────── */
+  .bottom-nav {
+    height: 68px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 8px 8px;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 6px 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background .2s;
+    min-width: 52px;
+  }
+  .nav-item.active { background: rgba(0,212,204,.10); }
+  .nav-item svg { width: 22px; height: 22px; }
+  .nav-item span { font-size: 10px; font-weight: 500; color: var(--text-secondary); }
+  .nav-item.active span, .nav-item.active svg { color: var(--accent-teal); fill: var(--accent-teal); }
+  .nav-item svg { fill: var(--text-secondary); }
+
+  /* =========================================================
+     SCREEN 1 — OFFSEASON HUB
+  ========================================================= */
+  .offseason-tabs {
+    display: flex;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+  }
+  .offseason-tab {
+    flex: 1;
+    padding: 14px 0;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    position: relative;
+    transition: color .2s;
+  }
+  .offseason-tab.active { color: var(--accent-orange); }
+  .offseason-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 16px; right: 16px;
+    height: 2.5px;
+    background: var(--accent-orange);
+    border-radius: 2px;
+  }
+
+  .offseason-body { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+
+  .news-card {
+    background: var(--bg-card);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    cursor: pointer;
+    transition: transform .15s;
+  }
+  .news-card:hover { transform: translateY(-1px); }
+  .news-img {
+    width: 100%; height: 140px;
+    background: linear-gradient(135deg, #1e3a5f, #2a4a7f);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px; color: rgba(255,255,255,.4);
+  }
+  [data-theme="light"] .news-img { background: linear-gradient(135deg, #c9dcf0, #a8c8e8); }
+  .news-content { padding: 14px; }
+  .news-source {
+    font-size: 10px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase;
+    color: var(--accent-teal); margin-bottom: 6px;
+  }
+  .news-headline { font-size: 14px; font-weight: 600; color: var(--text-primary); line-height: 1.4; margin-bottom: 6px; }
+  .news-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+  .news-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px;
+    border-top: 1px solid var(--border);
+  }
+  .news-time { font-size: 11px; color: var(--text-muted); }
+  .news-read-more { font-size: 11px; font-weight: 600; color: var(--accent-teal); }
+
+  /* Draft tab */
+  .draft-list { display: flex; flex-direction: column; gap: 10px; }
+  .draft-card {
+    background: var(--bg-card);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: var(--shadow-card);
+  }
+  .pick-badge {
+    min-width: 40px; height: 40px;
+    border-radius: 10px;
+    background: rgba(88,166,255,.15);
+    border: 1px solid rgba(88,166,255,.3);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-size: 8px; font-weight: 700; color: var(--accent-blue); text-transform: uppercase; letter-spacing: .3px;
+  }
+  .pick-badge .pick-num { font-size: 16px; font-weight: 700; line-height: 1; }
+  .draft-info { flex: 1; }
+  .draft-name { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .draft-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .draft-pos {
+    font-size: 11px; font-weight: 700; padding: 3px 8px;
+    border-radius: 8px;
+    background: rgba(224,123,42,.15);
+    color: var(--accent-orange);
+    border: 1px solid rgba(224,123,42,.3);
+  }
+
+  /* Free Agency tab */
+  .fa-card {
+    background: var(--bg-card);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: var(--shadow-card);
+  }
+  .player-avatar {
+    width: 44px; height: 44px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, #1e3a5f, #2a4a7f);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 700; color: rgba(255,255,255,.7);
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+  }
+  .fa-info { flex: 1; }
+  .fa-name { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .fa-team { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .fa-contract {
+    font-size: 12px; font-weight: 700;
+    color: var(--accent-green);
+  }
+  .fa-pos {
+    font-size: 11px; font-weight: 700; padding: 3px 8px;
+    border-radius: 8px;
+    background: rgba(63,185,80,.12);
+    color: var(--accent-green);
+    border: 1px solid rgba(63,185,80,.25);
+    align-self: flex-start;
+    margin-top: 4px;
+    display: inline-block;
+  }
+
+  .empty-state {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 12px; color: var(--text-muted); padding: 40px 24px;
+  }
+  .empty-icon { font-size: 48px; opacity: .4; }
+  .empty-title { font-size: 16px; font-weight: 600; color: var(--text-secondary); }
+  .empty-desc { font-size: 13px; text-align: center; line-height: 1.5; }
+
+  /* =========================================================
+     SCREEN 2 — MADNESS / BRACKET SIMULATOR
+  ========================================================= */
+  .madness-header {
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+    padding: 20px 20px 24px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .madness-title { font-size: 20px; font-weight: 700; color: #fff; letter-spacing: -.2px; }
+  .madness-subtitle { font-size: 13px; color: rgba(255,255,255,.65); }
+
+  .madness-body { flex: 1; overflow-y: auto; }
+
+  .simulate-section {
+    padding: 20px 16px 16px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .simulate-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 16px;
+    background: #3b82f6;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 4px 20px rgba(59,130,246,.45);
+    cursor: pointer;
+    transition: background .2s, transform .1s;
+    border: none;
+  }
+  .simulate-btn:hover { background: #2563eb; transform: translateY(-1px); }
+  .simulate-btn svg { flex-shrink: 0; }
+  .simulate-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .results-section { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 8px; }
+  .results-label {
+    font-size: 11px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 4px 0 8px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
+  }
+
+  .result-card {
+    background: var(--bg-card);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: var(--shadow-card);
+  }
+  .rank-badge {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; flex-shrink: 0;
+  }
+  .rank-1 { background: rgba(210,153,34,.15); border: 1.5px solid rgba(210,153,34,.4); color: var(--accent-amber); }
+  .rank-2 { background: rgba(139,148,158,.12); border: 1.5px solid rgba(139,148,158,.3); color: var(--text-secondary); }
+  .rank-3 { background: rgba(224,123,42,.12); border: 1.5px solid rgba(224,123,42,.3); color: var(--accent-orange); }
+  .rank-n  { background: var(--bg-card-alt); border: 1px solid var(--border); color: var(--text-muted); }
+  .result-info { flex: 1; }
+  .result-team { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+  .result-seed { font-size: 11px; color: var(--text-secondary); }
+  .result-stats { text-align: right; }
+  .result-champ { font-size: 15px; font-weight: 700; color: var(--accent-green); }
+  .result-f4 { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+
+  /* =========================================================
+     SCREEN 3 — TODAY + DROPDOWN
+  ========================================================= */
+  .today-app-bar {
+    height: 56px;
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .hamburger { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); }
+  .today-title {
+    font-size: 18px; font-weight: 700;
+    background: linear-gradient(90deg, var(--accent-teal), var(--accent-blue));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    flex: 1; letter-spacing: -.2px;
+  }
+  .league-pill {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 12px;
+    border-radius: 10px;
+    background: var(--bg-card);
+    border: 1.5px solid var(--border);
+    cursor: pointer;
+    transition: border-color .2s;
+    position: relative;
+  }
+  .league-pill:hover { border-color: var(--accent-teal); }
+  .league-pill span { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+  .league-pill svg { width: 14px; height: 14px; fill: var(--text-secondary); transition: transform .2s; }
+  .league-pill.open svg { transform: rotate(180deg); }
+  .league-pill.open { border-color: var(--accent-teal); }
+
+  .refresh-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); border-radius: 10px; }
+
+  /* Dropdown overlay */
+  .dropdown-overlay {
+    position: absolute; top: 100px; right: 16px; z-index: 100;
+    background: var(--bg-card);
+    border-radius: 14px;
+    border: 1.5px solid var(--border);
+    box-shadow: 0 8px 32px rgba(0,0,0,.3);
+    overflow: hidden;
+    min-width: 160px;
+    display: none;
+  }
+  .dropdown-overlay.visible { display: block; }
+  .dropdown-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 13px 16px;
+    cursor: pointer;
+    transition: background .15s;
+    font-size: 14px; font-weight: 600; color: var(--text-primary);
+  }
+  .dropdown-item:not(:last-child) { border-bottom: 1px solid var(--border); }
+  .dropdown-item:hover { background: var(--bg-card-alt); }
+  .dropdown-item.selected { color: var(--accent-teal); }
+  .dropdown-item .check { color: var(--accent-teal); font-size: 15px; margin-left: auto; opacity: 0; }
+  .dropdown-item.selected .check { opacity: 1; }
+
+  .today-date-row {
+    padding: 14px 16px 10px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .today-date { font-size: 13px; font-weight: 700; color: var(--text-secondary); letter-spacing: .3px; }
+  .game-count {
+    font-size: 11px; font-weight: 700; padding: 3px 10px;
+    border-radius: 20px;
+    background: rgba(0,212,204,.12);
+    color: var(--accent-teal);
+    border: 1px solid rgba(0,212,204,.25);
+  }
+
+  .today-body { flex: 1; overflow-y: auto; padding: 0 16px 16px; display: flex; flex-direction: column; gap: 10px; }
+
+  .game-card {
+    background: var(--bg-card);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    padding: 14px;
+    box-shadow: var(--shadow-card);
+    cursor: pointer;
+    transition: transform .15s;
+  }
+  .game-card:hover { transform: translateY(-1px); }
+  .team-row { display: flex; align-items: center; gap: 10px; padding: 4px 0; }
+  .team-logo {
+    width: 28px; height: 28px; border-radius: 14px;
+    background: var(--bg-card-alt);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; border: 1px solid var(--border);
+  }
+  .team-name { font-size: 14px; font-weight: 600; color: var(--text-primary); flex: 1; }
+  .team-score { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+  .team-score.winner { color: var(--accent-teal); }
+  .vs-divider { width: 100%; height: 1px; background: var(--border); margin: 4px 0; }
+  .prediction-badge {
+    display: flex; align-items: center; gap: 6px;
+    margin-top: 10px; padding: 8px 12px;
+    border-radius: 10px;
+    background: rgba(63,185,80,.08);
+    border: 1px solid rgba(63,185,80,.2);
+    color: var(--accent-green);
+    font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: background .15s;
+  }
+  .prediction-badge:hover { background: rgba(63,185,80,.14); }
+  .game-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 10px; padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+  .game-time { font-size: 11px; color: var(--text-muted); }
+  .game-actions { display: flex; gap: 8px; align-items: center; }
+  .forum-btn {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 600; color: var(--text-secondary);
+    padding: 4px 8px;
+    border-radius: 8px; border: 1px solid var(--border);
+    background: var(--bg-card-alt);
+  }
+  .status-pill {
+    font-size: 10px; font-weight: 700; padding: 3px 8px;
+    border-radius: 8px; text-transform: uppercase; letter-spacing: .5px;
+  }
+  .status-final { background: var(--bg-card-alt); color: var(--text-muted); border: 1px solid var(--border); }
+  .status-live  { background: rgba(248,81,73,.15); color: var(--accent-red); border: 1px solid rgba(248,81,73,.3); }
+  .status-soon  { background: rgba(88,166,255,.12); color: var(--accent-blue); border: 1px solid rgba(88,166,255,.25); }
+
+  /* Tab visibility helpers */
+  .tab-pane { display: none; flex: 1; flex-direction: column; overflow-y: auto; }
+  .tab-pane.active { display: flex; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Signal Sports — UI Mockups</h1>
+  <p>Offseason Hub · March Madness · Today Dropdown &nbsp;·&nbsp; theme-responsive</p>
+</div>
+
+<div class="theme-toggle">
+  <button onclick="toggleTheme()" id="theme-btn">☀️ Switch to Light</button>
+</div>
+
+<div class="switcher">
+  <button class="switch-btn active" onclick="showScreen('offseason', this)">Offseason</button>
+  <button class="switch-btn" onclick="showScreen('madness', this)">Madness</button>
+  <button class="switch-btn" onclick="showScreen('today', this)">Today + Dropdown</button>
+</div>
+
+<div class="frame-wrap">
+  <div class="phone">
+
+    <!-- Status bar -->
+    <div class="status-bar">
+      <span>9:41</span>
+      <div class="status-icons">
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/><rect x="13.5" y="1" width="2.5" height="11" rx="1" opacity=".3"/></svg>
+        <svg width="16" height="12" viewBox="0 0 24 18" fill="currentColor"><path d="M12 3C8.3 3 5 4.6 2.7 7.2l1.8 1.8C6.2 6.8 8.9 5.5 12 5.5s5.8 1.3 7.5 3.5l1.8-1.8C19 4.6 15.7 3 12 3z"/><path d="M12 7c-2.4 0-4.6 1-6.2 2.6L7.6 11.4c1.2-1.2 2.7-1.9 4.4-1.9s3.2.7 4.4 1.9l1.8-1.8C16.6 8 14.4 7 12 7z"/><circle cx="12" cy="16" r="2"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12" fill="currentColor"><rect x="0" y="1" width="22" height="10" rx="3" stroke="currentColor" stroke-width="1.2" fill="none"/><rect x="1.5" y="2.5" width="17" height="7" rx="2"/><rect x="23" y="4" width="2" height="4" rx="1"/></svg>
+      </div>
+    </div>
+
+    <!-- ══ OFFSEASON SCREEN ══════════════════════════════════════ -->
+    <div class="screen active" id="screen-offseason">
+      <div class="app-bar">
+        <div class="app-bar-title">Offseason</div>
+        <div class="app-bar-action">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.96 7.96 0 0 0 12 4C7.58 4 4.01 7.58 4.01 12S7.58 20 12 20c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+        </div>
+      </div>
+
+      <div class="offseason-tabs">
+        <div class="offseason-tab active" onclick="showOffseasonTab('news', this)">News</div>
+        <div class="offseason-tab" onclick="showOffseasonTab('draft', this)">Draft 2026</div>
+        <div class="offseason-tab" onclick="showOffseasonTab('fa', this)">Free Agency</div>
+      </div>
+
+      <!-- News tab -->
+      <div class="tab-pane active" id="offseason-news">
+        <div class="offseason-body">
+          <div class="news-card">
+            <div class="news-img">🏀</div>
+            <div class="news-content">
+              <div class="news-source">ESPN · NBA</div>
+              <div class="news-headline">LeBron James opts in for 24th season with Lakers</div>
+              <div class="news-desc">Sources confirmed Thursday that LeBron James has exercised his player option, locking him in for another season in LA.</div>
+            </div>
+            <div class="news-footer">
+              <span class="news-time">2h ago</span>
+              <span class="news-read-more">Read more →</span>
+            </div>
+          </div>
+          <div class="news-card">
+            <div class="news-img" style="background: linear-gradient(135deg, #1a3a2a, #2a5a3a);">🏆</div>
+            <div class="news-content">
+              <div class="news-source">The Athletic · NBA</div>
+              <div class="news-headline">Warriors agree to multi-year deal with young PG prospect</div>
+              <div class="news-desc">Golden State has been aggressive in retooling their roster ahead of next season's championship push.</div>
+            </div>
+            <div class="news-footer">
+              <span class="news-time">5h ago</span>
+              <span class="news-read-more">Read more →</span>
+            </div>
+          </div>
+          <div class="news-card">
+            <div class="news-img" style="background: linear-gradient(135deg, #2a1a3a, #3a2a5a);">📊</div>
+            <div class="news-content">
+              <div class="news-source">NBA.com · Analytics</div>
+              <div class="news-headline">2026 Draft rankings updated — who climbed and who fell</div>
+              <div class="news-desc">The latest model rankings have shuffled the top 10 after the pre-draft combine measurements came in.</div>
+            </div>
+            <div class="news-footer">
+              <span class="news-time">1d ago</span>
+              <span class="news-read-more">Read more →</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Draft tab -->
+      <div class="tab-pane" id="offseason-draft">
+        <div class="offseason-body draft-list">
+          <div class="draft-card">
+            <div class="pick-badge"><span class="pick-num">1</span>Pick</div>
+            <div class="draft-info">
+              <div class="draft-name">Ace Bailey</div>
+              <div class="draft-meta">Rutgers · 6'9" · F</div>
+            </div>
+            <div class="draft-pos">SF</div>
+          </div>
+          <div class="draft-card">
+            <div class="pick-badge"><span class="pick-num">2</span>Pick</div>
+            <div class="draft-info">
+              <div class="draft-name">Dylan Harper</div>
+              <div class="draft-meta">Rutgers · 6'6" · G</div>
+            </div>
+            <div class="draft-pos">SG</div>
+          </div>
+          <div class="draft-card">
+            <div class="pick-badge"><span class="pick-num">3</span>Pick</div>
+            <div class="draft-info">
+              <div class="draft-name">Cooper Flagg</div>
+              <div class="draft-meta">Duke · 6'9" · F</div>
+            </div>
+            <div class="draft-pos">PF</div>
+          </div>
+          <div class="draft-card">
+            <div class="pick-badge"><span class="pick-num">4</span>Pick</div>
+            <div class="draft-info">
+              <div class="draft-name">VJ Edgecombe</div>
+              <div class="draft-meta">Baylor · 6'5" · G</div>
+            </div>
+            <div class="draft-pos">SG</div>
+          </div>
+          <div class="draft-card">
+            <div class="pick-badge"><span class="pick-num">5</span>Pick</div>
+            <div class="draft-info">
+              <div class="draft-name">Tre Johnson</div>
+              <div class="draft-meta">Texas · 6'5" · G</div>
+            </div>
+            <div class="draft-pos">SG</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Free Agency tab -->
+      <div class="tab-pane" id="offseason-fa">
+        <div class="offseason-body" style="gap:10px">
+          <div class="fa-card">
+            <div class="player-avatar">KD</div>
+            <div class="fa-info">
+              <div class="fa-name">Kevin Durant</div>
+              <div class="fa-team">Phoenix Suns · UFA</div>
+              <span class="fa-pos">SF</span>
+            </div>
+            <div class="fa-contract">$48M / yr</div>
+          </div>
+          <div class="fa-card">
+            <div class="player-avatar">PG</div>
+            <div class="fa-info">
+              <div class="fa-name">Paul George</div>
+              <div class="fa-team">Philadelphia 76ers · UFA</div>
+              <span class="fa-pos">SF</span>
+            </div>
+            <div class="fa-contract">$40M / yr</div>
+          </div>
+          <div class="fa-card">
+            <div class="player-avatar">KL</div>
+            <div class="fa-info">
+              <div class="fa-name">Kawhi Leonard</div>
+              <div class="fa-team">LA Clippers · UFA</div>
+              <span class="fa-pos">SF</span>
+            </div>
+            <div class="fa-contract">$45M / yr</div>
+          </div>
+          <div class="fa-card">
+            <div class="player-avatar">JB</div>
+            <div class="fa-info">
+              <div class="fa-name">Jordan Brand</div>
+              <div class="fa-team">Utah Jazz · RFA</div>
+              <span class="fa-pos">PG</span>
+            </div>
+            <div class="fa-contract">$22M / yr</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="">
+          <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+          <span>Today</span>
+        </div>
+        <div class="nav-item">
+          <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+          <span>Live</span>
+        </div>
+        <div class="nav-item">
+          <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+          <span>Finished</span>
+        </div>
+        <div class="nav-item active">
+          <svg viewBox="0 0 24 24"><path d="M13.127 14.56l1.43-1.43 6.44 6.443L19.57 21zm4.417-9.367c-1.538 0-2.787 1.249-2.787 2.786 0 1.538 1.249 2.786 2.787 2.786 1.537 0 2.786-1.248 2.786-2.786 0-1.537-1.249-2.786-2.786-2.786zm0 6.572c-2.097 0-3.786-1.689-3.786-3.786S15.447 4.193 17.544 4.193s3.786 1.689 3.786 3.786-1.689 3.786-3.786 3.786zm-6.963 1.275l-.6-.6-2.438 2.438-.6-.6-1.8 1.8.6.6-1.8 1.8.6.6 2.438-2.438.6.6 1.8-1.8-.6-.6zm-6.581-7.847l2.438 2.438.6-.6 1.8 1.8-.6.6.6.6-1.8 1.8-.6-.6-2.438 2.438-.6-.6L.6 9.47 0 10.07l1.8-1.8.6.6 2.438-2.438-.6-.6 1.8-1.8.6.6z"/></svg>
+          <span>Offseason</span>
+        </div>
+        <div class="nav-item">
+          <svg viewBox="0 0 24 24"><path d="M15 3H9v2H7v2H5v2H3v2h2v8h4v-6h2v6h4V11h2V9h-2V7h-2V5h-2V3zm0 2v2h2v2h2v2h-2v8h-2v-6h-6v6H7v-8H5V9h2V7h2V5h6z"/></svg>
+          <span>Madness</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ MADNESS SCREEN ════════════════════════════════════════ -->
+    <div class="screen" id="screen-madness">
+      <div class="madness-header">
+        <div class="madness-title">March Madness Simulator</div>
+        <div class="madness-subtitle">Monte Carlo CBB · 10,000 iterations</div>
+      </div>
+
+      <div class="madness-body">
+        <div class="simulate-section">
+          <button class="simulate-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+            Simulate 10,000 Iterations
+          </button>
+          <p class="simulate-hint">Tap to simulate the 64-team bracket using our Monte Carlo CBB AI model.</p>
+        </div>
+
+        <div class="results-section">
+          <div class="results-label">Championship Win Probability</div>
+
+          <div class="result-card">
+            <div class="rank-badge rank-1">1</div>
+            <div class="result-info">
+              <div class="result-team">Kansas Jayhawks</div>
+              <div class="result-seed">Seed #1 · Big 12</div>
+            </div>
+            <div class="result-stats">
+              <div class="result-champ">18.4%</div>
+              <div class="result-f4">F4: 52.1%</div>
+            </div>
+          </div>
+
+          <div class="result-card">
+            <div class="rank-badge rank-2">2</div>
+            <div class="result-info">
+              <div class="result-team">Duke Blue Devils</div>
+              <div class="result-seed">Seed #2 · ACC</div>
+            </div>
+            <div class="result-stats">
+              <div class="result-champ">14.7%</div>
+              <div class="result-f4">F4: 47.3%</div>
+            </div>
+          </div>
+
+          <div class="result-card">
+            <div class="rank-badge rank-3">3</div>
+            <div class="result-info">
+              <div class="result-team">Houston Cougars</div>
+              <div class="result-seed">Seed #1 · Big 12</div>
+            </div>
+            <div class="result-stats">
+              <div class="result-champ">12.1%</div>
+              <div class="result-f4">F4: 43.8%</div>
+            </div>
+          </div>
+
+          <div class="result-card">
+            <div class="rank-badge rank-n">4</div>
+            <div class="result-info">
+              <div class="result-team">Connecticut Huskies</div>
+              <div class="result-seed">Seed #3 · Big East</div>
+            </div>
+            <div class="result-stats">
+              <div class="result-champ">9.8%</div>
+              <div class="result-f4">F4: 38.2%</div>
+            </div>
+          </div>
+
+          <div class="result-card">
+            <div class="rank-badge rank-n">5</div>
+            <div class="result-info">
+              <div class="result-team">Purdue Boilermakers</div>
+              <div class="result-seed">Seed #2 · Big Ten</div>
+            </div>
+            <div class="result-stats">
+              <div class="result-champ">8.3%</div>
+              <div class="result-f4">F4: 34.5%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <div class="nav-item">
+          <svg viewBox="0 0 24 24" fill="inherit"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+          <span>Today</span>
+        </div>
+        <div class="nav-item">
+          <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+          <span>Live</span>
+        </div>
+        <div class="nav-item">
+          <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+          <span>Finished</span>
+        </div>
+        <div class="nav-item">
+          <svg viewBox="0 0 24 24"><path d="M13.127 14.56l1.43-1.43 6.44 6.443L19.57 21zm4.417-9.367c-1.538 0-2.787 1.249-2.787 2.786 0 1.538 1.249 2.786 2.787 2.786 1.537 0 2.786-1.248 2.786-2.786 0-1.537-1.249-2.786-2.786-2.786zm0 6.572c-2.097 0-3.786-1.689-3.786-3.786S15.447 4.193 17.544 4.193s3.786 1.689 3.786 3.786-1.689 3.786-3.786 3.786zm-6.963 1.275l-.6-.6-2.438 2.438-.6-.6-1.8 1.8.6.6-1.8 1.8.6.6 2.438-2.438.6.6 1.8-1.8-.6-.6zm-6.581-7.847l2.438 2.438.6-.6 1.8 1.8-.6.6.6.6-1.8 1.8-.6-.6-2.438 2.438-.6-.6L.6 9.47 0 10.07l1.8-1.8.6.6 2.438-2.438-.6-.6 1.8-1.8.6.6z"/></svg>
+          <span>Offseason</span>
+        </div>
+        <div class="nav-item active">
+          <svg viewBox="0 0 24 24"><path d="M15 3H9v2H7v2H5v2H3v2h2v8h4v-6h2v6h4V11h2V9h-2V7h-2V5h-2V3zm0 2v2h2v2h2v2h-2v8h-2v-6h-6v6H7v-8H5V9h2V7h2V5h6z"/></svg>
+          <span>Madness</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TODAY + DROPDOWN SCREEN ═══════════════════════════════ -->
+    <div class="screen" id="screen-today" style="position:relative;">
+      <div class="today-app-bar">
+        <div class="hamburger">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+        </div>
+        <div class="today-title">Signal Sports</div>
+        <div class="league-pill" id="league-pill" onclick="toggleDropdown()">
+          <span id="league-label">NBA</span>
+          <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+        </div>
+        <div class="refresh-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.96 7.96 0 0 0 12 4C7.58 4 4.01 7.58 4.01 12S7.58 20 12 20c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+        </div>
+      </div>
+
+      <!-- League dropdown -->
+      <div class="dropdown-overlay visible" id="dropdown" style="">
+        <div class="dropdown-item selected" onclick="selectLeague('NBA', this)">
+          <span>🏀</span> NBA
+          <span class="check">✓</span>
+        </div>
+        <div class="dropdown-item" onclick="selectLeague('WNBA', this)">
+          <span>🏀</span> WNBA
+          <span class="check">✓</span>
+        </div>
+      </div>
+
+      <div class="today-date-row">
+        <span class="today-date">MAY 2, 2026</span>
+        <span class="game-count">1 game</span>
+      </div>
+
+      <div class="today-body">
+        <div class="game-card">
+          <div class="team-row">
+            <div class="team-logo">🍀</div>
+            <div class="team-name">Boston Celtics</div>
+            <div class="team-score winner">112</div>
+          </div>
+          <div class="vs-divider"></div>
+          <div class="team-row">
+            <div class="team-logo">🔵</div>
+            <div class="team-name">@ Philadelphia 76ers</div>
+            <div class="team-score">98</div>
+          </div>
+          <div class="prediction-badge">
+            🌐 Tap to see model prediction
+          </div>
+          <div class="game-footer">
+            <span class="game-time">May 2 · 4:30 PM PT</span>
+            <div class="game-actions">
+              <div class="forum-btn">💬 Forum</div>
+              <div class="status-pill status-final">FINAL</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <div class="nav-item active">
+          <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+          <span>Today</span>
+        </div>
+        <div class="nav-item">
+          <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+          <span>Live</span>
+        </div>
+        <div class="nav-item">
+          <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+          <span>Finished</span>
+        </div>
+        <div class="nav-item">
+          <svg viewBox="0 0 24 24"><path d="M13.127 14.56l1.43-1.43 6.44 6.443L19.57 21zm4.417-9.367c-1.538 0-2.787 1.249-2.787 2.786 0 1.538 1.249 2.786 2.787 2.786 1.537 0 2.786-1.248 2.786-2.786 0-1.537-1.249-2.786-2.786-2.786zm0 6.572c-2.097 0-3.786-1.689-3.786-3.786S15.447 4.193 17.544 4.193s3.786 1.689 3.786 3.786-1.689 3.786-3.786 3.786zm-6.963 1.275l-.6-.6-2.438 2.438-.6-.6-1.8 1.8.6.6-1.8 1.8.6.6 2.438-2.438.6.6 1.8-1.8-.6-.6zm-6.581-7.847l2.438 2.438.6-.6 1.8 1.8-.6.6.6.6-1.8 1.8-.6-.6-2.438 2.438-.6-.6L.6 9.47 0 10.07l1.8-1.8.6.6 2.438-2.438-.6-.6 1.8-1.8.6.6z"/></svg>
+          <span>Offseason</span>
+        </div>
+        <div class="nav-item">
+          <svg viewBox="0 0 24 24"><path d="M15 3H9v2H7v2H5v2H3v2h2v8h4v-6h2v6h4V11h2V9h-2V7h-2V5h-2V3zm0 2v2h2v2h2v2h-2v8h-2v-6h-6v6H7v-8H5V9h2V7h2V5h6z"/></svg>
+          <span>Madness</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /phone -->
+</div><!-- /frame-wrap -->
+
+<script>
+  /* ── Theme toggle ─────────────────────────────────────── */
+  function toggleTheme() {
+    const html = document.documentElement;
+    const btn  = document.getElementById('theme-btn');
+    if (html.getAttribute('data-theme') === 'dark') {
+      html.setAttribute('data-theme', 'light');
+      btn.textContent = '🌙 Switch to Dark';
+    } else {
+      html.setAttribute('data-theme', 'dark');
+      btn.textContent = '☀️ Switch to Light';
+    }
+  }
+
+  /* ── Screen switcher ──────────────────────────────────── */
+  function showScreen(name, btn) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.switch-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('screen-' + name).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  /* ── Offseason sub-tabs ───────────────────────────────── */
+  function showOffseasonTab(name, tab) {
+    document.querySelectorAll('#screen-offseason .tab-pane').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.offseason-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('offseason-' + name).classList.add('active');
+    tab.classList.add('active');
+  }
+
+  /* ── Today dropdown ───────────────────────────────────── */
+  let dropdownOpen = true;
+  function toggleDropdown() {
+    const dd   = document.getElementById('dropdown');
+    const pill = document.getElementById('league-pill');
+    dropdownOpen = !dropdownOpen;
+    dd.style.display   = dropdownOpen ? 'block' : 'none';
+    pill.classList.toggle('open', dropdownOpen);
+  }
+  function selectLeague(name, el) {
+    document.getElementById('league-label').textContent = name;
+    document.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('selected'));
+    el.classList.add('selected');
+    toggleDropdown();
+  }
+</script>
+</body>
+</html>

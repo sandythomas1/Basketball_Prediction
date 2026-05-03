@@ -62,9 +62,9 @@ class AppConfig {
   /// Web development URL
   static const String _webDevelopmentApiUrl = 'http://localhost:8000';
 
-  /// ESPN API base URL
+  /// ESPN API base URL — league path is appended by the caller
   static const String espnApiUrl =
-      'https://site.api.espn.com/apis/site/v2/sports/basketball/nba';
+      'https://site.api.espn.com/apis/site/v2/sports/basketball';
 
   /// Get the appropriate API base URL based on environment and platform.
   String getApiBaseUrl({bool isWeb = false}) {

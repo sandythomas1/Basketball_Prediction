@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../Providers/api_service.dart';
+import '../theme/app_theme.dart';
 
 class BracketSimulatorScreen extends ConsumerStatefulWidget {
   const BracketSimulatorScreen({super.key});
@@ -12,14 +14,13 @@ class BracketSimulatorScreen extends ConsumerStatefulWidget {
 class _BracketSimulatorScreenState extends ConsumerState<BracketSimulatorScreen> {
   bool _isLoading = false;
   List<MapEntry<String, dynamic>> _results = [];
-  
-  // Mock 64 teams (Abilene Christian, Air Force, Akron, Alabama, etc.)
+
   final List<int> _mock64Teams = [
-    2000, 2005, 2006, 2010, 333, 2011, 2016, 44, 2026, 9, 12, 8, 2032, 2029, 
-    349, 2, 2046, 252, 2050, 239, 91, 2057, 2065, 2066, 68, 103, 104, 189, 71, 
-    225, 2803, 2083, 2084, 2086, 13, 2934, 2239, 2463, 2856, 25, 2097, 2099, 
-    2110, 2115, 2117, 232, 2127, 2429, 236, 2130, 2132, 228, 325, 324, 2142, 
-    38, 36, 171, 2154, 172, 156, 159, 2166, 2168
+    2000, 2005, 2006, 2010, 333, 2011, 2016, 44, 2026, 9, 12, 8, 2032, 2029,
+    349, 2, 2046, 252, 2050, 239, 91, 2057, 2065, 2066, 68, 103, 104, 189, 71,
+    225, 2803, 2083, 2084, 2086, 13, 2934, 2239, 2463, 2856, 25, 2097, 2099,
+    2110, 2115, 2117, 232, 2127, 2429, 236, 2130, 2132, 228, 325, 324, 2142,
+    38, 36, 171, 2154, 172, 156, 159, 2166, 2168,
   ];
 
   Future<void> _simulate() async {
@@ -33,14 +34,9 @@ class _BracketSimulatorScreenState extends ConsumerState<BracketSimulatorScreen>
 
     if (response != null && response['results'] != null) {
       final Map<String, dynamic> rawResults = response['results'];
-      
-      // Sort by likelihood to win championship ("W")
       final sortedEntries = rawResults.entries.toList()
         ..sort((a, b) => (b.value['W'] as num).compareTo(a.value['W'] as num));
-
-      setState(() {
-        _results = sortedEntries;
-      });
+      setState(() => _results = sortedEntries);
     } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -49,54 +45,67 @@ class _BracketSimulatorScreenState extends ConsumerState<BracketSimulatorScreen>
       }
     }
 
-    setState(() {
-      _isLoading = false;
-    });
+    setState(() => _isLoading = false);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: context.bgPrimary,
       appBar: AppBar(
-        title: const Text('March Madness Simulator', style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF1E3A8A), Color(0xFF3B82F6)], // Deep blue to bright blue
+              colors: [Color(0xFF1E3A8A), Color(0xFF3B82F6)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
           ),
         ),
-      ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: Column(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.blueAccent.withOpacity(0.3),
-                      blurRadius: 15,
-                      spreadRadius: 2,
-                    )
-                  ],
-                ),
+            Text(
+              'March Madness Simulator',
+              style: GoogleFonts.dmSans(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+            Text(
+              'Monte Carlo CBB · 10,000 iterations',
+              style: GoogleFonts.dmSans(
+                fontSize: 12,
+                color: Colors.white.withValues(alpha: 0.65),
+              ),
+            ),
+          ],
+        ),
+      ),
+      body: Column(
+        children: [
+          // Simulate button
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF3B82F6).withValues(alpha: 0.35),
+                    blurRadius: 16,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: SizedBox(
+                width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                     backgroundColor: const Color(0xFF3B82F6),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
@@ -104,19 +113,26 @@ class _BracketSimulatorScreenState extends ConsumerState<BracketSimulatorScreen>
                   ),
                   onPressed: _isLoading ? null : _simulate,
                   child: _isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Row(
-                          mainAxisSize: MainAxisSize.min,
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.5,
+                          ),
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.sports_basketball, size: 28, color: Colors.white),
-                            SizedBox(width: 12),
+                            const Icon(Icons.sports_basketball, size: 22, color: Colors.white),
+                            const SizedBox(width: 10),
                             Text(
-                              'SIMULATE 10,000 ITERATIONS',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
+                              'Simulate 10,000 Iterations',
+                              style: GoogleFonts.dmSans(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
                                 color: Colors.white,
-                                letterSpacing: 1.2,
+                                letterSpacing: 0.5,
                               ),
                             ),
                           ],
@@ -124,92 +140,189 @@ class _BracketSimulatorScreenState extends ConsumerState<BracketSimulatorScreen>
                 ),
               ),
             ),
-            
-            if (_results.isEmpty && !_isLoading)
-              const Expanded(
-                child: Center(
-                  child: Text(
-                    'Tap to simulate the 64-team bracket using our Monte Carlo CBB AI.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white70, fontSize: 16),
-                  ),
-                ),
-              ),
+          ),
 
-            if (_results.isNotEmpty) ...[
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Align(
-                  alignment: Alignment.centerLeft,
+          // Empty hint
+          if (_results.isEmpty && !_isLoading)
+            Expanded(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(32),
                   child: Text(
-                    '🏆 Most Likely Champions',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+                    'Tap to simulate the 64-team bracket using our Monte Carlo CBB AI model.',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14,
+                      color: context.textMuted,
+                      height: 1.6,
+                    ),
                   ),
                 ),
               ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: _results.length,
-                  itemBuilder: (context, index) {
-                    final entry = _results[index];
-                    final teamId = entry.key;
-                    final probs = entry.value;
-                    
-                    final winPct = ((probs['W'] as num) * 100).toStringAsFixed(1);
-                    final f4Pct = ((probs['F4'] as num) * 100).toStringAsFixed(1);
-                    
-                    // Add subtle glow to top 3
-                    final isTop3 = index < 3;
-                    
-                    return Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(12),
-                        border: isTop3 ? Border.all(color: Colors.blueAccent.withOpacity(0.5), width: 1.5) : null,
+            ),
+
+          // Results
+          if (_results.isNotEmpty) ...[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 10),
+              child: Row(
+                children: [
+                  Expanded(child: Divider(color: context.borderColor)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text(
+                      'CHAMPIONSHIP WIN PROBABILITY',
+                      style: GoogleFonts.spaceMono(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: context.textMuted,
+                        letterSpacing: 0.5,
                       ),
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: isTop3 ? Colors.amber : Colors.grey[800],
-                          child: Text(
-                            '#${index + 1}',
-                            style: TextStyle(
-                              color: isTop3 ? Colors.black : Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        title: Text(
-                          'Team $teamId', // In a real app, map ID to Team Name
-                          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),
-                        ),
-                        subtitle: Text(
-                          'Final Four: $f4Pct%',
-                          style: TextStyle(color: Colors.blue[300]),
-                        ),
-                        trailing: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            const Text('Win %', style: TextStyle(color: Colors.white54, fontSize: 12)),
-                            Text(
-                              '$winPct%',
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.greenAccent,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
+                    ),
+                  ),
+                  Expanded(child: Divider(color: context.borderColor)),
+                ],
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                itemCount: _results.length,
+                itemBuilder: (context, index) {
+                  final entry = _results[index];
+                  final probs = entry.value;
+                  final winPct = ((probs['W'] as num) * 100).toStringAsFixed(1);
+                  final f4Pct = ((probs['F4'] as num) * 100).toStringAsFixed(1);
+                  return _ResultCard(
+                    rank: index + 1,
+                    teamId: entry.key,
+                    winPct: winPct,
+                    f4Pct: f4Pct,
+                  );
+                },
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ResultCard extends StatelessWidget {
+  final int rank;
+  final String teamId;
+  final String winPct;
+  final String f4Pct;
+
+  const _ResultCard({
+    required this.rank,
+    required this.teamId,
+    required this.winPct,
+    required this.f4Pct,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final (badgeBg, badgeBorder, badgeText) = switch (rank) {
+      1 => (
+          const Color(0xFFD29922).withValues(alpha: 0.15),
+          const Color(0xFFD29922).withValues(alpha: 0.4),
+          const Color(0xFFD29922),
+        ),
+      2 => (
+          const Color(0xFF8B949E).withValues(alpha: 0.12),
+          const Color(0xFF8B949E).withValues(alpha: 0.3),
+          const Color(0xFF8B949E),
+        ),
+      3 => (
+          const Color(0xFFE07B2A).withValues(alpha: 0.12),
+          const Color(0xFFE07B2A).withValues(alpha: 0.3),
+          const Color(0xFFE07B2A),
+        ),
+      _ => (
+          context.bgSecondary,
+          context.borderColor,
+          context.textMuted,
+        ),
+    };
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: context.bgCard,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: Row(
+        children: [
+          // Rank badge
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: badgeBg,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: badgeBorder, width: 1.5),
+            ),
+            child: Center(
+              child: Text(
+                '$rank',
+                style: GoogleFonts.dmSans(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: badgeText,
                 ),
               ),
-            ]
-          ],
-        ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          // Team info
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Team $teamId',
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: context.textPrimary,
+                  ),
+                ),
+                Text(
+                  'Final Four: $f4Pct%',
+                  style: GoogleFonts.dmSans(
+                    fontSize: 12,
+                    color: context.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Win %
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '$winPct%',
+                style: GoogleFonts.dmSans(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.accentGreen,
+                ),
+              ),
+              Text(
+                'Win %',
+                style: GoogleFonts.dmSans(
+                  fontSize: 11,
+                  color: context.textMuted,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
