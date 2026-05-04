@@ -22,6 +22,9 @@ class _OffseasonHubScreenState extends ConsumerState<OffseasonHubScreen>
   bool _isLoadingDraft = true;
   List<dynamic> _prospects = [];
 
+  bool _isLoadingDraftNews = true;
+  List<dynamic> _draftNews = [];
+
   bool _isLoadingFA = true;
   List<dynamic> _freeAgents = [];
 
@@ -55,6 +58,15 @@ class _OffseasonHubScreenState extends ConsumerState<OffseasonHubScreen>
         setState(() {
           _prospects = data?['prospects'] ?? [];
           _isLoadingDraft = false;
+        });
+      }
+    });
+
+    api.fetchDraftNews().then((data) {
+      if (mounted) {
+        setState(() {
+          _draftNews = data?['news'] ?? [];
+          _isLoadingDraftNews = false;
         });
       }
     });
@@ -98,6 +110,7 @@ class _OffseasonHubScreenState extends ConsumerState<OffseasonHubScreen>
             onPressed: () {
               setState(() {
                 _isLoadingNews = true;
+                _isLoadingDraftNews = true;
                 _isLoadingDraft = true;
                 _isLoadingFA = true;
               });
@@ -161,24 +174,92 @@ class _OffseasonHubScreenState extends ConsumerState<OffseasonHubScreen>
   // ── Draft Tab ────────────────────────────────────────────────────────────────
 
   Widget _buildDraftTab() {
-    if (_isLoadingDraft) {
+    if (_isLoadingDraftNews && _isLoadingDraft) {
       return Center(child: CircularProgressIndicator(color: AppColors.accentOrange));
     }
-    if (_prospects.isEmpty) {
+
+    if (!_isLoadingDraftNews && _draftNews.isEmpty &&
+        !_isLoadingDraft && _prospects.isEmpty) {
       return _buildEmptyState(
         icon: Icons.school_outlined,
-        title: 'No prospects yet',
-        description: 'Draft prospect rankings will appear here once available.',
+        title: 'No draft content yet',
+        description: 'Draft news and prospect rankings will appear here once available.',
       );
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: _prospects.length,
-      itemBuilder: (context, index) {
-        final prospect = _prospects[index];
-        return _DraftCard(rank: index + 1, prospect: prospect);
-      },
+    return CustomScrollView(
+      slivers: [
+        // ── Draft News section ───────────────────────────────────────────
+        if (_isLoadingDraftNews || _draftNews.isNotEmpty) ...[
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Text(
+                'Draft News',
+                style: GoogleFonts.dmSans(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: context.textPrimary,
+                ),
+              ),
+            ),
+          ),
+          if (_isLoadingDraftNews)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: Center(child: CircularProgressIndicator(color: AppColors.accentOrange)),
+              ),
+            )
+          else
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final article = _draftNews[index];
+                    return _NewsCard(article: article, onTap: () => _launchUrl(article['link']));
+                  },
+                  childCount: _draftNews.length,
+                ),
+              ),
+            ),
+        ],
+
+        // ── Prospect Rankings section ────────────────────────────────────
+        if (_isLoadingDraft || _prospects.isNotEmpty) ...[
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
+              child: Text(
+                'Prospect Rankings',
+                style: GoogleFonts.dmSans(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: context.textPrimary,
+                ),
+              ),
+            ),
+          ),
+          if (_isLoadingDraft)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: Center(child: CircularProgressIndicator(color: AppColors.accentOrange)),
+              ),
+            )
+          else
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => _DraftCard(rank: index + 1, prospect: _prospects[index]),
+                  childCount: _prospects.length,
+                ),
+              ),
+            ),
+        ],
+      ],
     );
   }
 

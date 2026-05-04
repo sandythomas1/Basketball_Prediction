@@ -8,16 +8,16 @@ router = APIRouter(prefix="/nba/offseason", tags=["Offseason"])
 
 # Static mock data for Draft
 MOCK_DRAFT_PROSPECTS = [
-    {"id": 1, "name": "Cooper Flagg", "position": "F", "school": "Duke", "projected_pick": "1st Overall", "strengths": "Defense, Versatility, IQ", "image_url": "https://a.espncdn.com/i/headshots/recruiting/ncb/players/full/246416.png"},
-    {"id": 2, "name": "Ace Bailey", "position": "F", "school": "Rutgers", "projected_pick": "Top 3", "strengths": "Shot Creation, Athleticism", "image_url": "https://a.espncdn.com/i/headshots/recruiting/ncb/players/full/248386.png"},
-    {"id": 3, "name": "Dylan Harper", "position": "G", "school": "Rutgers", "projected_pick": "Top 5", "strengths": "Playmaking, Scoring", "image_url": "https://a.espncdn.com/i/headshots/recruiting/ncb/players/full/248398.png"},
-    {"id": 4, "name": "V.J. Edgecombe", "position": "G", "school": "Baylor", "projected_pick": "Top 5", "strengths": "Slashing, Explosiveness", "image_url": "https://a.espncdn.com/i/headshots/recruiting/ncb/players/full/248405.png"},
-    {"id": 5, "name": "Tre Johnson", "position": "G", "school": "Texas", "projected_pick": "Top 10", "strengths": "Shooting, Pure Scoring", "image_url": "https://a.espncdn.com/i/headshots/recruiting/ncb/players/full/246445.png"},
-    {"id": 6, "name": "Khaman Maluach", "position": "C", "school": "Duke", "projected_pick": "Top 10", "strengths": "Size, Rim Protection", "image_url": "https://a.espncdn.com/i/headshots/recruiting/ncb/players/full/255536.png"},
-    {"id": 7, "name": "Nolan Traore", "position": "G", "school": "France", "projected_pick": "Lottery", "strengths": "Pick & Roll, Quickness", "image_url": "https://a.espncdn.com/i/headshots/nba/players/full/1234567.png"},
-    {"id": 8, "name": "Drake Powell", "position": "F", "school": "UNC", "projected_pick": "Lottery", "strengths": "Two-way Potential, Wing Defense", "image_url": "https://a.espncdn.com/i/headshots/recruiting/ncb/players/full/246422.png"},
-    {"id": 9, "name": "Hugo Gonzalez", "position": "F", "school": "Real Madrid", "projected_pick": "Lottery", "strengths": "Motor, Defensive Versatility", "image_url": "https://a.espncdn.com/i/headshots/nba/players/full/1234568.png"},
-    {"id": 10, "name": "Ian Jackson", "position": "G", "school": "UNC", "projected_pick": "Mid 1st Round", "strengths": "Scoring, Energy", "image_url": "https://a.espncdn.com/i/headshots/recruiting/ncb/players/full/246419.png"},
+    {"id": 1, "name": "AJ Dybantsa", "position": "F", "school": "BYU", "projected_pick": "1st Overall", "strengths": "Scoring, Versatility, Size", "image_url": None},
+    {"id": 2, "name": "Cameron Boozer", "position": "PF", "school": "Duke", "projected_pick": "Top 3", "strengths": "Rebounding, Interior Scoring", "image_url": None},
+    {"id": 3, "name": "Cayden Boozer", "position": "PG", "school": "Duke", "projected_pick": "Top 5", "strengths": "Playmaking, Basketball IQ", "image_url": None},
+    {"id": 4, "name": "Liam McNeeley", "position": "F", "school": "UConn", "projected_pick": "Top 5", "strengths": "Shooting, Off-Ball Movement", "image_url": None},
+    {"id": 5, "name": "Carter Bryant", "position": "F", "school": "Arizona", "projected_pick": "Top 10", "strengths": "Length, Two-Way Potential", "image_url": None},
+    {"id": 6, "name": "Darryn Peterson", "position": "G", "school": "Kansas", "projected_pick": "Top 10", "strengths": "Creation, Athleticism", "image_url": None},
+    {"id": 7, "name": "Noa Essengue", "position": "F", "school": "France", "projected_pick": "Lottery", "strengths": "Upside, Defensive Tools", "image_url": None},
+    {"id": 8, "name": "Isaiah Evans", "position": "G", "school": "Duke", "projected_pick": "Lottery", "strengths": "Shooting, Off-Ball Scoring", "image_url": None},
+    {"id": 9, "name": "Nikolas Khamenia", "position": "F", "school": "Arizona", "projected_pick": "Lottery", "strengths": "Motor, High IQ", "image_url": None},
+    {"id": 10, "name": "Egor Demin", "position": "G", "school": "BYU", "projected_pick": "Mid 1st Round", "strengths": "Passing, Court Vision", "image_url": None},
 ]
 
 # Static mock data for Free Agents
@@ -64,6 +64,44 @@ async def get_offseason_news():
                 raise HTTPException(status_code=response.status_code, detail="Failed to fetch ESPN news")
     except Exception as e:
         logger.error(f"Error fetching news: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+_DRAFT_KEYWORDS = {"draft", "prospect", "combine", "lottery", "flagg", "bailey", "harper", "edgecombe"}
+
+@router.get("/draft/news")
+async def get_draft_news():
+    """Fetch draft-related NBA news from ESPN, filtered by draft keywords."""
+    url = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/news"
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, timeout=10.0)
+            if response.status_code == 200:
+                data = response.json()
+                articles = data.get("articles", [])
+
+                draft_articles = []
+                for article in articles:
+                    text = (
+                        (article.get("headline") or "") + " " +
+                        (article.get("description") or "")
+                    ).lower()
+                    if any(kw in text for kw in _DRAFT_KEYWORDS):
+                        images = article.get("images", [])
+                        image_url = images[0].get("url") if images else None
+                        draft_articles.append({
+                            "headline": article.get("headline"),
+                            "description": article.get("description"),
+                            "published_at": article.get("published"),
+                            "source": article.get("source", "ESPN"),
+                            "link": article.get("links", {}).get("web", {}).get("href"),
+                            "image_url": image_url,
+                        })
+
+                return {"status": "success", "news": draft_articles}
+            else:
+                raise HTTPException(status_code=response.status_code, detail="Failed to fetch ESPN news")
+    except Exception as e:
+        logger.error(f"Error fetching draft news: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/draft")

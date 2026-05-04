@@ -254,6 +254,21 @@ class ApiService {
     return _fetchGet(url, 'Draft Prospects');
   }
 
+  /// Fetch draft news by filtering the offseason news feed client-side.
+  /// Falls back gracefully if no articles match draft-related keywords.
+  Future<Map<String, dynamic>?> fetchDraftNews() async {
+    const keywords = ['draft', 'prospect', 'combine', 'lottery', 'flagg', 'bailey', 'harper'];
+    final url = '$fastApiBaseUrl/nba/offseason/news';
+    final data = await _fetchGet(url, 'Draft News');
+    if (data == null) return null;
+    final articles = (data['news'] as List? ?? []);
+    final filtered = articles.where((a) {
+      final text = '${a['headline'] ?? ''} ${a['description'] ?? ''}'.toLowerCase();
+      return keywords.any((kw) => text.contains(kw));
+    }).toList();
+    return {'news': filtered};
+  }
+
   /// Fetch free agents
   Future<Map<String, dynamic>?> fetchFreeAgents() async {
     final url = '$fastApiBaseUrl/nba/offseason/free-agents';
